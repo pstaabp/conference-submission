@@ -7,7 +7,9 @@ function make(Schema, mongoose) {
 		submissionDate: Date,
 	});
 
-	var Proposal = mongoose.Model("Proposal",ProposalSchema);
+	var Proposal = mongoose.model("Proposal",ProposalSchema);
 
 
-});
+}
+
+module.exports.make = make;
