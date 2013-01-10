@@ -1,0 +1,66 @@
+<html>
+<head>
+<script data-main="./other/apps/SubmitPage" src="./other/vendor/require.js"></script>
+   <!-- Bootstrap -->
+    <link href="./other/css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+
+</head>
+<body>
+<h2>Testing the Undergraduate Conference Submission Page</h2>
+
+<div id="container">
+
+
+<script type="text/template" id="submit-main">
+
+<ul class="nav nav-tabs" id="submit-main-tabs">
+  <li class="active"><a href="#login">Login</a></li>
+  <li><a href="#personal">Personal Info</a></li>
+  <li><a href="#proposal">Proposal</a></li>
+  <li><a href="#messages">Messages</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="login">
+  <p>Below use your falconkey and password to login:</p>
+  <table class="table">
+  <tr><td>falconkey</td><td><input id="falconkey" size="20"></td></tr>
+  <tr><td>password</td><td><input id="password" type="password" size="20"></td>
+  <td><button type="button" id="login-button" class="btn">Login</button></tr>
+  </table>
+  </div>
+
+  <div class="tab-pane" id="personal"><h3>Information about You</h3></div>
+  <div class="tab-pane" id="proposal"><h3>Your Proposal</h3></div>
+  <div class="tab-pane" id="messages">Other</div>
+</div>
+</script>
+
+<script type="text/template" id="user-view">
+
+<h3>Your Information</h3>
+<table>
+<tr><td>First Name</td><td><input id="firstname" name="firstname" type="text" size="40"></td></tr>
+<tr><td>Last Name</td><td><input id="lastname" name="lastname" type="text" size="40"></td></tr>
+<tr><td>Email</td><td><input id="email" name="email" type="text" size="40"></td></tr>
+<tr><td>Major</td><td><input id="major" name="major" type="text" size="40"></td></tr>
+
+
+</script>
+
+<script type="text/template" id="proposal-view">
+
+<h3>Proposal Information</h3>
+<table>
+<tr><td>Title</td><td><input id="title" name="title" type="text" size="40"></td></tr>
+<tr><td>Sponsor Email</td><td><input id="semail" name="semail" type="text" size="40"></td></tr>
+<tr><td>Sponsor Name</td><td><input id="sponsor" name="sponsor" type="text" size="40"></td></tr>
+<tr><td>Sponsor&apos;s Department</td><td><input id="sdept" name="sdept" type="text" size="40"></td></tr>
+<tr><td>Proposal Text</td><td> <textarea id="content" name="content" rows="15" cols="80"></textarea>
+
+
+</script>
+
+</body>
+</html>
