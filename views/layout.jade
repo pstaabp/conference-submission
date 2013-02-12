@@ -1,7 +1,25 @@
-doctype 5
+!!!
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    title Undergraduate Conference Submission
+    link(href='/stylesheets/bootstrap.min.css',rel='stylesheet',media="screen")
+    link(href='/stylesheets/style.css',rel='stylesheet')
+    block script
   body
-    block content
+    div.container-fluid
+      div.navbar
+        div.navbar-inner
+          a.brand(href="#") Fitchburg State Undergraduate Conference Proposals
+          span.navbar-text.pull-right.span5
+            - if (typeof(user)!=="undefined"){
+              span.span2 Welcome #{user.first_name}   
+            -}
+              
+            a.btn.span1#logout Log Out
+            a.btn.span1#help-link Help
+      #container
+        block container
+    
+    block templates
+
+    

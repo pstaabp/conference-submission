@@ -1,0 +1,38 @@
+<html>
+<head>
+<script data-main="./apps/FacultyPage" src="./vendor/require.js"></script>
+   <!-- Bootstrap -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+
+</head>
+<body>
+<h2>Testing the Undergraduate Conference Submission Page</h2>
+
+<div id="container">
+
+
+<script type="text/template" id="faculty-main">
+
+<ul class="nav nav-tabs" id="submit-main-tabs">
+  <li class="active"><a href="#login">Login</a></li>
+  <li><a href="#review">Proposals To Review</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="login">
+  <p>Below use your falconkey and password to login:</p>
+  <table class="table">
+  <tr><td>falconkey</td><td><input id="falconkey" size="20"></td></tr>
+  <tr><td>password</td><td><input id="password" type="password" size="20"></td>
+  <td><button type="button" id="login-button" class="btn">Login</button></tr>
+  </table>
+  </div>
+
+  <div class="tab-pane" id="review"><h3>Proposals to Review</h3></div>
+  
+</div>
+</script>
+
+
+</html>

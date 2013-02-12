@@ -1,10 +1,10 @@
 function make(Schema, mongoose) {
 	var ProposalSchema = new Schema({
-	    first_name: String,
-		last_name: String,
-		type: String,
+	    user_id: String,
+	    type: String,
 		proposal: Buffer,
 		submissionDate: Date,
+		sponsor_statement: Buffer
 	});
 
 	var Proposal = mongoose.model("Proposal",ProposalSchema);

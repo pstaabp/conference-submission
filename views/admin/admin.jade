@@ -1,0 +1,81 @@
+extends ../layout
+
+block script
+  script(type='text/javascript',data-main='/javascripts/apps/AdminPage',src='/javascripts/vendor/require.js')
+
+block container
+  ul.nav.nav-tabs#admin-tabs
+    li.active
+      a(href="#users") Users
+    li
+      a(href="#proposals") Proposals
+    li
+      a(href="#oral-presentations") Oral 
+    li
+      a(href="#poster-presentations") Posters
+    li
+      a(href="#art-2d") 2D Art
+    li
+      a(href="#art-3d") 3D Art
+    li
+      a(href="#video") Video
+    
+      
+  .tab-content
+    .tab-pane.active#users
+      h3 Users
+      table#user-table.table
+        thead
+          tr
+            td First Name
+            td Last Name
+            td Major
+            td Role
+            td Email
+        tbody
+    .tab-pane#proposals
+      h3 Proposals
+      table#proposal-table.table.table-striped
+        tbody
+          include proposal-table-header.jade
+    .tab-pane#oral-presentations
+      h3 Oral Presentations
+      table#oral-table.table.table-striped
+        tbody
+          include proposal-table-header.jade
+
+    .tab-pane#poster-presentations
+      h3 Poster Presentations
+      table#poster-table.table.table-striped
+        tbody
+          include proposal-table-header.jade
+
+    .tab-pane#art-2d
+      h3 2D Art
+    .tab-pane#art-3d
+      h3 3D Art
+    .tab-pane#video
+      h3 Videos
+    
+
+block templates
+  script(type='text/template',id='user-row-template')
+    tr
+      td <%=first_name%>
+      td <%=last_name%>
+      td <%=major%>
+      td <%=role%>
+      td <%=email%>
+
+  script(type='text/template',id='proposal-row-template')
+    tr
+      td <%=email%>
+      td <%=title%>
+      td <%=sponsor_name%>
+      td <%=sponsor_email%>
+      td <%=sponsor_dept%>
+      td <%=type%>
+    tr
+      td(colspan="6") <%=content%>        
+
+            

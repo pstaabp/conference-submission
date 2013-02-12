@@ -1,0 +1,35 @@
+extends ../layout
+
+block script
+  script(type='text/javascript',data-main='/javascripts/apps/NewUserPage',src='/javascripts/vendor/require.js')
+
+
+block templates
+  script(type='text/template',id="new-user-view")
+    h2 Create a new Account for the Undergraduate Conference
+
+    p Enter an email and password and verify the password.  Please use your Fitchburg State Email address.
+
+    form(id='newUser',action='/users/add',method='post')
+      input(type='hidden',name='type');
+      table
+        tbody
+          tr
+            td
+              label Email: 
+            td
+              input(type='text',name='email')
+          tr
+            td
+              label password:
+            td
+              input(type='password',name='password')
+          tr
+            td
+              label retype password:
+            td
+              input(type='password',name='verify')
+          tr
+            td
+            td   
+              button.btn(id='submit') Submit

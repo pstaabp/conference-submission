@@ -1,0 +1,96 @@
+extends layout
+
+block script
+  script(type='text/javascript',data-main='/javascripts/apps/StudentPage',src='/javascripts/vendor/require.js')
+
+block templates
+  include users/info.jade
+  script(type='text/template',id='student-tabs-template')
+    input(type='hidden',id='user-email',value=user.email)
+    include tabs.jade
+    
+
+  script(type='text/template',id="proposal-view")
+    div.row
+      span.span6 
+        h4 Proposal Information
+      span.span6.pull-right 
+        button.btn(id='submit-proposal-button') Save the Proposal
+    table
+      tr
+        td Project Title
+        td(colspan="3")
+          input(id='title',data-field="title",type='text',size='40')
+      tr
+        td Type of Presentation
+        td
+          select(id='pres-type',data-field="type")
+            option Poster Presentation
+            option Oral Presentation
+            option Music
+            option Art (2D)
+            option Art (3D)
+            option Theatre
+            option Video
+            option Creative Writing
+        td Sponsor Email
+        td
+          input(id='semail',data-field="sponsor_email",type='text',size='40')
+      tr
+        td Sponsor&apos;s Name 
+        td
+          input(id='sponsor',data-field="sponsor_name",type='text',size='40')
+        td Sponsor&apos;s Department
+        td
+          select(id='sponsor-dept',data-field="sponsor_dept")
+            option 
+            option Behavioral Sciences
+            option Biology &amp; Chemistry
+            option Business Administration
+            option Communications Media
+            option Computer Science
+            option Economics, History &amp; Political Science
+            option Education
+            option English Studies 
+            option Exercise &amp; Sports Science 
+            option Geo/Physical Sciences 
+            option Humanities 
+            option Industrial Technology 
+            option Mathematics 
+            option Nursing 
+            option Other
+        td
+      tr
+        td(colspan="2")
+          label
+            input(type='checkbox',id='human-subjects',data-field="use_human_subjects") 
+            | My Research involves Human Subjects
+            
+        td(colspan="2")
+          label
+            input(type='checkbox',id='animal-subjects',data-field="use_animal_subjects")
+            | My Research involves Animal Subjects
+
+      tr
+        td Proposal
+        td(colspan=3)
+          textarea(rows=10,id='proposal-text',data-field="content")
+          
+
+  script(type='text/template',id='new-proposal-template')
+    .tab-pane
+      p Creating a new Proposal.&nbsp;&nbsp;
+        img(src='/images/ajax-loader-small.gif')
+  script(type='text/template',id='help-text')
+    p
+      | This page has a set of tabs (Personal Information and Propoals.)  You can edit your personal information except your
+      | email address, create new proposals and edit existing ones.  To close this help box, click the X in the upper right 
+      | corner.  
+    p 
+      | To edit your personal information, click the "Edit Info" button, change the information and then click "Save Info".
+    p 
+      | To create a new proposal for the Conference, click the "Create a New Proposal" button.  A new tab for the page opens
+      | and you can include all of the information.  Make sure that you include information for all fields.  
+    p 
+      | To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then 
+      | click "Save the Proposal".

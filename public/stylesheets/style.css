@@ -1,8 +1,15 @@
 body {
-  padding: 50px;
+  padding: 0px 30px 30px 30px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
 }
+
+#proposal-text { width: 100%;}
+#title {width: 100%;}
+
+td {padding: 5px;}
+
+label:hover {cursor: pointer};
