@@ -14,7 +14,7 @@
     "connect": "*",
     "connect-flash": "*",
     "connect-mongodb": "*",
-    "connect-timout": "*",
+    "connect-timeout": "*",
     "mongoose": "*",
     "cookie-sessions": "*"
   }
