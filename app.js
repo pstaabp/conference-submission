@@ -13,6 +13,7 @@ var express = require('express')
   , connectTimeout = require('connect-timeout')
   , mongoose = require('mongoose')
   , mongoStore = require('connect-mongodb')
+  , nodemailer = require("nodemailer")
   , models = require('./models')
   , db
   , User
@@ -76,7 +77,24 @@ models.defineModels(mongoose, function() {
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
   db = mongoose.connect(app.set('db-uri'));
-})
+});
+
+// create reusable transport method (opens pool of SMTP connections)
+var smtpTransport = nodemailer.createTransport("SMTP",{
+    host: "cas.fitchburgstate.edu",
+    auth: {
+        user: "ugrad-conf@fitchburgstate.edu",
+        pass: "UnderC0nf"
+    }
+});
+
+// setup e-mail data with unicode symbols
+var resetPasswordOptions = {
+    from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
+    subject: "Password Reset for FSU Conference", // Subject line
+    text: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website", // plaintext body
+    html: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website" // html body
+}
 
 
 function authenticateFromLoginToken(req, res, next) {
@@ -147,7 +165,7 @@ app.post('/users/add', function(request, response){
   // detect the email address to determine the role.  
   var emailRe = /(\w+)\@(student\.)?fitchburgstate\.edu$/;
   
-  var newUser = new User({email: request.body.email, password: request.body.password, role: request.body.role});
+  var newUser = new User({email: request.body.email, password: request.body.password, role: request.body.role, reset_pass: false});
   
   function userSaveFailed() {
     request.flash('error', 'Account creation failed');
@@ -299,6 +317,34 @@ app.get('/student',loadUser,function(req,res){
   });
 });
 
+app.get("/forgot", function(req,res){
+  res.render('sessions/forgot.jade');
+});
+
+app.post("/reset", function (req,res){
+  var email = req.body.email;
+
+  var _user = new User();
+  _user.email = email; 
+
+  console.log("Attempting to send mail to " + req.body.email);
+
+  resetPasswordOptions.to=req.body.email;
+
+  smtpTransport.sendMail(resetPasswordOptions, function(error, response){
+    if(error){
+        console.log(error);
+    }else{
+        console.log("Message sent: " + response.message);
+    }
+
+    // if you don't want to use this transport object anymore, uncomment following line
+    //smtpTransport.close(); // shut down the connection pool, no more messages
+  });
+  res.render('sessions/password-reset.jade', {user: _user});
+
+});
+
 
 // Sessions
 app.get('/sessions/new', function(req, res) {
@@ -338,6 +384,8 @@ app.del('/sessions', loadUser, function(req, res) {
   }
   res.redirect('/sessions/new');
 });
+
+
 
 
 

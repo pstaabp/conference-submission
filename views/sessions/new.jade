@@ -1,12 +1,36 @@
-.page
+extends ../layout
+
+block script
+  script(type='text/javascript',data-main='/javascripts/apps/LoginPage',src='/javascripts/vendor/require.js')
+
+block container
   h2 Log In
   p
     a.button(href='/users/new') Create an account &rarr;
   form.users#login(method='post', action='/sessions')
-    include ../users/fields
-    div
-      label(for='remember_me') Remember me:
-      input#remember_me(type='checkbox', name='remember_me')
-    div
-      input(type='submit', value='Log In')
+    table
+      tr
+        td
+          label Email:
+        td
+          input(name='user[email]', value=user.email || '')
+      tr
+        td
+          label Password:
+        td
+          input(name='user[password]', value=user.password || '', type='password')
+      tr
+        td
+          label(for='remember_me') Remember me:
+        td
+          input#remember_me(type='checkbox', name='remember_me')
+        td
+          input(type='submit', value='Log In')
+      tr
+        td
+          a(href="/forgot") I forgot my login info
+block templates
+  script#help-text(type='text/template')
+    p
+      | Help text!!
 

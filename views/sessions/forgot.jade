@@ -1,0 +1,24 @@
+extends ../layout
+
+block script
+  script(type='text/javascript',data-main='/javascripts/apps/LoginPage',src='/javascripts/vendor/require.js')
+
+block container
+  h2 Log In
+  p
+    a.button(href='/users/new') Create an account &rarr;
+  p Enter your email below and you will receive an email to reset your password. 
+  form.users#login(method='post', action='/reset')
+    table
+      tr
+        td
+          label Email:
+        td
+          input#email(name="email")
+        td
+          input.btn(type='submit', value='Reset my Password')
+block templates
+  script#help-text(type='text/template')
+    p
+      | Help text!!
+
