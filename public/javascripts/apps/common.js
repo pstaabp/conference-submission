@@ -6,7 +6,7 @@ define(['Backbone'], function(Backbone){
 		    if (confirm('Are you sure you want to log out?')) {
 		      var element = $(this),
 		          form = $('<form></form>');
-		      form.attr({method: 'POST',action: '/sessions'})
+		      form.attr({method: 'POST',action: '/conference-submission/sessions'})
         		  .hide()
         		  .append('<input type="hidden" />')
         		  .find('input')

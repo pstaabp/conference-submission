@@ -12,7 +12,7 @@ define(['Backbone', 'underscore','./User'], function(Backbone, _,User){
             _.bindAll(this,"addUser");
             this.on("add",this.addUser);
         },
-        url: '/users',
+        url: '/conference-submission/users',
         addUser: function (user){
 
         }, /*

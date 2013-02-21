@@ -104,7 +104,7 @@ function authenticateFromLoginToken(req, res, next) {
                        series: cookie.series,
                        token: cookie.token }, (function(err, token) {
     if (!token) {
-      res.redirect('/sessions/new');
+      res.redirect('/conference-submission/sessions/new');
       return;
     }
 
@@ -119,7 +119,7 @@ function authenticateFromLoginToken(req, res, next) {
           next();
         });
       } else {
-        res.redirect('/sessions/new');
+        res.redirect('/conference-submission/sessions/new');
       }
     });
   }));
@@ -132,13 +132,13 @@ function loadUser(req, res, next) {
         req.currentUser = user;
         next();
       } else {
-        res.redirect('/sessions/new');
+        res.redirect('/conference-submission/sessions/new');
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
-    res.redirect('/sessions/new');
+    res.redirect('/conference-submission/sessions/new');
   }
 }
 
@@ -148,18 +148,18 @@ function routeUser(res,user){
 
   switch(user.role){
     case "student":
-      res.redirect("/student");
+      res.redirect("/conference-submission/student");
       break;
     case "faculty":
-      res.redirect("/faculty");
+      res.redirect("/conference-submission/faculty");
       break;
     case "admin":
-      res.redirect("/admin")
+      res.redirect("/conference-submission/admin")
       break;
   }
 }
 
-app.post('/users/add', function(request, response){
+app.post('/conference-submission/users/add', function(request, response){
   console.log(request.body);      // your JSON
 
   // detect the email address to determine the role.  
@@ -190,11 +190,11 @@ app.post('/users/add', function(request, response){
 
 // users routes
 
-app.get('/users/new', function(req, res) {
+app.get('/conference-submission/users/new', function(req, res) {
   res.render('users/new.jade');
 });
 
- app.get('/users', function(req, res){
+ app.get('/conference-submission/users', function(req, res){
 
   console.log("in get /users");
 
@@ -211,7 +211,7 @@ app.get('/users/new', function(req, res) {
 }); 
 
 
-app.put(/^\/users\/(\w+)$/, function (req,res){
+app.put(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
   console.log("in post /users/user");
   console.log(req.params[0]);
   var newInfo = {email: req.body.email, last_name: req.body.last_name, first_name: req.body.first_name, 
@@ -227,7 +227,7 @@ app.put(/^\/users\/(\w+)$/, function (req,res){
   });
 });
 
-app.post('/users',function(req,res){
+app.post('/conference-submission/users',function(req,res){
   console.log("in post /users");
   console.log(req.body);
   res.send("Yeah!");
@@ -235,7 +235,7 @@ app.post('/users',function(req,res){
 
 // proposals routes
 
-app.get("/proposals", function(req,res){
+app.get("/conference-submission/proposals", function(req,res){
   console.log("in /proposals");
   var _email = req.param("email")
 
@@ -250,7 +250,7 @@ app.get("/proposals", function(req,res){
   }); 
 })
 
-app.post("/proposals",function(req,res){
+app.post("/conference-submission/proposals",function(req,res){
    console.log("in post /proposals");
    console.log(req.body);
 
@@ -262,7 +262,7 @@ app.post("/proposals",function(req,res){
 
 });
 
-app.put(/^\/proposals\/(\w+)$/, function (req,res){
+app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
   console.log("in post /proposal/id");
   console.log(req.params[0]);
   var newInfo = {title: req.body.title, type: req.body.type, sponsor_email: req.body.sponsor_email, 
@@ -278,7 +278,7 @@ app.put(/^\/proposals\/(\w+)$/, function (req,res){
 });
 
 
-app.get('/', loadUser, function(req, res) {
+app.get('/conference-submission', loadUser, function(req, res) {
    User.findOne({_id: req.currentUser.id},function(err,_user){
     console.log("in /");
 
@@ -286,7 +286,7 @@ app.get('/', loadUser, function(req, res) {
   });
 });
 
-app.get('/admin',loadUser, function(req,res){
+app.get('/conference-submission/admin',loadUser, function(req,res){
   User.findOne({_id: req.currentUser.id},function(err,_user){
     console.log("in /admin");
     console.log(_user);
@@ -299,7 +299,7 @@ app.get('/admin',loadUser, function(req,res){
   res.render('admin/admin.jade');
 })
 
-app.get('/faculty', function(req, res) {
+app.get('/conference-submission/faculty', function(req, res) {
    User.findOne({_id: req.currentUser.id},function(err,_user){
     console.log("in /faculty");
     console.log(_user);
@@ -307,7 +307,7 @@ app.get('/faculty', function(req, res) {
   });
 });
 
-app.get('/student',loadUser,function(req,res){
+app.get('/conference-submission/student',loadUser,function(req,res){
 
   User.findOne({_id: req.currentUser.id},function(err,_user){
     console.log("in /student");
@@ -317,11 +317,11 @@ app.get('/student',loadUser,function(req,res){
   });
 });
 
-app.get("/forgot", function(req,res){
+app.get("/conference-submission/forgot", function(req,res){
   res.render('sessions/forgot.jade');
 });
 
-app.post("/reset", function (req,res){
+app.post("/conference-submission/reset", function (req,res){
   var email = req.body.email;
 
   var _user = new User();
@@ -347,11 +347,11 @@ app.post("/reset", function (req,res){
 
 
 // Sessions
-app.get('/sessions/new', function(req, res) {
+app.get('/conference-submission/sessions/new', function(req, res) {
   res.render('sessions/new.jade', {user: new User()});
 });
 
-app.post('/sessions', function(req, res) {
+app.post('/conference-submission/sessions', function(req, res) {
   User.findOne({ email: req.body.user.email }, function(err, user) {
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
@@ -371,18 +371,18 @@ app.post('/sessions', function(req, res) {
     } else {
       console.log("Incorrect credentials");
       req.flash('error', 'Incorrect credentials');
-      res.redirect('/sessions/new');
+      res.redirect('/conference-submission/sessions/new');
     }
   }); 
 });
 
-app.del('/sessions', loadUser, function(req, res) {
+app.del('/conference-submission/sessions', loadUser, function(req, res) {
   if (req.session) {
     LoginToken.remove({ email: req.currentUser.email }, function() {});
     res.clearCookie('logintoken');
     req.session.destroy(function() {});
   }
-  res.redirect('/sessions/new');
+  res.redirect('/conference-submission/sessions/new');
 });
 
 

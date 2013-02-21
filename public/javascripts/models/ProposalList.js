@@ -11,7 +11,7 @@ define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
         initialize:function () {
     
         },
-        url: '/proposals',
+        url: '/conference-submission/proposals',
         /*parse: function (response){
             console.log(response);
             return response;
