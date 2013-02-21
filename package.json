@@ -1,5 +1,6 @@
 {
-  "name": "Fitchburg State Undergraduate Conference Proposal Submission",
+  "name": "FSU-conf-submission",
+  "description": "Fitchburg State Undergraduate Conference Proposal Submission",
   "version": "0.1",
   "private": true,
   "scripts": {
