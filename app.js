@@ -269,7 +269,10 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
   var newInfo = {title: req.body.title, type: req.body.type, sponsor_email: req.body.sponsor_email, 
       sponsor_name: req.body.sponsor_name, sponsor_dept: req.body.sponsor_dept,
       content: req.body.content, use_animal_subjects: req.body.use_animal_subjects, 
-      use_human_subjects: req.body.use_human_subjects};
+      use_human_subjects: req.body.use_human_subjects,
+      other_equipment: req.body.other_equipment};
+
+  console.log(newInfo);
   Proposal.findByIdAndUpdate(req.params[0],newInfo, function (err, prop) {
     if (err) return handleError(err);
     
@@ -392,7 +395,7 @@ app.del('/conference-submission/sessions', loadUser, function(req, res) {
 
 if (!module.parent) {
   app.listen(app.set("port"));
-  console.log('Express server listening on port %s, environment: %s', app.set("port"), app.settings.env)
+  console.log('Express server listening on port %s, environment: %s', app.set("port"), app.settings.env);
   console.log('Using connect %s, Express %s, Jade %s', connect.version, express.version, jade.version);
 }
 

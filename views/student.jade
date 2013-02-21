@@ -39,10 +39,10 @@ block templates
       tr
         td Sponsor&apos;s Name 
         td
-          input(id='sponsor',data-field="sponsor_name",type='text',size='40')
+          input#sponsor(data-field="sponsor_name",type='text',size='40')
         td Sponsor&apos;s Department
         td
-          select(id='sponsor-dept',data-field="sponsor_dept")
+          select#sponsor-dept(data-field="sponsor_dept")
             option 
             option Behavioral Sciences
             option Biology &amp; Chemistry
@@ -63,14 +63,18 @@ block templates
       tr
         td(colspan="2")
           label
-            input(type='checkbox',id='human-subjects',data-field="use_human_subjects") 
+            input#human-subjects(type='checkbox',data-field="use_human_subjects") 
             | My Research involves Human Subjects
             
         td(colspan="2")
           label
             input(type='checkbox',id='animal-subjects',data-field="use_animal_subjects")
             | My Research involves Animal Subjects
-
+      tr
+        td(colspan="2") Other Equipment needed 
+          button.btn-small#other-equip-help ?
+        td(colspan="2")
+          input#other-equip(type="text",data-field="other_equipment")
       tr
         td Proposal
         td(colspan=3)

@@ -26,6 +26,7 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.$("#proposal-text").val(this.model.get("content"));
                 this.$("#human-subjects").prop("checked",this.model.get("use_human_subjects"));
                 this.$("#animal-subjects").prop("checked",this.model.get("use_animal_subjects"));
+                this.$("#other-equip").val(this.model.get("other_equipment"));
             }
             if (!this.editMode){
                 this.$("#submit-proposal-button").html("Edit Proposal");

@@ -29,7 +29,8 @@ function defineModels(mongoose, fn) {
     content: String,
     sponsor_statement: String,
     use_human_subjects: Boolean,
-    use_animal_subjects: Boolean
+    use_animal_subjects: Boolean,
+    other_equipment: String
   });
 
   /**
