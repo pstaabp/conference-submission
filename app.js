@@ -69,7 +69,8 @@ app.configure(function(){
   app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
   app.use(express.methodOverride());
   app.use(flash());
-  app.use(express.static(__dirname + '/public'));
+  app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
+  app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
 });
 
 models.defineModels(mongoose, function() {
