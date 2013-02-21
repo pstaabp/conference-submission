@@ -1,7 +1,7 @@
 {
   "name": "FSU-conf-submission",
   "description": "Fitchburg State Undergraduate Conference Proposal Submission",
-  "version": "0.1",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node app"
