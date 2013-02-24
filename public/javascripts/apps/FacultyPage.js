@@ -16,19 +16,21 @@ require.config({
         'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
         'bootstrap':['jquery'],
         'backbone-validation': ['Backbone'],
+        'XDate':{ exports: 'XDate'}
     }
 });
 
 require(['Backbone', 'underscore',
-    '../models/UserList','../models/User','../models/ProposalList',
+    '../models/UserList','../models/User','../models/ProposalList',"../views/WebPage",
     'bootstrap'],
-function(Backbone, _, UserList, User, ProposalList){
-    var FacultyView = Backbone.View.extend({
+function(Backbone, _, UserList, User, ProposalList,WebPage){
+    var FacultyView = WebPage.extend({
         initialize: function () {
-            _.bindAll(this, 'render',"login","saveInfo");  // include all functions that need the this object
+            this.constructor.__super__.initialize.apply(this, {el: this.el});
+            _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
-            this.users = new UserList();
-            this.users.fetch({success: this.fetchSuccess});
+            //this.users = new UserList();
+            //this.users.fetch({success: this.fetchSuccess});
             this.proposals = new ProposalList();
             this.render();
 
@@ -39,16 +41,19 @@ function(Backbone, _, UserList, User, ProposalList){
 
         },
         render: function () {
-            //this.$el.html(_.template($("#faculty-main").html()));
-        },
-        events: {"click #login-button": "login",
-                 "click #save-info": "saveInfo"},
-        login: function ()
-        {
-            var user = new User({user_id: $("#falconkey").val()});
-            var valid = user.authenticate($("#password").val());
-        },
+            this.$el.html("");
+            this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
+            var self = this;
+            this.$el.append(_.template($("#faculty-tabs-template").html()));
 
+            
+            if (this.user) {
+                new PersonalInfoView({el: $("#personal"), user: this.user, editMode: false, parent: self});
+            }
+
+        },
+        //events: {"click #login-button": "login"},
+        
         fetchSuccess: function(collection, response, options) {
             console.log(collection);
             console.log(response);

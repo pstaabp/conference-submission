@@ -8,15 +8,16 @@ block container
   p
     a.button(href='/users/new') Create an account &rarr;
   p Enter your email below and you will receive an email to reset your password. 
-  form.users#login(method='post', action='/conference-submission/reset')
-    table
-      tr
-        td
-          label Email:
-        td
-          input#email(name="email")
-        td
-          input.btn(type='submit', value='Reset my Password')
+  table
+    tr
+      td
+        label Email:
+      td
+        input#email_reset(name="email_reset")
+      td
+        button#reset-password.btn Reset my Password
+  form.users#reset-form(method='post', action='/conference-submission/sessions/password-sent')
+    input#email(name="email",type='hidden')
 block templates
   script#help-text(type='text/template')
     p

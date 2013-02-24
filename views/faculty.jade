@@ -3,4 +3,9 @@ extends layout
 block script
   script(type='text/javascript',data-main='/conference-submission/javascripts/apps/FacultyPage',src='/conference-submission/javascripts/vendor/require.js')
 
-  
+block templates
+  include users/info.jade
+  script(type='text/template',id='faculty-tabs-template')
+    input(type='hidden',id='user-json',value=user)
+    input(type='hidden',id='user-id',value=user.id)
+    include tabs.jade

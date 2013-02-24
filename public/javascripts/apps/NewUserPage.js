@@ -15,16 +15,17 @@ require.config({
         'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
         'bootstrap':['jquery'],
         'backbone-validation': ['Backbone'],
+        'XDate':{ exports: 'XDate'},
     }
 });
 
-require(['Backbone', 'underscore',
-    '../models/UserList','../models/User',
-    'bootstrap'],
-function(Backbone, _, UserList, User){
+require(['Backbone', 'underscore','../models/UserList','../models/User',
+    '../views/WebPage','./common','bootstrap'],
+function(Backbone, _,UserList, User, WebPage, common){ 
 
-    var NewUserPage = Backbone.View.extend({ 
+    var NewUserPage = WebPage.extend({ 
         initialize: function () {
+            this.constructor.__super__.initialize.apply(this, {el: this.el});
             _.bindAll(this, 'render','fetchSuccess');  // include all functions that need the this object
             var self = this;
 
@@ -32,26 +33,24 @@ function(Backbone, _, UserList, User){
             this.users.fetch({success: this.fetchSuccess});
         },
         render: function(){
-            this.$el.html(_.template($("#new-user-view").html()));
+             this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
+            this.$el.append(_.template($("#new-user-view").html()));
         },
         events: {"click #submit": "submit"},
         fetchSuccess: function(collection, response, options) {
             this.render();
         },
         submit: function(){
-            var email = $("input[name='email']").val();
-            var pass = $("input[name='password']").val();
-            var verify = $("input[name='verify']").val();
+            var self = this;
+            $("#submit").prop("disabled",true);
+            var _email = $("input[name='temail']").val();
+            var pass = $("input[name='tpassword']").val();
+            var verify = $("input[name='tverify']").val();
 
             var emailRe = /(\w+)\@(student\.)?fitchburgstate\.edu$/;
-            var emailParts = emailRe.exec(email);
+            var emailParts = emailRe.exec(_email);
 
-
-            var user = this.users.find(function(_user){ return _user.get("user_id")===email});
-            if(user){
-                alert("The user with username: " + userId + " already exists.  Please login or create a new userId");
-                return false;
-            } else if (pass!==verify){
+            if (pass!==verify){
                 alert("The two passwords must match.");
                 return false;
             } else if (pass.length<6){
@@ -61,8 +60,23 @@ function(Backbone, _, UserList, User){
                 alert("You need to use a fitchburgstate.edu email address.");
                 return false;
             }
-            $("input[name='type']").val((emailParts[2])?"student":"faculty");
 
+            $.post("/conference-submission/users/exists", {email: _email}, function (data){
+                if (data.user_exists){
+                    console.log("oops!");
+                    self.errorPane.addMessage("The email " + _email + " has already been used.  Click 'forget my password' if you need to.");
+                    $("#submit").prop("disabled",false);
+                } else {
+                    $("input[name='email']").val(_email);
+                    $("input[name='password']").val(pass);
+                    $("input[name='role']").val((emailParts[2])?"student":"faculty");
+
+                    self.announce.addMessage("You have successfully created a new account.  You will be redirected to login with " +
+                        "this account information in 10 seconds.");
+                    window.setTimeout(function () {document.getElementById("newUser").submit();}, 10000); 
+                    
+                }
+            });
         }
     });
     

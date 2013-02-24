@@ -83,6 +83,7 @@ models.defineModels(mongoose, function() {
 // create reusable transport method (opens pool of SMTP connections)
 var smtpTransport = nodemailer.createTransport("SMTP",{
     host: "cas.fitchburgstate.edu",
+    secureConnection: true,
     auth: {
         user: "ugrad-conf@fitchburgstate.edu",
         pass: "UnderC0nf"
@@ -104,6 +105,7 @@ function authenticateFromLoginToken(req, res, next) {
   LoginToken.findOne({ email: cookie.email,
                        series: cookie.series,
                        token: cookie.token }, (function(err, token) {
+
     if (!token) {
       res.redirect('/conference-submission/sessions/new');
       return;
@@ -111,6 +113,8 @@ function authenticateFromLoginToken(req, res, next) {
 
     User.findOne({ email: token.email }, function(err, user) {
       if (user) {
+        console.log("in auth");
+        console.log(user);
         req.session.user_id = user.id;
         req.currentUser = user;
 
@@ -127,6 +131,8 @@ function authenticateFromLoginToken(req, res, next) {
 }
 
 function loadUser(req, res, next) {
+  console.log("in loadUser");
+  console.log(req.session);
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
@@ -161,11 +167,7 @@ function routeUser(res,user){
 }
 
 app.post('/conference-submission/users/add', function(request, response){
-  console.log(request.body);      // your JSON
 
-  // detect the email address to determine the role.  
-  var emailRe = /(\w+)\@(student\.)?fitchburgstate\.edu$/;
-  
   var newUser = new User({email: request.body.email, password: request.body.password, role: request.body.role, reset_pass: false});
   
   function userSaveFailed() {
@@ -175,16 +177,15 @@ app.post('/conference-submission/users/add', function(request, response){
     });
   }
 
-  newUser.save(function(err) {
+  newUser.save(function(err, _user) {
     if (err){
       console.log(err);
-
-
-    }
+}
     console.log("saved!!");
+    console.log(_user);
 
-    routeUser(response,newUser);
-
+    //routeUser(response,_user);
+    response.redirect("/conference-submission/sessions/new");
 //    response.send(request.body);    // echo the result back
   });
 });
@@ -211,6 +212,8 @@ app.get('/conference-submission/users/new', function(req, res) {
   
 }); 
 
+//app.post(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
+
 
 app.put(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
   console.log("in post /users/user");
@@ -228,10 +231,17 @@ app.put(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
   });
 });
 
-app.post('/conference-submission/users',function(req,res){
-  console.log("in post /users");
-  console.log(req.body);
-  res.send("Yeah!");
+app.post('/conference-submission/users/exists',function(req,res){
+  User.findOne({email: req.body.email},function(err,_user){
+    if (err){
+      console.log(err);
+    }
+    if (_user){
+      res.json({user_exists: true});
+    } else {
+      res.json({user_exists: false});
+    }
+  });
 })
 
 // proposals routes
@@ -282,10 +292,10 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
 });
 
 
-app.get('/conference-submission', loadUser, function(req, res) {
-   User.findOne({_id: req.currentUser.id},function(err,_user){
-    console.log("in /");
+app.get('/conference-submission/', loadUser, function(req, res) {
+  console.log(" in get /conference-submission/");
 
+   User.findOne({_id: req.currentUser.id},function(err,_user){
     routeUser(req,_user);
   });
 });
@@ -303,11 +313,9 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
   res.render('admin/admin.jade');
 })
 
-app.get('/conference-submission/faculty', function(req, res) {
-   User.findOne({_id: req.currentUser.id},function(err,_user){
-    console.log("in /faculty");
-    console.log(_user);
-    res.render('faculty.jade');
+app.get('/conference-submission/faculty', loadUser, function(req, res) {
+    User.findOne({_id: req.currentUser.id},function(err,_user){
+    res.render('faculty.jade',{user: _user});
   });
 });
 
@@ -325,29 +333,9 @@ app.get("/conference-submission/forgot", function(req,res){
   res.render('sessions/forgot.jade');
 });
 
-app.post("/conference-submission/reset", function (req,res){
-  var email = req.body.email;
 
-  var _user = new User();
-  _user.email = email; 
+/*  Sessions Routes  */
 
-  console.log("Attempting to send mail to " + req.body.email);
-
-  resetPasswordOptions.to=req.body.email;
-
-  smtpTransport.sendMail(resetPasswordOptions, function(error, response){
-    if(error){
-        console.log(error);
-    }else{
-        console.log("Message sent: " + response.message);
-    }
-
-    // if you don't want to use this transport object anymore, uncomment following line
-    //smtpTransport.close(); // shut down the connection pool, no more messages
-  });
-  res.render('sessions/password-reset.jade', {user: _user});
-
-});
 
 
 // Sessions
@@ -357,6 +345,8 @@ app.get('/conference-submission/sessions/new', function(req, res) {
 
 app.post('/conference-submission/sessions', function(req, res) {
   User.findOne({ email: req.body.user.email }, function(err, user) {
+    console.log("in post sessions");
+    console.log(user);
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
 
@@ -389,7 +379,51 @@ app.del('/conference-submission/sessions', loadUser, function(req, res) {
   res.redirect('/conference-submission/sessions/new');
 });
 
+app.post('/conference-submission/sessions/send-reset', function(req,res){
+  res.redirect("/conference-submission/sessions/password-sent", {user: req.body.user});
+});
 
+app.post("/conference-submission/sessions/password-sent", function(req,res){
+  res.render('sessions/password-reset.jade', {email: req.body.email});
+});
+
+app.post("/conference-submission/sessions/reset", function (req,res){
+  var _email = req.body.email;
+
+  User.findOne({email: _email},function(err,user){
+
+    console.log(err)
+
+    if (err) {
+      console.log(err);
+    }
+    if (user){
+      console.log("user " + user);
+      
+      console.log("Attempting to send mail to " + user.email);
+
+      resetPasswordOptions.to=user.email;
+
+      smtpTransport.sendMail(resetPasswordOptions, function(error, response){
+        if(error){
+            console.log(error);
+            res.json({user_found: true, user: user});
+        }else{
+            res.json({user_found: true, user: user, message: "An email has been sent to " + email + ".  Please follow the instructions to reset your password."});
+            console.log("Message sent: " + response.message);
+        }
+
+      });
+     }  else {
+      res.json({user_found: false, message: "Your email address was not found.  Please try again."});
+    }
+      
+    // if you don't want to use this transport object anymore, uncomment following line
+    //smtpTransport.close(); // shut down the connection pool, no more messages
+  });
+
+
+});
 
 
 

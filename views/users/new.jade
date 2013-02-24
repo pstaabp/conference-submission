@@ -10,26 +10,31 @@ block templates
 
     p Enter an email and password and verify the password.  Please use your Fitchburg State Email address.
 
+    table
+      tbody
+        tr
+          td
+            label Email: 
+          td
+            input(type='text',name='temail')
+        tr
+          td
+            label password:
+          td
+            input(type='password',name='tpassword')
+        tr
+          td
+            label retype password:
+          td
+            input(type='password',name='tverify')
+        tr
+          td
+          td   
+            button.btn(id='submit') Submit
+        tr
+          td
+            a(href="/conference-submission/forgot") I forgot my password
     form(id='newUser',action='/conference-submission/users/add',method='post')
-      input(type='hidden',name='type');
-      table
-        tbody
-          tr
-            td
-              label Email: 
-            td
-              input(type='text',name='email')
-          tr
-            td
-              label password:
-            td
-              input(type='password',name='password')
-          tr
-            td
-              label retype password:
-            td
-              input(type='password',name='verify')
-          tr
-            td
-            td   
-              button.btn(id='submit') Submit
+      input(type='hidden',name='email');
+      input(type='hidden',name='password')
+      input(type='hidden',name='role');
