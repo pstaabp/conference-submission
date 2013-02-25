@@ -41,13 +41,15 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.$("input").prop("disabled",true);
                 this.$("select").prop("disabled",true);
                 this.$("#proposal-text").prop("disabled",true);
+                this.$("#add-author").prop("disabled",true);
             }
     	},
         events: {"click button#submit-proposal-button": "submit",
                  "change input": "update",
                  "change select": "update",
                  "change #proposal-text": "update",
-                 "click button#save-statement": "saveStatement"},
+                 "click button#save-statement": "saveStatement",
+                 "click button#add-author": "addAuthor"},
         update: function (evt){
             var targ = $(evt.target)
                 ,field = targ.data("field")
@@ -70,8 +72,12 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.render();
                 return;
             } 
-            
-
+        },
+        addAuthor: function (){
+            console.log("yeah!");
+            this.$(".add-author-row:last").before(_.template($("#add-author-template").html()));
+            this.$(".delete-author").on("click",function(evt) {$(evt.target).parent().parent().remove();});
+            this.$(".add-author-row input").on("change",this.update);
         },
         saveStatement: function ()
         {
