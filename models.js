@@ -41,7 +41,6 @@ function defineModels(mongoose, fn) {
   }
 
   var User = new Schema({
-    user_id: String,
     first_name: String,
     last_name: String,
     role: String,
@@ -84,6 +83,17 @@ function defineModels(mongoose, fn) {
       next();
     }
   });
+
+  User.methods.getPublicFields = function () {
+    var returnObject = {
+        first_name: this.first_name,
+        last_name: this.last_name,
+        role: this.role,
+        major: this.major,
+        email: this.email
+    };
+    return returnObject;
+};
 
   /**
     * Model: LoginToken

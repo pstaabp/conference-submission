@@ -6,7 +6,7 @@
 var express = require('express')
   , flash = require('connect-flash')
   , jade = require('jade')
-  //, user = require('./routes/user')
+  , _und = require('underscore')
   , http = require('http')
   , path = require('path')
   , connect = require('connect')
@@ -199,6 +199,7 @@ app.get('/conference-submission/users/new', function(req, res) {
  app.get('/conference-submission/users', function(req, res){
 
   console.log("in get /users");
+  console.log(req.body);
 
   var query = User.find();
 
@@ -211,6 +212,15 @@ app.get('/conference-submission/users/new', function(req, res) {
   });  
   
 }); 
+
+ app.get(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
+  User.findById(req.params[0], function (err, user) {
+   if (err) console.log(err);
+    
+    res.json(user.getPublicFields());
+  });
+});
+
 
 //app.post(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
 
@@ -227,7 +237,7 @@ app.put(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
     console.log("updated!!");
     console.log(err);
     console.log(user);
-    res.json(user);
+    res.json(user.getPublicFields());
   });
 });
 
@@ -249,17 +259,29 @@ app.post('/conference-submission/users/exists',function(req,res){
 app.get("/conference-submission/proposals", function(req,res){
   console.log("in /proposals");
   var _email = req.param("email")
+  , semail = req.param("sponsor_email")
+  , query = null;
 
-  var query = (_email)? Proposal.find({email: _email}) : Proposal.find();
+  console.log(_email);
+  console.log(semail);
+
+  if (_email) {
+     query = (_email)? Proposal.find({email: _email}) : Proposal.find(); 
+  }
+  if (semail){
+    query = (semail)? Proposal.find({sponsor_email: semail}) : Proposal.find(); 
+  }
 
   query.exec(function(err,proposals) {
     // 'users' will contain all of the users returned by the query
 
-    if (err) return handleError(err);
+    if (err) {
+      console.log(err);
+    }
     
     res.json(proposals);
   }); 
-})
+});
 
 app.post("/conference-submission/proposals",function(req,res){
    console.log("in post /proposals");
@@ -276,15 +298,17 @@ app.post("/conference-submission/proposals",function(req,res){
 app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
   console.log("in post /proposal/id");
   console.log(req.params[0]);
-  var newInfo = {title: req.body.title, type: req.body.type, sponsor_email: req.body.sponsor_email, 
+/*  var newInfo = {title: req.body.title, type: req.body.type, sponsor_email: req.body.sponsor_email, 
       sponsor_name: req.body.sponsor_name, sponsor_dept: req.body.sponsor_dept,
       content: req.body.content, use_animal_subjects: req.body.use_animal_subjects, 
       use_human_subjects: req.body.use_human_subjects,
-      other_equipment: req.body.other_equipment};
+      other_equipment: req.body.other_equipment, sponsor_statement:};
 
-  console.log(newInfo);
-  Proposal.findByIdAndUpdate(req.params[0],newInfo, function (err, prop) {
-    if (err) return handleError(err);
+  console.log(newInfo); */
+  Proposal.findByIdAndUpdate(req.params[0],_und.omit(req.body, "_id"), function (err, prop) {
+    if (err) {
+      console.log(err);
+    }
     
     console.log("updated!!");
     res.json(prop);

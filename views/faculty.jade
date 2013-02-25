@@ -6,6 +6,37 @@ block script
 block templates
   include users/info.jade
   script(type='text/template',id='faculty-tabs-template')
-    input(type='hidden',id='user-json',value=user)
     input(type='hidden',id='user-id',value=user.id)
     include tabs.jade
+
+
+  script(type='text/template',id="proposal-view")
+    div.row
+      span.span6 
+        h4 Proposal Information
+      span.span3
+        button#save-statement.btn Save the Statement
+    table.table.table-bordered
+      tr
+        td Project Title
+        td#title(colspan="3")
+      tr
+        td Project Author
+        td#author(colspan="3")
+      tr
+        td Type of Presentation
+        td#pres-type
+      tr
+        td Other Equipment needed 
+        td#other-equip(colspan="2")
+      tr
+        td Proposal
+        td#proposal-text(colspan=3)
+      tr
+        td Sponsor Statement
+        td(colspan=3)
+          textarea#sponsor-statement(rows=10)
+        
+          
+
+

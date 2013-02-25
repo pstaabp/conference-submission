@@ -9,8 +9,9 @@ define(['Backbone', 'underscore'], function(Backbone, _){
     var ProposalView = Backbone.View.extend({
     	template: _.template($("#proposal-view").html()),
     	initialize: function () {
-    		_.bindAll(this,"render","update","saved");
+    		_.bindAll(this,"render","update","saved","savedStatement");
             this.parent = this.options.parent;
+            this.facultyView = this.options.facultyView;
     		this.render();
             this.editMode = (this.options.editMode)?this.options.editMode:false;
             this.fieldsToSave = {};
@@ -28,6 +29,13 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.$("#animal-subjects").prop("checked",this.model.get("use_animal_subjects"));
                 this.$("#other-equip").val(this.model.get("other_equipment"));
             }
+            if(this.model && this.facultyView){
+                this.$("#title").html(this.model.get("title"));
+                this.$("#pres-type").html(this.model.get("type"));
+                this.$("#other-equip").html(this.model.get("other_equipment"));
+                this.$("#proposal-text").html(this.model.get("content"));
+                this.$("#sponsor-statement").val(this.model.get("sponsor_statement"));
+            }
             if (!this.editMode){
                 this.$("#submit-proposal-button").html("Edit Proposal");
                 this.$("input").prop("disabled",true);
@@ -38,7 +46,8 @@ define(['Backbone', 'underscore'], function(Backbone, _){
         events: {"click button#submit-proposal-button": "submit",
                  "change input": "update",
                  "change select": "update",
-                 "change #proposal-text": "update"},
+                 "change #proposal-text": "update",
+                 "click button#save-statement": "saveStatement"},
         update: function (evt){
             var targ = $(evt.target)
                 ,field = targ.data("field")
@@ -53,7 +62,6 @@ define(['Backbone', 'underscore'], function(Backbone, _){
         {
             if (this.editMode){
                 this.editMode = false;
-                //this.model.set(this.fieldsToSave);
                 this.model.save(this.fieldsToSave,{success: this.saved, error: this.error});    
                 this.fieldsToSave = {};
                 this.render();
@@ -65,6 +73,12 @@ define(['Backbone', 'underscore'], function(Backbone, _){
             
 
         },
+        saveStatement: function ()
+        {
+            this.model.set("sponsor_statement", this.$("#sponsor-statement").val());
+            this.model.save({sponsor_statement: this.model.get("sponsor_statement")}, {success: this.savedStatement } )
+        },
+        
         saved: function(model, response, options) {
             this.parent.announce.addMessage("The proposal was updated.");
             console.log(model);
@@ -74,6 +88,11 @@ define(['Backbone', 'underscore'], function(Backbone, _){
             console.log(model);
             console.log(xhr);
             console.log(options);
+        }, 
+        savedStatement: function (model, response,options){
+            this.parent.announce.addMessage("The sponsor statement was saved. ");
+            $("li.active a").removeClass("review-needed");
+            
         }
 
 

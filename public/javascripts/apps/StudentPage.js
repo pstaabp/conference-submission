@@ -32,18 +32,20 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
     var StudentPage = WebPage.extend({
         initialize: function () {
             this.constructor.__super__.initialize.apply(this, {el: this.el});
-            _.bindAll(this, 'render','usersFetched','proposalsFetched');  // include all functions that need the this object
+            _.bindAll(this, 'render','userFetched','proposalsFetched');  // include all functions that need the this object
             var self = this;
             this.proposals = new ProposalList();
             this.render();
-            this.users = new UserList();
-            this.users.fetch({success: this.usersFetched});
             
             this.proposals.on("add",function (){
                 self.render(); 
                 $("#submit-main-tabs a:last").tab("show");
             });
+
             $("#logout").on("click",common.logout); 
+
+            this.user = new User({_id: $("#user-id").val()});
+            this.user.fetch({success: this.userFetched});
 
         },
         render: function () {
@@ -77,12 +79,8 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
                 $(this).tab('show');
             });   
         },
-        usersFetched: function(collection, response, options) {
-            var userEmail = $("#user-email").val();
-            this.user = this.users.find(function(_user) {return _user.get("email")===userEmail});
-            console.log(this.user);
-            new PersonalInfoView({el: $("#personal"), user: this.user});
-
+        userFetched: function(collection, response, options) {
+            this.render();
             this.proposals.fetch({data: $.param({ email: this.user.get("email")}),success: this.proposalsFetched});
 
         },
