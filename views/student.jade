@@ -87,12 +87,18 @@ block templates
     tr.add-author-row
       td Author Name
       td
-        input.author-name(data-field='author-name')
+        input#author-name(data-field='author-name')
       td Author Email
       td
-        input.author-email(data-field='author-email')
+        input#author-email(data-field='author-email')
       td
         button.delete-author.btn Delete Author
+  script#author-row(type="text/template")
+    tr.add-author-row
+      td Author Name
+      td <%=name%>
+      td Author Email
+      td <%=email%>
 
   script(type='text/template',id='new-proposal-template')
     .tab-pane
@@ -107,7 +113,8 @@ block templates
       | To edit your personal information, click the "Edit Info" button, change the information and then click "Save Info".
     p 
       | To create a new proposal for the Conference, click the "Create a New Proposal" button.  A new tab for the page opens
-      | and you can include all of the information.  Make sure that you include information for all fields.  
+      | and you can include all of the information.  Make sure that you include information for all fields.  If there are more 
+      | than one student on a project, click the "Add Author" button to add the student and the email address. 
     p 
       | To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then 
       | click "Save the Proposal".

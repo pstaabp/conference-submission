@@ -3,7 +3,7 @@ require.config({
     paths: {
         "Backbone":             "../vendor/backbone-0.9.9",
         "backbone-validation":  "../vendor/backbone-validation",
-        "underscore":           "../vendor/underscore",
+        "underscore":           "../vendor/underscore-min",
         "jquery":               "../vendor/jquery",
         "bootstrap":            "../vendor/bootstrap/js/bootstrap",
         "XDate":                "../vendor/xdate"

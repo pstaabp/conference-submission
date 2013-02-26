@@ -28,6 +28,11 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.$("#human-subjects").prop("checked",this.model.get("use_human_subjects"));
                 this.$("#animal-subjects").prop("checked",this.model.get("use_animal_subjects"));
                 this.$("#other-equip").val(this.model.get("other_equipment"));
+
+                _(this.model.get("other_authors")).each(function(author){
+                    console.log(author);
+                    this.$(".add-author-row:last").before(_.template($("#author-row").html(),author));
+                });
             }
             if(this.model && this.facultyView){
                 this.$("#title").html(this.model.get("title"));
@@ -58,11 +63,12 @@ define(['Backbone', 'underscore'], function(Backbone, _){
 
             obj[field] = value;
             _(this.fieldsToSave).extend(obj);
-            console.log(this.fieldsToSave);
         },
         submit: function ()
         {
             if (this.editMode){
+                this.parseAuthor();
+
                 this.editMode = false;
                 this.model.save(this.fieldsToSave,{success: this.saved, error: this.error});    
                 this.fieldsToSave = {};
@@ -73,8 +79,28 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 return;
             } 
         },
+        parseAuthor: function (){
+            var newAuthor = {name: $("#author-name").val(), email: $("#author-email").val()};
+            if (_(this.fieldsToSave).has("author-name") && _(this.fieldsToSave).has("author-email")) {
+                this.fieldsToSave = _(this.fieldsToSave).omit(["author-name","author-email"]);
+            }
+            if (_(this.fieldsToSave).has("other_authors")) { 
+                this.fieldsToSave.other_authors.push(newAuthor);
+            }
+            else {
+                this.fieldsToSave.other_authors=this.model.get("other_authors");
+            }
+            $($(".add-author-row #author-name")[0]).parent().html(newAuthor.name);
+            $($(".add-author-row #author-email")[0]).parent().html(newAuthor.email);
+            
+            console.log(this.fieldsToSave);
+
+
+        },
         addAuthor: function (){
-            console.log("yeah!");
+            // parse and store any already entered author
+            this.parseAuthor();
+
             this.$(".add-author-row:last").before(_.template($("#add-author-template").html()));
             this.$(".delete-author").on("click",function(evt) {$(evt.target).parent().parent().remove();});
             this.$(".add-author-row input").on("change",this.update);
