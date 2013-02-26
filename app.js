@@ -428,7 +428,8 @@ app.post("/conference-submission/sessions/reset", function (req,res){
             console.log(error);
             res.json({user_found: true, user: user});
         }else{
-            res.json({user_found: true, user: user, message: "An email has been sent to " + email + ".  Please follow the instructions to reset your password."});
+            res.json({user_found: true, user: user, message: "An email has been sent to " + 
+                  user.email + ".  Please follow the instructions to reset your password."});
             console.log("Message sent: " + response.message);
         }
 
