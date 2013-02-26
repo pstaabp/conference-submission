@@ -46,9 +46,11 @@ function defineModels(mongoose, fn) {
     last_name: String,
     role: String,
     major: String,
-    'email': { type: String, validate: [validatePresenceOf, 'an email is required'], index: { unique: true } },
-    'hashed_password': String,
-    'salt': String
+    email: { type: String, validate: [validatePresenceOf, 'an email is required'], index: { unique: true } },
+    hashed_password: String,
+    salt: String,
+    reset_pass: Boolean,
+    temp_pass: String
   });
 
   User.virtual('id')

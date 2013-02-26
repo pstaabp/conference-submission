@@ -89,8 +89,12 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 var resetPasswordOptions = {
     from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
     subject: "Password Reset for FSU Conference", // Subject line
-    text: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website", // plaintext body
-    html: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website" // html body
+    text: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website."
+          + "  Please go to http://webwork.fitchburgstate.edu/conference-submission/sessions/password and "
+          + " enter the temporary password ", // plaintext body
+    html: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website."
+          + "  Please go to <a href='http://webwork.fitchburgstate.edu/conference-submission/sessions/password'>http://webwork.fitchburgstate.edu/conference-submission/sessions/password</a> and "
+          + " enter the temporary password " // html body
 }
 
 
@@ -126,8 +130,6 @@ function authenticateFromLoginToken(req, res, next) {
 }
 
 function loadUser(req, res, next) {
-  console.log("in loadUser");
-  console.log(req.session);
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
@@ -247,7 +249,36 @@ app.post('/conference-submission/users/exists',function(req,res){
       res.json({user_exists: false});
     }
   });
-})
+});
+
+app.post('/conference-submission/users/password',function(req,res){
+  var _email = req.body.email;
+  var tmpPassword = req.body.temp_pass;
+  var _password = req.body.password;
+
+  User.findOne({email: _email}, function(err,_user) {
+    if (err) {console.log(err);}
+
+    if(_user){
+      if (_user.temp_pass !== tmpPassword) {
+        res.json({success: false, message: "Your temporary Password is incorrect"});
+      }
+
+      _user.encryptPassword(password);
+
+      User.findByIdAndUpdate(_user.id,{reset_pass: false, temp_pass: ""},
+          function(err,theUser){
+            if (err) {console.log(err);}
+
+            if(theUser){
+              res.json({success: true, user: theUser.getPublicFields()});
+          }
+       });
+    } else {
+      res.json({success: false, message: "A user with email " + _email + " does not exist"});
+    }
+  });
+});
 
 // proposals routes
 
@@ -384,7 +415,7 @@ app.post('/conference-submission/sessions', function(req, res) {
     } else {
       console.log("Incorrect credentials");
       req.flash('error', 'Incorrect credentials');
-      res.redirect('/conference-submission/sessions/new');
+      res.redirect('/conference-submission/sessions/new?password-correct=false');
     }
   }); 
 });
@@ -406,42 +437,66 @@ app.post("/conference-submission/sessions/password-sent", function(req,res){
   res.render('sessions/password-reset.jade', {email: req.body.email});
 });
 
+app.get("/conference-submission/sessions/password",function(req,res){
+  res.render('sessions/change-password.jade');
+});
+
+
+
 app.post("/conference-submission/sessions/reset", function (req,res){
   var _email = req.body.email;
 
-  User.findOne({email: _email},function(err,user){
+  function attemptToSendMail(err,res) {
+    if(err){
+      console.log(error);
+      res.json({user_found: true, user: user});
+    }else{
+      res.json({user_found: true, user: user, message: "An email has been sent to " + 
+                  user.email + ".  Please follow the instructions to reset your password."});
+      console.log("Message sent: " + response.message);
+    }
+  }
 
+
+  function emailReset(err,user) {
     console.log(err)
 
     if (err) {
       console.log(err);
     }
     if (user){
-      console.log("user " + user);
-      
+    
       console.log("Attempting to send mail to " + user.email);
 
       resetPasswordOptions.to=user.email;
+      var tmpPassword = parseInt(999999*Math.random());
+      console.log(tmpPassword);
 
-      smtpTransport.sendMail(resetPasswordOptions, function(error, response){
-        if(error){
-            console.log(error);
-            res.json({user_found: true, user: user});
-        }else{
-            res.json({user_found: true, user: user, message: "An email has been sent to " + 
-                  user.email + ".  Please follow the instructions to reset your password."});
-            console.log("Message sent: " + response.message);
-        }
+      resetPasswordOptions.text += tmpPassword;
+      resetPasswordOptions.html += tmpPassword;
 
-      });
+      User.findByIdAndUpdate(user.id , {reset_pass: true, temp_pass: tmpPassword}, 
+        function (err, _user) {
+          if (err){console.log(err);} 
+          if (_user){
+            console.log(_user);
+            smtpTransport.sendMail(resetPasswordOptions, attemptToSendMail);
+          }
+        });
+
+
+
+
+
      }  else {
       res.json({user_found: false, message: "Your email address was not found.  Please try again."});
     }
-      
-    // if you don't want to use this transport object anymore, uncomment following line
-    //smtpTransport.close(); // shut down the connection pool, no more messages
-  });
+    
+  }
 
+
+
+  User.findOne({email: _email},emailReset );
 
 });
 
