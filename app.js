@@ -82,12 +82,7 @@ models.defineModels(mongoose, function() {
 
 // create reusable transport method (opens pool of SMTP connections)
 var smtpTransport = nodemailer.createTransport("SMTP",{
-    host: "cas.fitchburgstate.edu",
-    secureConnection: true,
-    auth: {
-        user: "ugrad-conf@fitchburgstate.edu",
-        pass: "UnderC0nf"
-    }
+    host: "barracuda.fitchburgstate.edu"
 });
 
 // setup e-mail data with unicode symbols
