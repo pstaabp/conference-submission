@@ -264,9 +264,10 @@ app.post('/conference-submission/users/password',function(req,res){
         res.json({success: false, message: "Your temporary Password is incorrect"});
       }
 
-      _user.encryptPassword(password);
+      var encryptedPassword = _user.encryptPassword(_password);
+      console.log(encryptedPassword);
 
-      User.findByIdAndUpdate(_user.id,{reset_pass: false, temp_pass: ""},
+      User.findByIdAndUpdate(_user.id,{reset_pass: false, temp_pass: "", hashed_password: encryptedPassword},
           function(err,theUser){
             if (err) {console.log(err);}
 
@@ -395,8 +396,6 @@ app.get('/conference-submission/sessions/new', function(req, res) {
 
 app.post('/conference-submission/sessions', function(req, res) {
   User.findOne({ email: req.body.user.email }, function(err, user) {
-    console.log("in post sessions");
-    console.log(user);
     if (user && user.authenticate(req.body.user.password)) {
       req.session.user_id = user.id;
 
@@ -446,17 +445,6 @@ app.get("/conference-submission/sessions/password",function(req,res){
 app.post("/conference-submission/sessions/reset", function (req,res){
   var _email = req.body.email;
 
-  function attemptToSendMail(err,res) {
-    if(err){
-      console.log(error);
-      res.json({user_found: true, user: user});
-    }else{
-      res.json({user_found: true, user: user, message: "An email has been sent to " + 
-                  user.email + ".  Please follow the instructions to reset your password."});
-      console.log("Message sent: " + response.message);
-    }
-  }
-
 
   function emailReset(err,user) {
     console.log(err)
@@ -476,17 +464,22 @@ app.post("/conference-submission/sessions/reset", function (req,res){
       resetPasswordOptions.html += tmpPassword;
 
       User.findByIdAndUpdate(user.id , {reset_pass: true, temp_pass: tmpPassword}, 
-        function (err, _user) {
-          if (err){console.log(err);} 
+        function (error, _user) {
+          if (error){console.log(error);} 
           if (_user){
             console.log(_user);
-            smtpTransport.sendMail(resetPasswordOptions, attemptToSendMail);
+            smtpTransport.sendMail(resetPasswordOptions, function(err,res){
+              if(err){
+                console.log(err);
+                res.json({user_found: true, user: user});
+              }else{
+                res.json({user_found: true, user: user, message: "An email has been sent to " + 
+                            user.email + ".  Please follow the instructions to reset your password."});
+                console.log("Message sent: " + response.message);
+              }
+            });
           }
         });
-
-
-
-
 
      }  else {
       res.json({user_found: false, message: "Your email address was not found.  Please try again."});

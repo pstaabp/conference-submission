@@ -35,7 +35,8 @@ function(Backbone, _,UserList, User, WebPage, common){
             $("#logout").on("click",common.logout); 
         },
         events: {"click #save-password": "savePassword"},
-        savePassword: function(){
+        savePassword: function(evt){
+            evt.stopPropagation();
             var self = this;
             $("#save-password").prop("disabled",true);
             var _email = $("input[name='email']").val();
@@ -54,21 +55,15 @@ function(Backbone, _,UserList, User, WebPage, common){
 
             $.post("/conference-submission/users/password", {email: _email, temp_pass: tmpPass, password: pass}, function (data){
                 
-                console.log(data);
-
-                /*if (data.user_exists){
-                    console.log("oops!");
-                    self.errorPane.addMessage("The email " + _email + " has already been used.  Click 'forget my password' if you need to.");
-                    $("#submit").prop("disabled",false);
-                } else {
-                    $("input[name='email']").val(_email);
-                    $("input[name='password']").val(pass);
-
+                if(data.success){
                     self.announce.addMessage("You have successfully created a new account.  You will be redirected to login with " +
                         "this account information in 5 seconds.");
-                    window.setTimeout(function () {document.getElementById("newUser").submit();}, 5000); 
+                    window.setTimeout(function () {location.href="/conference-submission/sessions/new"}, 5000); 
                     
-                } */
+                } else {
+                    self.errorPane.addMessage(data.message);
+                    $("#save-password").prop("disabled",false);
+                }
             });
         }
     });

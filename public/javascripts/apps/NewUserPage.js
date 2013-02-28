@@ -63,7 +63,6 @@ function(Backbone, _,UserList, User, WebPage, common){
 
             $.post("/conference-submission/users/exists", {email: _email}, function (data){
                 if (data.user_exists){
-                    console.log("oops!");
                     self.errorPane.addMessage("The email " + _email + " has already been used.  Click 'forget my password' if you need to.");
                     $("#submit").prop("disabled",false);
                 } else {
