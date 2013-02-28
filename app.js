@@ -468,10 +468,9 @@ app.post("/conference-submission/sessions/reset", function (req,res){
           if (error){console.log(error);} 
           if (_user){
             console.log(_user);
-            smtpTransport.sendMail(resetPasswordOptions, function(err,res){
+            smtpTransport.sendMail(resetPasswordOptions, function(err,respsone){
               if(err){
                 console.log(err);
-                res.json({user_found: true, user: user});
               }else{
                 res.json({user_found: true, user: user, message: "An email has been sent to " + 
                             user.email + ".  Please follow the instructions to reset your password."});
