@@ -468,7 +468,7 @@ app.post("/conference-submission/sessions/reset", function (req,res){
           if (error){console.log(error);} 
           if (_user){
             console.log(_user);
-            smtpTransport.sendMail(resetPasswordOptions, function(err,respsone){
+            smtpTransport.sendMail(resetPasswordOptions, function(err,response){
               if(err){
                 console.log(err);
               }else{
