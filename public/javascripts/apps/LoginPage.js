@@ -29,6 +29,10 @@ function(Backbone, _,WebPage, common){
             this.render();
             $("#logout").on("click",common.logout);
             $("#reset-password").on("click",this.resetPassword);
+            if (common.getParameterByName("password-correct")==="false")
+            {
+                this.errorPane.addMessage("Your password is incorrect.  Please try again or click 'I forgot my login info.' below.");
+            }
         },
         render: function () {
             this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 

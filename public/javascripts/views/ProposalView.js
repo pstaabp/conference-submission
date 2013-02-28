@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore'], function(Backbone, _){
+define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
     /**
      *
      * This defines a User
@@ -48,6 +48,7 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.$("#proposal-text").prop("disabled",true);
                 this.$("#add-author").prop("disabled",true);
             }
+            $("#other-equip-help").popover({html: true, content: $("#other-equip-help-text").html()});
     	},
         events: {"click button#submit-proposal-button": "submit",
                  "change input": "update",
@@ -55,6 +56,9 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                  "change #proposal-text": "update",
                  "click button#save-statement": "saveStatement",
                  "click button#add-author": "addAuthor"},
+        showOtherEquipHelp: function(){
+
+        },
         update: function (evt){
             var targ = $(evt.target)
                 ,field = targ.data("field")
