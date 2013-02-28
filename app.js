@@ -260,6 +260,12 @@ app.post('/conference-submission/users/password',function(req,res){
     if (err) {console.log(err);}
 
     if(_user){
+
+      if (!_user.reset_pass) {
+        res.json({success: false, message: "You don't have permission to reset this password. " +
+          " Click <a href='/conference-submission/forgot'>here</a> if you have forgotten your password."})
+      }
+
       if (_user.temp_pass !== tmpPassword) {
         res.json({success: false, message: "Your temporary Password is incorrect"});
       }
