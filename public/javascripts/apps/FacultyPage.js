@@ -60,6 +60,7 @@ function(Backbone, _, UserList, User, ProposalList,WebPage,PersonalInfoView,Prop
 
             this.proposalViews = [];
             this.proposals.each(function(prop,i){
+                
                 $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'>Proposal #" + (i+1) + "</a></li>");
                 if (prop.get("sponsor_statement")===""){
                     $("a[href='#prop"+ (i+1) + "']").addClass("review-needed");

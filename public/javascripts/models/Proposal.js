@@ -8,6 +8,7 @@ define(['Backbone', 'underscore'], function(Backbone, _){
 
     var Proposal = Backbone.Model.extend({
         defaults: {
+            author: "",
             other_authors: [],
             sponsor_email:"",
             sponsor_name:"",

@@ -18,6 +18,7 @@ function defineModels(mongoose, fn) {
 
  
   var Proposal = new Schema({
+    author: String,
     other_authors: Array,
     email: String,
     type: String,

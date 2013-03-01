@@ -35,11 +35,18 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
                 });
             }
             if(this.model && this.facultyView){
+                console.log(this.model.attributes);
                 this.$("#title").html(this.model.get("title"));
                 this.$("#pres-type").html(this.model.get("type"));
                 this.$("#other-equip").html(this.model.get("other_equipment"));
                 this.$("#proposal-text").html(this.model.get("content"));
                 this.$("#sponsor-statement").val(this.model.get("sponsor_statement"));
+                this.$("#author").html(this.model.get("author"));
+                if (this.model.get("other_authors").length >0){
+                    this.$("#author").prev().html("Project Authors");
+                    this.$("#author").append(", " + (_(this.model.get("other_authors")).pluck("name")).join(", "));
+                }
+
             }
             if (!this.editMode){
                 this.$("#submit-proposal-button").html("Edit Proposal");
