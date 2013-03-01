@@ -55,7 +55,7 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
             this.$el.append(_.template($("#student-tabs-template").html()));
             if (this.user) {
                 new PersonalInfoView({el: $("#personal"), user: this.user, editMode: false, parent: self});
-                if(this.user.get("role")==="student"){
+                if(!(this.user.get("role")==="faculty")){
                     $("#save-info").parent().parent().append("<button id='submit-proposal' class='btn'>Create a New Proposal</button>")
                 }
             }
@@ -74,7 +74,7 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
                  
         newProposal: function() {
             $("#submit-proposal").val("Creating a New Proposal").prop("disabled",true);
-            this.proposals.create({email: this.user.get("email")});
+            this.proposals.create({email: this.user.get("email"), author: this.user.get("first_name") + " " + this.user.get("last_name")});
         },
         activateTabs: function(){
             $('#submit-main-tabs a').click(function (e) {

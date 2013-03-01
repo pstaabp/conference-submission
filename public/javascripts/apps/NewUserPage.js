@@ -71,8 +71,8 @@ function(Backbone, _,UserList, User, WebPage, common){
                     $("input[name='role']").val((emailParts[2])?"student":"faculty");
 
                     self.announce.addMessage("You have successfully created a new account.  You will be redirected to login with " +
-                        "this account information in 10 seconds.");
-                    window.setTimeout(function () {document.getElementById("newUser").submit();}, 10000); 
+                        "this account information in 5 seconds.");
+                    window.setTimeout(function () {document.getElementById("newUser").submit();}, 5000); 
                     
                 }
             });
