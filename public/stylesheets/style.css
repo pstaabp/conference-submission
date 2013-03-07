@@ -1,6 +1,6 @@
 body {
   padding: 0px 30px 30px 30px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+ // font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 .review-needed {color: red;}
@@ -16,3 +16,7 @@ td {padding: 5px;}
 
 label:hover {cursor: pointer};
 
+
+tr.not-accepted td {background-color: pink;}
+
+.proposal {list-style: none}

@@ -21,6 +21,7 @@ function defineModels(mongoose, fn) {
     author: String,
     other_authors: Array,
     email: String,
+    session: String,
     type: String,
     sponsor_email: String,
     sponsor_name: String,

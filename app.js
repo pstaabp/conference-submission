@@ -289,31 +289,35 @@ app.post('/conference-submission/users/password',function(req,res){
 
 // proposals routes
 
-app.get("/conference-submission/proposals", function(req,res){
+app.get("/conference-submission/proposals", loadUser, function(req,res){
   console.log("in /proposals");
   var _email = req.param("email")
   , semail = req.param("sponsor_email")
   , query = null;
 
-  console.log(_email);
-  console.log(semail);
-
-  if (_email) {
-     query = (_email)? Proposal.find({email: _email}) : Proposal.find(); 
-  }
-  if (semail){
-    query = (semail)? Proposal.find({sponsor_email: semail}) : Proposal.find(); 
-  }
-
-  query.exec(function(err,proposals) {
-    // 'users' will contain all of the users returned by the query
-
-    if (err) {
-      console.log(err);
-    }
+  User.findOne({_id: req.currentUser.id},function(err,_user){
     
-    res.json(proposals);
-  }); 
+    var role = _user.role;  
+
+    console.log(_email);
+    console.log(semail);
+
+    if (_email) {
+       query = (_email)? Proposal.find({email: _email}) : Proposal.find(); 
+    } else if (semail){
+      query = (semail)? Proposal.find({sponsor_email: semail}) : Proposal.find(); 
+    } else if (role==="admin") {
+      query = Proposal.find();
+    }
+
+    query.exec(function(err,proposals) {
+      if (err) {
+        console.log(err);
+      }
+      
+      res.json(proposals);
+    }); 
+  });
 });
 
 app.post("/conference-submission/proposals",function(req,res){
@@ -362,7 +366,7 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
     console.log("in /admin");
     console.log(_user);
     if (_user.role==="admin")
-      res.render('admin/admin.jade',{user:_user});
+      res.render('admin/admin.jade');
     else
       res.redirect("/"+_user.role);
   });

@@ -11,6 +11,9 @@ define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
         initialize:function () {
     
         },
+        comparator: function (proposal){
+            return proposal.get("session");
+        },
         url: '/conference-submission/proposals',
         /*parse: function (response){
             console.log(response);

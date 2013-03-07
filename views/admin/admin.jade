@@ -1,7 +1,7 @@
 extends ../layout
 
 block script
-  script(type='text/javascript',data-main='/javascripts/apps/AdminPage',src='/javascripts/vendor/require.js')
+  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/AdminPage',src='/conference-submission/javascripts/vendor/require.js')
 
 block container
   ul.nav.nav-tabs#admin-tabs
@@ -35,20 +35,23 @@ block container
         tbody
     .tab-pane#proposals
       h3 Proposals
-      table#proposal-table.table.table-striped
+      table#proposal-table.table.table-bordered
+        include proposal-table-header.jade
         tbody
-          include proposal-table-header.jade
+          
     .tab-pane#oral-presentations
       h3 Oral Presentations
-      table#oral-table.table.table-striped
+      table#oral-table.table.table-bordered
+        include proposal-table-header.jade
         tbody
-          include proposal-table-header.jade
+          
 
     .tab-pane#poster-presentations
       h3 Poster Presentations
-      table#poster-table.table.table-striped
-        tbody
-          include proposal-table-header.jade
+      table#poster-table-header.table.table-bordered
+        include proposal-table-header.jade
+      ul#poster-table
+          
 
     .tab-pane#art-2d
       h3 2D Art
@@ -68,14 +71,24 @@ block templates
       td <%=email%>
 
   script(type='text/template',id='proposal-row-template')
-    tr
-      td <%=email%>
-      td <%=title%>
-      td <%=sponsor_name%>
-      td <%=sponsor_email%>
-      td <%=sponsor_dept%>
-      td <%=type%>
-    tr
-      td(colspan="6") <%=content%>        
+    li.proposal
+      table.table.table-bordered
+        tbody
+          tr.not-accepted
+            td
+              input(type='checkbox',val='<%=accepted%>')
+            td.session <%=session%>
+            td.author <%=author%>
+            td.title <%=title%>
+            td.sponsor-name <%=sponsor_name%>
+            td.sponsor-email <%=sponsor_email%>
+            td.sponsor-dept <%=sponsor_dept%>
+            td.type <%=type%>
+          tr
+            td
+            td(colspan="7") <%=content%>
+          tr
+            td
+            td(colspan="7") <%=sponsor_statement%>        
 
             
