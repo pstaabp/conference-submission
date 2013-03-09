@@ -14,6 +14,8 @@ block container
     li
       a(href="#poster-presentations") Posters
     li
+      a(href="#schedule") Schedule
+    li
       a(href="#art-2d") 2D Art
     li
       a(href="#art-3d") 3D Art
@@ -35,15 +37,16 @@ block container
         tbody
     .tab-pane#proposals
       h3 Proposals
-      table#proposal-table.table.table-bordered
+      table#proposal-table-header.table.table-bordered
         include proposal-table-header.jade
-        tbody
+      ul#proposal-table
+
           
     .tab-pane#oral-presentations
       h3 Oral Presentations
-      table#oral-table.table.table-bordered
+      table#oral-table-header.table.table-bordered
         include proposal-table-header.jade
-        tbody
+      ul#oral-table
           
 
     .tab-pane#poster-presentations
@@ -52,6 +55,13 @@ block container
         include proposal-table-header.jade
       ul#poster-table
           
+    .tab-pane#schedule
+      h3 Oral Presentation Schedule
+      table#oral-present-table.table.table-bordered
+        thead
+          tr
+        tbody
+          tr
 
     .tab-pane#art-2d
       h3 2D Art
@@ -62,7 +72,7 @@ block container
     
 
 block templates
-  script(type='text/template',id='user-row-template')
+  script#user-row-template(type='text/template')
     tr
       td <%=first_name%>
       td <%=last_name%>
@@ -70,7 +80,7 @@ block templates
       td <%=role%>
       td <%=email%>
 
-  script(type='text/template',id='proposal-row-template')
+  script#proposal-row-template(type='text/template')
     li.proposal
       table.table.table-bordered
         tbody
@@ -89,6 +99,11 @@ block templates
             td(colspan="7") <%=content%>
           tr
             td
-            td(colspan="7") <%=sponsor_statement%>        
+            td(colspan="7") <%=sponsor_statement%>
+
+  script#oral-presentation-template(type="text/template")
+    li.oral-present
+      .title <%=title%>
+      .author <%=author%>        
 
             

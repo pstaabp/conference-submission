@@ -20,3 +20,11 @@ label:hover {cursor: pointer};
 tr.not-accepted td {background-color: pink;}
 
 .proposal {list-style: none}
+
+#oral-present-table {width: 500px; height: 520px; border: 1px gray solid;}
+.oral-present-col {list-style-type: none; width: 130px;}
+.oral-present { border: 1px solid black; width: 120px; height: 100px; float: left; overflow: hidden;}
+
+
+
+.title {font-weight: bold}

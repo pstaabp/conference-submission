@@ -34,10 +34,13 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,common){
             
             this.proposals = new ProposalList();
             this.users = new UserList();
-            this.render();
-            this.users.fetch({success: this.usersFetched});
             
+            this.users.fetch({success: this.usersFetched});
             this.proposals.on("add",this.render);
+
+
+            //this.render();
+
             $("#logout").on("click",common.logout);   
 
         },
@@ -50,17 +53,16 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,common){
                 userTable.append(_.template($("#user-row-template").html(),_user.attributes));
             });
 
-            var proposalTable = this.$("#proposal-table tbody");
+            var proposalTable = this.$("#proposal-table");
             this.proposals.each(function(prop){
                 proposalTable.append(_.template($("#proposal-row-template").html(),prop.attributes));
             });
 
-            var oralTable = this.$("#oral-table tbody");
-            var orals = this.proposals.filter(function(prop){return prop.get("type")==="Oral Presentation"});
-            _(orals).each(function(prop){
-                oralTable.append(_.template($("#proposal-row-template").html(),prop.attributes));
-                self.$(".session:last").html((new EditableCell({model: prop, property: "session"})).render().el);
-            });
+            
+            this.oralPresentTable.render();
+            
+
+
 
             var posterTable = this.$("#poster-table");
             var posters = this.proposals.filter(function(prop){return prop.get("type")==="Poster Presentation"});
@@ -69,6 +71,15 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,common){
                 self.$(".session:last").html((new EditableCell({model: prop, property: "session"})).render().el);
                 self.$("li.proposal:last").attr("id",prop.cid);
             });
+
+            var oralTable = this.$("#oral-table");
+            var orals = this.proposals.filter(function(prop){return prop.get("type")==="Oral Presentation"});
+            _(orals).each(function(prop,i){
+                oralTable.append(_.template($("#proposal-row-template").html(),prop.attributes));
+
+            });
+
+
 
             posterTable.sortable({update: function( event, ui ) {
               console.log("I was sorted!!");
@@ -101,8 +112,47 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,common){
         proposalsFetched: function(collection, response, options) {          
             
             console.log("proposalsFetched");
-            console.log(collection);
+            
+            var oralPresentations = this.proposals.filter(function(prop){return prop.get("type")==="Oral Presentation"});
+            this.oralPresentTable = new OralPresentationScheduleView({el: $("#schedule"), proposals: oralPresentations});
+
             this.render();
+        }
+    });
+
+    var OralPresentationScheduleView = Backbone.View.extend({
+        rowTemplate: _.template($("#proposal-row-template").html()),
+        initialize: function(){
+            this.proposals = this.options.proposals; 
+
+        },
+        render: function (){
+            
+            var numCols = 3
+              , i =0; 
+            var tableBody = this.$("#oral-present-table tbody tr");
+            var tableHead = this.$("#oral-present-table thead tr");
+            for(i=0;i< numCols; i++){
+                tableBody.append("<td><ul class='oral-present-col' id='col" + i + "'></ul></td>");
+                tableHead.append("<th>Column " + i + "</td>");
+            }
+
+
+            _(this.proposals).each(function(prop,i){
+                this.$("#col0").append(_.template($("#oral-presentation-template").html(),prop.attributes));
+                this.$("#col1").append(_.template($("#oral-presentation-template").html(),prop.attributes));
+                self.$("#oral-present-table .oral-present:last").attr("data-id",prop.cid);
+            });
+
+            $("#col0, #col1, #col2").sortable({update: function(evt,ui){
+                console.log("reordering!");
+                self.$("#oral-present-table .oral-present").each(function(i,prop){
+                    console.log(prop);
+                
+                }
+                )}
+                , connectWith: ".oral-present-col"}).disableSelection();
+
         }
     });
 
