@@ -335,13 +335,7 @@ app.post("/conference-submission/proposals",function(req,res){
 app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
   console.log("in post /proposal/id");
   console.log(req.params[0]);
-/*  var newInfo = {title: req.body.title, type: req.body.type, sponsor_email: req.body.sponsor_email, 
-      sponsor_name: req.body.sponsor_name, sponsor_dept: req.body.sponsor_dept,
-      content: req.body.content, use_animal_subjects: req.body.use_animal_subjects, 
-      use_human_subjects: req.body.use_human_subjects,
-      other_equipment: req.body.other_equipment, sponsor_statement:};
-
-  console.log(newInfo); */
+  
   Proposal.findByIdAndUpdate(req.params[0],_und.omit(req.body, "_id"), function (err, prop) {
     if (err) {
       console.log(err);
