@@ -21,7 +21,7 @@ block templates
         td Project Title
         td(colspan="3")
           input(id='title',data-field="title",type='text',size='40')
-      tr.add-author-row
+      tr.add-author-button-row
         td
           button#add-author.btn Add an Author
       tr
@@ -85,22 +85,15 @@ block templates
           textarea(rows=10,id='proposal-text',data-field="content")
           
   script(type="text/template",id='add-author-template')
-    tr.add-author-row
-      td Author Name
-      td
-        input#author-name(data-field='author-name')
-      td Author Email
-      td
-        input#author-email(data-field='author-email')
-      td
-        button.delete-author.btn Delete Author
-  script#author-row(type="text/template")
-    tr.add-author-row
-      td Author Name
-      td <%=name%>
-      td Author Email
-      td <%=email%>
-
+    td Author Name
+    td
+      input.name(data-field='name',value!="<%=name%>")
+    td Author Email
+    td
+      input.email(data-field='email',value!="<%=email%>")
+    td
+      button.delete-author.btn Delete Author
+ 
   script(type='text/template',id='new-proposal-template')
     .tab-pane
       p Creating a new Proposal.&nbsp;&nbsp;

@@ -9,14 +9,24 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
     var ProposalView = Backbone.View.extend({
     	template: _.template($("#proposal-view").html()),
     	initialize: function () {
+            var self = this;
     		_.bindAll(this,"render","update","saved","savedStatement");
             this.parent = this.options.parent;
             this.facultyView = this.options.facultyView;
-    		this.render();
             this.editMode = (this.options.editMode)?this.options.editMode:false;
+
+            this.additionalAuthorsViews = [];
+            _(this.model.get("other_authors")).each(function(_author){
+                self.additionalAuthorsViews.push(new AdditionalAuthorView({author: _author, parent: self}));
+            })
+
+    		this.render();
+
             this.fieldsToSave = {};
+
     	},
     	render: function (){
+            var self = this; 
     		this.$el.html(this.template);
             if(this.model){
                 this.$("#title").val(this.model.get("title"));
@@ -29,10 +39,10 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
                 this.$("#animal-subjects").prop("checked",this.model.get("use_animal_subjects"));
                 this.$("#other-equip").val(this.model.get("other_equipment"));
 
-                _(this.model.get("other_authors")).each(function(author){
-                    console.log(author);
-                    this.$(".add-author-row:last").before(_.template($("#author-row").html(),author));
-                });
+                _(this.additionalAuthorsViews).each(function(view) {
+                    self.$(".add-author-button-row").before(view.render().el);});
+
+                
             }
             if(this.model && this.facultyView){
                 console.log(this.model.attributes);
@@ -78,9 +88,8 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
         submit: function ()
         {
             if (this.editMode){
-                this.parseAuthor();
-
                 this.editMode = false;
+                _.extend(this.fieldsToSave,{other_authors: this.getOtherAuthors()});
                 this.model.save(this.fieldsToSave,{success: this.saved, error: this.error});    
                 this.fieldsToSave = {};
                 this.render();
@@ -90,31 +99,13 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
                 return;
             } 
         },
-        parseAuthor: function (){
-            var newAuthor = {name: $("#author-name").val(), email: $("#author-email").val()};
-            if (_(this.fieldsToSave).has("author-name") && _(this.fieldsToSave).has("author-email")) {
-                this.fieldsToSave = _(this.fieldsToSave).omit(["author-name","author-email"]);
-            }
-            if (_(this.fieldsToSave).has("other_authors")) { 
-                this.fieldsToSave.other_authors.push(newAuthor);
-            }
-            else {
-                this.fieldsToSave.other_authors=this.model.get("other_authors");
-            }
-            $($(".add-author-row #author-name")[0]).parent().html(newAuthor.name);
-            $($(".add-author-row #author-email")[0]).parent().html(newAuthor.email);
-            
-            console.log(this.fieldsToSave);
-
-
-        },
         addAuthor: function (){
-            // parse and store any already entered author
-            this.parseAuthor();
-
-            this.$(".add-author-row:last").before(_.template($("#add-author-template").html()));
-            this.$(".delete-author").on("click",function(evt) {$(evt.target).parent().parent().remove();});
-            this.$(".add-author-row input").on("change",this.update);
+            this.additionalAuthorsViews.push(new AdditionalAuthorView({parent: this}));
+            this.render();
+        },
+        removeAuthor: function (_cid){
+            this.additionalAuthorsViews = _(this.additionalAuthorsViews).reject(function(view) { return view.cid===_cid;});
+            this.render();
         },
         saveStatement: function ()
         {
@@ -133,11 +124,49 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
             console.log(options);
         }, 
         savedStatement: function (model, response,options){
-            this.parent.announce.addMessage("The sponsor statement was saved. ");
+            this.parent.announce.addMessage("The sponsor statement was saved.");
             $("li.active a").removeClass("review-needed");
             
+        },
+        getOtherAuthors: function(){
+            var otherAuthors =[];
+            _(this.additionalAuthorsViews).each(function(view){
+                otherAuthors.push(view.getAuthor());
+            });
+            return otherAuthors;
         }
 
+
+    });
+
+    var AdditionalAuthorView = Backbone.View.extend({
+        tagName: "tr",
+        className: "add-author-row",
+        initialize: function (){
+            _.bindAll(this,"render","getAuthor","deleteAuthor");
+            _.extend(this,this.options);
+            if (!this.author){
+                this.author = {name: "", email: ""};
+            }
+        },
+        render: function(){
+            this.$el.html(_.template($("#add-author-template").html(),this.author));
+            this.$("button").prop("disabled",!this.parent.editMode);
+            this.delegateEvents();  // this seems to be needed because the button is originally disabled. 
+
+            return this;
+        },
+        events: {"click button": "deleteAuthor",
+                "change input": "saveField"},
+        deleteAuthor: function (){
+            this.parent.removeAuthor(this.cid);
+        },
+        saveField: function(evt){
+            this.author[$(evt.target).data("field")] = $(evt.target).val();
+        },
+        getAuthor: function (){         
+            return this.author;
+        }
 
     });
 
