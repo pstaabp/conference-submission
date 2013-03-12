@@ -162,7 +162,7 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
             this.parent.removeAuthor(this.cid);
         },
         saveField: function(evt){
-            this.author[$(evt.target).data("field")] = $(evt.target).val();
+            this.author[$(evt.target).data("field").split("-")[1]] = $(evt.target).val();
         },
         getAuthor: function (){         
             return this.author;
