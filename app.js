@@ -359,6 +359,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
     User.findOne({_id: req.currentUser.id},function(err,_user){
       submissionReceivedEmail.to = _user.email;
 
+      console.log("Trying to send email");
       smtpTransport.sendMail(submissionReceivedEmail, function(err,response){
         if(err){
           console.log(err);
