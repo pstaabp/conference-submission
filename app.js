@@ -343,9 +343,8 @@ app.post("/conference-submission/proposals",function(req,res){
 
 });
 
-app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
+app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,res){
   console.log("in post /proposal/id");
-  console.log(req.params[0]);
   
   Proposal.findByIdAndUpdate(req.params[0],_und.omit(req.body, "_id"), function (err, prop) {
     if (err) {
