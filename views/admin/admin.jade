@@ -102,7 +102,7 @@ block templates
             td(colspan="7") <%=sponsor_statement%>
 
   script#oral-presentation-template(type="text/template")
-    li.oral-present
+    li.oral-present(id!='<%=cid%>')
       .title <%=title%>
       .author <%=author%>        
 
