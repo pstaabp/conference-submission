@@ -50,10 +50,15 @@ script(type='text/template',id='user-view')
           label Email:
         td
           input#email(value=user.email,disabled=true)
-      tr
+      tr.save-info-row
         td
         td
           button.btn#save-info Save Info
+      tr.submit-proposal-row
+        td
+        td
+          button.btn#submit-proposal Create a New Proposal
+          
         
 
    

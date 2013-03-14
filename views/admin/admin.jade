@@ -6,69 +6,32 @@ block script
 block container
   ul.nav.nav-tabs#admin-tabs
     li.active
-      a(href="#users") Users
+      a(href="#users",data-toggle="tab",data-view="usersView") Users
     li
-      a(href="#proposals") Proposals
+      a(href="#proposals",data-toggle="tab",data-view="proposalsView") Proposals
     li
-      a(href="#oral-presentations") Oral 
+      a(href="#oral-presentations",data-toggle="tab",data-view="oralsView") Oral 
     li
-      a(href="#poster-presentations") Posters
+      a(href="#posters",data-toggle="tab",data-view="postersView") Posters
     li
-      a(href="#schedule") Schedule
+      a(href="#schedule",data-toggle="tab",data-view="scheduleView") Schedule
     li
-      a(href="#art-2d") 2D Art
+      a(href="#art-2d",data-toggle="tab",data-view="art2DView") 2D Art
     li
-      a(href="#art-3d") 3D Art
+      a(href="#art-3d",data-toggle="tab",data-view="art3DView") 3D Art
     li
-      a(href="#video") Video
+      a(href="#video",data-toggle="tab",data-view="videosView") Video
     
       
   .tab-content
     .tab-pane.active#users
-      h3 Users
-      table#user-table.table
-        thead
-          tr
-            td First Name
-            td Last Name
-            td Major
-            td Role
-            td Email
-        tbody
     .tab-pane#proposals
-      h3 Proposals
-      table#proposal-table-header.table.table-bordered
-        include proposal-table-header.jade
-      ul#proposal-table
-
-          
     .tab-pane#oral-presentations
-      h3 Oral Presentations
-      table#oral-table-header.table.table-bordered
-        include proposal-table-header.jade
-      ul#oral-table
-          
-
-    .tab-pane#poster-presentations
-      h3 Poster Presentations
-      table#poster-table-header.table.table-bordered
-        include proposal-table-header.jade
-      ul#poster-table
-          
+    .tab-pane#posters
     .tab-pane#schedule
-      h3 Oral Presentation Schedule
-      table#oral-present-table.table.table-bordered
-        thead
-          tr
-        tbody
-          tr
-
     .tab-pane#art-2d
-      h3 2D Art
     .tab-pane#art-3d
-      h3 3D Art
     .tab-pane#video
-      h3 Videos
     
 
 block templates
@@ -81,29 +44,100 @@ block templates
       td <%=email%>
 
   script#proposal-row-template(type='text/template')
-    li.proposal
+    td
       table.table.table-bordered
+        thead
+          tr
+            th Acc.
+            th Sess.
+            th Main Author
+            th(colspan="2") Title
+            th Presentation Type
         tbody
           tr.not-accepted
             td
               input(type='checkbox',val='<%=accepted%>')
             td.session <%=session%>
             td.author <%=author%>
-            td.title <%=title%>
-            td.sponsor-name <%=sponsor_name%>
-            td.sponsor-email <%=sponsor_email%>
-            td.sponsor-dept <%=sponsor_dept%>
+            td.title(colspan="2") <%=title%>
             td.type <%=type%>
           tr
             td
-            td(colspan="7") <%=content%>
+            td
+            td.header Sponsor Name
+            td.header Sponsor Email
+            td.header Sponsor Dept
+            td.header Date/Time Submitted
           tr
             td
-            td(colspan="7") <%=sponsor_statement%>
+            td
+            td.sponsor-name <%=sponsor_name%>
+            td.sponsor-email <%=sponsor_email%>
+            td.sponsor-dept <%=sponsor_dept%>
+            td.submitted-date <%=date%> at <%=time%>
+          tr
+            td
+            td(colspan="6").header Proposal Text
+          tr
+            td
+            td(colspan="6") <%=content%>
+          tr
+            td
+            td(colspan="6").header Sponsor Statement
+          tr
+            td
+            td(colspan="6") <%=sponsor_statement%>
+
+
+  script#users-template(type="text/template")
+    h3 Users
+    table#user-table.table
+      thead
+        tr
+          td First Name
+          td Last Name
+          td Major
+          td Role
+          td Email
+      tbody
+  script#proposals-template(type="text/template")
+    h3 Proposals
+    table#proposal-table-header.table.table-bordered.proposal-table
+      tbody
+      
+          
+
+  script#orals-template(type="text/template")
+    h3 Oral Presentations
+    table#oral-table-header.table.table-bordered.proposal-table
+      tbody    
+
+  script#posters-template(type="text/template")
+    h3 Poster Presentations
+    table#poster-table-header.table.table-bordered.proposal-table
+      tbody
+
+
+  script#schedule-template(type="text/template")
+    h3 Oral Presentation Schedule
+
+    ul.oral-present-col#extra-ops
+
+    table#oral-present-table.table.table-bordered
+      thead
+        tr
+      tbody
+        tr
 
   script#oral-presentation-template(type="text/template")
     li.oral-present(id!='<%=cid%>')
       .title <%=title%>
-      .author <%=author%>        
+      .author <%=author%>   
 
+  script#art2d-template(type="text/template")
+    h3 2D Art
+  script#art3d-template(type="text/template")
+    h3 3D Art
+  script#videos-template(type="text/template")
+    h3 Videos
             

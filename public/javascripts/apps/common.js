@@ -27,7 +27,11 @@ define(['Backbone'], function(Backbone){
             return "";
           else
             return decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
+        },
+        proposalParams : [{class: ".session", field: "session"},{class:".title",field: "title"},
+          {class: ".sponsor-name", field: "sponsor_name"}, {class: ".sponsor-email", field: "sponsor_email"},
+          {class: ".sponsor-dept", field: "sponsor_dept"}, {class: ".type", field: "type"}]
+
     }
 
     return common;

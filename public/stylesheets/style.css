@@ -21,11 +21,17 @@ tr.not-accepted td {background-color: pink;}
 
 .proposal {list-style: none}
 
+.srv-value {width: 100%; height: 2ex; display: block;}
+
 #oral-present-table {width: 500px; height: 520px; border: 1px gray solid;}
 .oral-present-col {list-style-type: none; width: 130px; height: 400px;}
 .oral-present { border: 1px solid black; width: 120px; height: 100px; float: left; overflow: hidden;}
 
 .ui-state-highlight { border: 1px dashed black; width: 120px; height: 100px; float: left; background-color: lightgray;}
 
+#extra-ops {height: auto;}
 
-.title {font-weight: bold}
+
+.title {font: italic;}
+
+.header {font-weight: bold}

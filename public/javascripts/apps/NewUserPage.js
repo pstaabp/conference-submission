@@ -52,12 +52,15 @@ function(Backbone, _,UserList, User, WebPage, common){
 
             if (pass!==verify){
                 alert("The two passwords must match.");
+                $("button#submit").prop("disabled",false);
                 return false;
             } else if (pass.length<6){
                 alert("Please enter a password at least 6 characters in length");
+                $("button#submit").prop("disabled",false);
                 return false;
             } else if (emailParts==null){
                 alert("You need to use a fitchburgstate.edu email address.");
+                $("button#submit").prop("disabled",false);
                 return false;
             }
 

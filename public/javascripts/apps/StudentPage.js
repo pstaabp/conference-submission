@@ -55,10 +55,11 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
             this.$el.append(_.template($("#student-tabs-template").html()));
             if (this.user) {
                 new PersonalInfoView({el: $("#personal"), user: this.user, editMode: false, parent: self});
-                if(!(this.user.get("role")==="faculty")){
-                    $("#save-info").parent().parent().append("<button id='submit-proposal' class='btn'>Create a New Proposal</button>")
+                if (this.user.get("role")!=="student"){
+                    $("#submit-proposal-row").addClass("hidden");
                 }
             }
+
 
             this.proposalViews = [];
             this.proposals.each(function(prop,i){
