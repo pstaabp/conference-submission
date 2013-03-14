@@ -97,6 +97,17 @@ var resetPasswordOptions = {
           + " enter the temporary password " // html body
 }
 
+// setup e-mail data with unicode symbols
+var submissionReceivedEmail = {
+    from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
+    subject: "Submission Received for FSU Conference", // Subject line
+    text: "this is a test.",
+    html: "this is a test."
+          
+}
+
+
+
 
 function authenticateFromLoginToken(req, res, next) {
   var cookie = JSON.parse(req.cookies.logintoken);
@@ -342,6 +353,23 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, function (req,res){
     }
     
     console.log("updated!!");
+
+    // send email that a proposal was received. 
+
+
+
+
+    smtpTransport.sendMail(submissionReceivedEmail, function(err,response){
+      if(err){
+        console.log(err);
+      }else{
+        res.json(prop);
+        console.log("Message sent: " + response.message);
+      }
+    });
+
+
+
     res.json(prop);
   });
 });
