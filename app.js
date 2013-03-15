@@ -384,7 +384,27 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
             }
           });
 
-                     // Send a single email
+       
+
+
+
+        }
+      });
+
+
+
+      emailTemplates(templatesDir, function(err, template) {
+
+        if (err) {
+          console.log(err);
+        } else {
+
+          locals = {first_name: _user.first_name, last_name: _user.last_name};
+          _und.extend(locals,prop);
+          // ## Send a single email
+
+
+                // Send a single email
           template('sponsor', locals, function(err, html, text) {
             if (err) {
               console.log(err);
@@ -409,14 +429,10 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
 
 
         }
-      });
-
-
-
 
 
     });
-
+  });
 
     res.json(prop);
   });
