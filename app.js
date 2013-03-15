@@ -359,7 +359,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
         } else {
 
           locals = {first_name: _user.first_name};
-          _.extend(locals,prop);
+          _und.extend(locals,prop);
           // ## Send a single email
 
            // Send a single email
