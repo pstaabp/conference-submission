@@ -358,7 +358,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
           console.log(err);
         } else {
 
-          locals = {first_name: _user.first_name};
+          locals = {first_name: _user.first_name, last_name: _user.last_name};
           _und.extend(locals,prop);
           // ## Send a single email
 
@@ -383,6 +383,30 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
               });
             }
           });
+
+                     // Send a single email
+          template('sponsor', locals, function(err, html, text) {
+            if (err) {
+              console.log(err);
+            } else {
+              smtpTransport.sendMail({
+                from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
+                subject: "Submission Received for FSU Conference", // Subject line
+                to: locals.sponsor_email,
+                html: html,
+                // generateTextFromHTML: true,
+                text: text
+              }, function(err, responseStatus) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log(responseStatus.message);
+                }
+              });
+            }
+          });
+
+
 
         }
       });

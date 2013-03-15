@@ -1,0 +1,32 @@
+<p>Dear <%=sponsor_name%>,</p>
+
+<p>A student has submitted a proposal to the FSU Conference on Research and Creative Practive with you as
+the sponsor.  This year we have a new procedures for accepting proposals.  Please go to the 
+<a href="http://webwork.fitchburgstate.edu/conference-submission/sessions/new">Submission Website</a>
+and register with your fitchburgstate.edu email address.  You will then see all of the proposals that you
+are sponsoring.  You need to write and submit and statement in support of the student's work.  
+</p>
+
+<p>The following information is what <%=first_name%> <%=last_name%> submitted:</p>
+
+<table>
+<tbody>
+<tr><td>Title</td><td><%=title%></td></tr>
+<tr><td>Sponsor's Name</td><td><%=sponsor_name%></td></tr>
+<tr><td>Sponsor's Department</td><td><%=sponsor_dept%></td></tr>
+<tr><td>Sponsor's Email</td><td><%=sponsor_email%></td></tr>
+<tr><td>Presentation Type</td><td><%=type%></td></tr>
+<% if(other_authors.length>0) {  %>
+
+<tr><td>Other Authors</td><td><%=: other_authors | map: 'name' | join %></td></tr> 
+
+<%}%>
+<tr><td>Other Equipment</td><td><%=other_equipment%></td></tr>
+<tr><td>Proposal</td><td><%=content%></td></tr>
+</tbody>
+</table>
+
+
+
+
+<p>The Undergraduate Conference Organizing Committee.</p>
