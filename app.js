@@ -363,7 +363,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
           // ## Send a single email
 
            // Send a single email
-          template('submitted.ejs', locals, function(err, html, text) {
+          template('submitted', locals, function(err, html, text) {
             if (err) {
               console.log(err);
             } else {
