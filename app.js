@@ -378,6 +378,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
                 from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
                 subject: "Submission Received for FSU Conference", // Subject line
                 to: locals.email,
+                cc: "ugrad-conf@fitchburgstate.edu",
                 html: html,
                 // generateTextFromHTML: true,
                 text: text
