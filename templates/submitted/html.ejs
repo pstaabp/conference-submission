@@ -14,14 +14,11 @@ Submission website</a> and logging in.  The website also has a password reset if
 <tr><td>Sponsor's Department</td><td><%=sponsor_dept%></td></tr>
 <tr><td>Sponsor's Email</td><td><%=sponsor_email%></td></tr>
 <tr><td>Presentation Type</td><td><%=type%></td></tr>
-<%=if(other_authors.length>0) {
-  var names = "";
-  for(i=0;i<other_authors.length;i++){
-  	names += other_authors[i].name;
-  }
+<% if(other_authors.length>0) {  %>
 
-%>
-<tr><td>Other Authors</td><td><%=names%></td></tr> <%}%>
+<tr><td>Other Authors</td><td><%=: other_authors | map: 'name' | join %></td></tr> 
+
+<%}%>
 <tr><td>Other Equipment</td><td><%=other_equipment%></td></tr>
 <tr><td>Proposal</td><td><%=content%></td></tr>
 </tbody>
