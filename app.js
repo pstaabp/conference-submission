@@ -33,11 +33,18 @@ var express = require('express')
 var app = express();
 
 app.configure('development', function() {
-  mongoose.set('debug',true);
+  mongoose.set('debug',false);
   app.set('db-uri', 'mongodb://localhost:27017/conf-development');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
-});
+}); 
+
+/* app.configure('production', function() {
+  mongoose.set('debug',false);
+  app.set('db-uri', 'mongodb://localhost:27017/conf-production');
+  app.use(express.errorHandler({ dumpExceptions: true }));
+  app.locals.pretty = true;
+}); */ 
 
 
 
