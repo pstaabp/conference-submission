@@ -1,0 +1,30 @@
+<p><%=first_name%>,</p>
+
+<p>Thank you for submitting a proposal to the FSU Conference on Research and Creative Practive.
+We will begin reviewing proposals soon.  In the mean time you may edit your proposal if needed by 
+returning to the <a href="http://webwork.fitchburgstate.edu/conference-submission/sessions/new">
+Submission website</a> and logging in.  The website also has a password reset if needed. </p>
+
+<p>The following information is what you submitted:</p>
+
+<table>
+<tbody>
+<tr><td>Title</td><td><%=title%></td></tr>
+<tr><td>Sponsor's Name</td><td><%=sponsor_name%></td></tr>
+<tr><td>Sponsor's Department</td><td><%=sponsor_dept%></td></tr>
+<tr><td>Sponsor's Email</td><td><%=sponsor_email%></td></tr>
+<tr><td>Presentation Type</td><td><%=type%></td></tr>
+<%=if(other_authors.length>0) {
+  var names = "";
+  for(i=0;i<other_authors.length;i++){
+  	names += other_authors[i].name;
+  }
+
+%>
+<tr><td>Other Authors</td><td><%=names%></td></tr> <%}%>
+<tr><td>Other Equipment</td><td><%=other_equipment%></td></tr>
+<tr><td>Proposal</td><td><%=content%></td></tr>
+</tbody>
+</table>
+
+<p>The Undergraduate Conference Organizing Committee.</p>

@@ -15,6 +15,8 @@ var express = require('express')
   , mongoStore = require('connect-mongodb')
   , nodemailer = require("nodemailer")
   , models = require('./models')
+  , templatesDir   = path.join(__dirname, 'templates')
+  , emailTemplates = require('email-templates')
   , db
   , User
   , Proposal
@@ -95,15 +97,6 @@ var resetPasswordOptions = {
     html: "You have requested a password reset for the Fitchburg State Undergraduate Conference Submission website."
           + "  Please go to <a href='http://webwork.fitchburgstate.edu/conference-submission/sessions/password'>http://webwork.fitchburgstate.edu/conference-submission/sessions/password</a> and "
           + " enter the temporary password " // html body
-}
-
-// setup e-mail data with unicode symbols
-var submissionReceivedEmail = {
-    from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
-    subject: "Submission Received for FSU Conference", // Subject line
-    text: "this is a test.",
-    html: "this is a test."
-          
 }
 
 
@@ -359,14 +352,47 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
       submissionReceivedEmail.to = _user.email;
 
       console.log("Trying to send email");
-      smtpTransport.sendMail(submissionReceivedEmail, function(err,response){
-        if(err){
+
+
+      emailTemplates(templatesDir, function(err, template) {
+
+        if (err) {
           console.log(err);
-        }else{
-          res.json(prop);
-          console.log("Message sent: " + response.message);
+        } else {
+
+          locals = {first_name: _user.first_name};
+          _.extend(locals,prop);
+          // ## Send a single email
+
+           // Send a single email
+          template('submitted', locals, function(err, html, text) {
+            if (err) {
+              console.log(err);
+            } else {
+              smtpTransport.sendMail({
+                from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
+                subject: "Submission Received for FSU Conference", // Subject line
+                to: locals.email,
+                html: html,
+                // generateTextFromHTML: true,
+                text: text
+              }, function(err, responseStatus) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log(responseStatus.message);
+                }
+              });
+            }
+          });
+
         }
       });
+
+
+
+
+
     });
 
 
