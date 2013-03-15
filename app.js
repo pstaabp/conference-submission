@@ -349,9 +349,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
     // send email that a proposal was received. 
 
     User.findOne({_id: req.currentUser.id},function(err,_user){
-      submissionReceivedEmail.to = _user.email;
-
-      console.log("Trying to send email");
+     console.log("Trying to send email");
 
 
       emailTemplates(templatesDir, function(err, template) {
