@@ -33,7 +33,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             this.constructor.__super__.initialize.apply(this, {el: this.el});
 
             _.bindAll(this, 'render','usersFetched','proposalsFetched','getProposals',
-                            'getOrals','getPosters');  // include all functions that need the this object
+                            'getOrals','getPosters', 'actAsUser');  // include all functions that need the this object
             var self = this;
             
             this.proposals = new ProposalList();
@@ -56,46 +56,14 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         render: function () {
             this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
 
+            var userNames = this.users.map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
+
+            $("#act-as-user").removeAttr("style").html(_($("#act-as-user-template").html()).template({users: userNames}));
+
             this.views.usersView.render();
-
-
-            /*
-
-            var proposalTable = $("#proposal-table");
-            this.proposals.each(function(proposal){
-                proposalTable.append((new ProposalView({model: proposal, proposalParams: self.proposalParams})).render().el);
-            });
-            
-            this.oralPresentTable.render();
-            
-
-
-
-            var posterTable = this.$("#poster-table");
-            var posters = this.proposals.filter(function(prop){return prop.get("type")==="Poster Presentation"});
-            _(posters).each(function(prop){
-                posterTable.append(_.template($("#proposal-row-template").html(),prop.attributes));
-                self.$(".session:last").html((new EditableCell({model: prop, property: "session"})).render().el);
-                self.$("li.proposal:last").attr("id",prop.cid);
-            });
-
-            var oralTable = this.$("#oral-table");
-            var orals = this.proposals.filter(function(prop){return prop.get("type")==="Oral Presentation"});
-            _(orals).each(function(prop,i){
-                oralTable.append(_.template($("#proposal-row-template").html(),prop.attributes));
-
-            });
-
-
-
-            
-
-           $('#admin-tabs a').click(function (evt) {
-                evt.preventDefault();
-                $(this).tab('show');
-            }); */
-
-          
+        },
+        actAsUser: function(evt){
+            console.log($(evt.target).data("id"));
         },
         changeView: function(evt){
             var viewName =$(evt.target).data("view");
@@ -164,14 +132,35 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
     var UsersView = Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, "render");
+            this.collection.on("remove",this.render);
         },
         render: function(){
             this.$el.html(_.template($("#users-template").html()));
             var userTable = this.$("#user-table tbody");
             this.collection.each(function(_user){
-                userTable.append(_.template($("#user-row-template").html(),_user.attributes));
+                userTable.append( (new UserRowView({model: _user})).render().el);
             });
+        },
+    });
+
+    var UserRowView = Backbone.View.extend({
+        tagName: "tr",
+        initialize: function() {
+            _.bindAll(this, "render");
+        },
+        render: function (){
+            this.$el.html(_.template($("#user-row-template").html(),this.model.attributes));
+            return this;
+        },
+        events: {"click .delete-user": "deleteUser"},
+        deleteUser: function (){
+            var del = confirm("Do you wish to delete the user: " + this.model.get("first_name") + " " 
+                                    + this.model.get("last_name"));
+            if (del){
+                this.model.destroy();
+            }
         }
+
     });
 
     var ProposalsView = Backbone.View.extend({

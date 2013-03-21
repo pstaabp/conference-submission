@@ -36,11 +36,14 @@ block container
 
 block templates
   script#user-row-template(type='text/template')
-    tr
-      td <%=first_name%>
-      td <%=last_name%>
-      td <%=major%>
-      td <%=role%>
+    td
+      .btn-group
+        button.btn.delete-user
+          i.icon-trash
+    td <%=first_name%>
+    td <%=last_name%>
+    td <%=major%>
+    td <%=role%>
       td <%=email%>
 
   script#proposal-row-template(type='text/template')
@@ -94,6 +97,7 @@ block templates
     table#user-table.table
       thead
         tr
+          td
           td First Name
           td Last Name
           td Major
@@ -140,4 +144,9 @@ block templates
     h3 3D Art
   script#videos-template(type="text/template")
     h3 Videos
-            
+
+  script#act-as-user-template(type="text/template")
+    a.btn.dropdown-toggle(data-toggle="dropdown",href="#") Act As User
+      span.caret
+    ul.dropdown-menu
+      <% _(users).each(function(user){ print('<li><a class="user-info" href="/conference-submission/admin/' + user.id + '"">' + user.name + '</a></li>')}) %>

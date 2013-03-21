@@ -80,6 +80,7 @@ app.configure(function(){
   app.use(flash());
   app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
   app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
+  app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
 });
 
 models.defineModels(mongoose, function() {
@@ -226,6 +227,16 @@ app.get('/conference-submission/users/new', function(req, res) {
    if (err) console.log(err);
     
     res.json(user.getPublicFields());
+  });
+});
+
+ app.del(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
+  User.findByIdAndRemove(req.params[0], function (err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json({delete: "successful"});
+    }
   });
 });
 
@@ -462,11 +473,42 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
     if (_user.role==="admin")
       res.render('admin/admin.jade');
     else
-      res.redirect("/"+_user.role);
+      res.redirect("/conference-submission/"+_user.role);
   });
   // check to make sure the user has the correct role. 
   res.render('admin/admin.jade');
-})
+});
+
+// Act as user view
+
+app.get(/^\/conference-submission\/admin\/(\w+)$/,loadUser, function(req,res){
+  User.findOne({_id: req.currentUser.id},function(err,_user) {
+    // first make sure the current user is an admin;
+    if (_user.role !=="admin") { res.redirect("/conference-submission/"+_user.role);}
+
+    var eff_user_id = req.params[0];
+
+    User.findOne({_id: eff_user_id}, function(err,eff_user){
+
+      console.log("The user is " + eff_user.first_name + " " + eff_user.last_name);
+      if (eff_user.role === "faculty"){
+        res.render('faculty.jade',{user: eff_user});
+      } else if (eff_user.role === "student") {
+        res.render("student.jade", {user: eff_user});
+      } else {
+        res.redirect('/conference-submission/admin');
+      }
+
+    });
+
+
+
+  });
+
+});
+
+
+
 
 app.get('/conference-submission/faculty', loadUser, function(req, res) {
     User.findOne({_id: req.currentUser.id},function(err,_user){

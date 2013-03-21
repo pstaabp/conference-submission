@@ -10,11 +10,11 @@ html
       div.navbar
         div.navbar-inner
           a.brand(href="#") Fitchburg State Undergraduate Conference Proposals
-          span.navbar-text.pull-right.span5
+          span.navbar-text.pull-right.span7
             - if (typeof(user)!=="undefined"){
               span.span2 Welcome #{user.first_name}   
             -}
-              
+            div.span2.btn-group.all-users#act-as-user(style="display: none")
             a.btn.span1#logout Log Out
             a.btn.span1#help-link Help
       #container
