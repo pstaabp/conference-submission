@@ -33,6 +33,8 @@ define(['Backbone', 'underscore'], function(Backbone, _){
 
             }
 
+            $(".submit-proposal-row").remove();
+
     	},
         events: {"click #save-info": "submit",
                  "change input": "update",
