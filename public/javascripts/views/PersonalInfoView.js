@@ -32,7 +32,7 @@ define(['Backbone', 'underscore'], function(Backbone, _){
                 this.$("#save-info").html("Edit Info");
 
             }
-            if(this.user.get("role") !== "student "){
+            if(this.user.get("role") !== "student"){
             $(".submit-proposal-row").remove();
         }
 
