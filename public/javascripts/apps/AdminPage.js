@@ -33,7 +33,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             this.constructor.__super__.initialize.apply(this, {el: this.el});
 
             _.bindAll(this, 'render','usersFetched','proposalsFetched','getProposals',
-                            'getOrals','getPosters', 'actAsUser');  // include all functions that need the this object
+                            'getOrals','getPosters', 'actAsUser','get2DArt','get3DArt','getVideos');  // include all functions that need the this object
             var self = this;
             
             this.proposals = new ProposalList();
@@ -105,13 +105,13 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
 
             this.views = {
                 usersView : new UsersView({collection: this.users, el: $("#users")}),
-                proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals"), template: "#proposals-template"}),
-                oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations"), template: "#orals-template"}),
-                postersView : new ProposalsView({parent: this, type: "posters", el: $("#posters"), template: "#posters-template"}),
+                proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals")}),
+                oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations")}),
+                postersView : new ProposalsView({parent: this, type: "posters", el: $("#posters")}),
                 scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
-                art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d"), template: "#art2d-template"}),
-                art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d"), template: "#art3d-template"}),
-                videosView : new ProposalsView({parent: this, type: "videos", el: $("#video"), template: "#videos-template"})
+                art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d")}),
+                art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
+                videosView : new ProposalsView({parent: this, type: "videos", el: $("#video")})
             }
 
 
@@ -126,7 +126,17 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         },
         getOrals: function () {
             return this.proposals.filter(function(prop){return prop.get("type")==="Oral Presentation"});
+        }, 
+        get2DArt: function(){
+            return this.proposals.filter(function(prop){return prop.get("type")==="2D Art"}); 
+        },
+        get3DArt: function(){
+            return this.proposals.filter(function(prop){return prop.get("type")==="2D Art"}); 
+        },
+        getVideos: function(){
+            return this.proposals.filter(function(prop){return prop.get("type")==="Video"}); 
         }
+
     });
 
     var UsersView = Backbone.View.extend({
@@ -135,7 +145,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             this.collection.on("remove",this.render);
         },
         render: function(){
-            this.$el.html(_.template($("#users-template").html()));
+            this.$el.html(_.template($("#users-template").html(),{numUsers: this.collection.size()}));
             var userTable = this.$("#user-table tbody");
             this.collection.each(function(_user){
                 userTable.append( (new UserRowView({model: _user})).render().el);
@@ -155,7 +165,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         events: {"click .delete-user": "deleteUser"},
         deleteUser: function (){
             var del = confirm("Do you wish to delete the user: " + this.model.get("first_name") + " " 
-                                    + this.model.get("last_name"));
+                                    + this.model.get("last_name") +"?");
             if (del){
                 this.model.destroy();
             }
@@ -166,22 +176,32 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
     var ProposalsView = Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, "render");
-            this.template = this.options.template;
+            this.template = $("#proposals-template").html();
             this.parent = this.options.parent;
             this.type = this.options.type;
-            this.getProposals = {"allProposals": this.parent.getProposals, "orals": this.parent.getOrals, 
-                "posters": this.parent.getPosters};
+            this.getProposals = {
+                "allProposals": this.parent.getProposals, "orals": this.parent.getOrals, 
+                "posters": this.parent.getPosters, "2dart": this.parent.get2DArt, "3dart": this.parent.get3DArt,
+                "videos": this.parent.getVideos
+            };
+
+            this.headers = {allProposals: "Proposals", orals: "Oral Presentations", posters: "Poster Presentations",
+                            "2dart": "Two-Dimensional Art", "3dart": "Three-Dimensional Art", videos: "Videos"};
+
+            this.parent.proposals.on("remove",this.render);
         },
         render: function(){
             var self = this;
-            this.$el.html(_.template($(this.template).html()));
-            _(this.getProposals[this.type].apply()).each(function(proposal){
-                self.$(".proposal-table > tbody").append((new ProposalView({model: proposal})).render().el);
+            var proposals = this.getProposals[this.type].apply();
+            this.$el.html(_.template(this.template,{propHeader: this.headers[this.type], number: proposals.length}));
+            _(proposals).each(function(proposal){
+                self.$(".proposal-table > tbody").append((new ProposalRowView({model: proposal})).render().el);
             });
         }
     });
 
-    var ProposalView = Backbone.View.extend({
+
+    var ProposalRowView = Backbone.View.extend({
         tagName: "tr",
         className: "proposal-row",
         initialize: function(){
@@ -202,6 +222,13 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             })
             return this;
         },
+        events: {"click .delete-proposal": "deleteProposal"},
+        deleteProposal: function(){
+            var del = confirm("Do you wish to delete the proposal " + this.model.get("title") +"?");
+            if(del){
+                this.model.destroy();
+            }
+        }
 
     });
 

@@ -66,6 +66,8 @@ block templates
             td.type <%=type%>
           tr
             td
+              button.btn.delete-proposal
+                i.icon-trash
             td
             td.header Sponsor Name
             td.header Sponsor Email
@@ -93,7 +95,10 @@ block templates
 
 
   script#users-template(type="text/template")
-    h3 Users
+    div.row
+      div.span4
+        h3 Users
+      div.span4.pull-right  total number of users: <%= numUsers %>
     table#user-table.table
       thead
         tr
@@ -105,22 +110,13 @@ block templates
           td Email
       tbody
   script#proposals-template(type="text/template")
-    h3 Proposals
+    div.row
+      div.span4
+        h3 <%= propHeader %>
+      div.span4.pull-right  total number: <%= number %>
     table#proposal-table-header.table.table-bordered.proposal-table
       tbody
       
-          
-
-  script#orals-template(type="text/template")
-    h3 Oral Presentations
-    table#oral-table-header.table.table-bordered.proposal-table
-      tbody    
-
-  script#posters-template(type="text/template")
-    h3 Poster Presentations
-    table#poster-table-header.table.table-bordered.proposal-table
-      tbody
-
 
   script#schedule-template(type="text/template")
     h3 Oral Presentation Schedule
@@ -137,13 +133,6 @@ block templates
     li.oral-present(id!='<%=cid%>')
       .title <%=title%>
       .author <%=author%>   
-
-  script#art2d-template(type="text/template")
-    h3 2D Art
-  script#art3d-template(type="text/template")
-    h3 3D Art
-  script#videos-template(type="text/template")
-    h3 Videos
 
   script#act-as-user-template(type="text/template")
     a.btn.dropdown-toggle(data-toggle="dropdown",href="#") Act As User

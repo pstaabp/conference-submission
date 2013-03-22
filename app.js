@@ -230,18 +230,24 @@ app.get('/conference-submission/users/new', function(req, res) {
   });
 });
 
- app.del(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
-  User.findByIdAndRemove(req.params[0], function (err, user) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.json({delete: "successful"});
+ app.del(/^\/conference-submission\/users\/(\w+)$/, loadUser, function (req,res){
+
+  User.findById(req.session.user_id, function(err, admin_user) {
+
+    if(admin_user.role!=="admin"){ 
+      res.json({deleted: false, message: "You do not have crendentials to do this."});
+      return;
     }
+
+    User.findByIdAndRemove(req.params[0], function (err, user) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json({deleted: true, message: "Successfully deleted user " + user.email});
+      }
+    });
   });
 });
-
-
-//app.post(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
 
 
 app.put(/^\/conference-submission\/users\/(\w+)$/, function (req,res){
@@ -458,12 +464,42 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
 });
 
 
+app.del(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,res){
+
+  User.findById(req.session.user_id, function(err, admin_user) {
+
+    if(admin_user.role!=="admin"){ 
+      res.json({deleted: false, message: "You do not have crendentials to do this."});
+      return;
+    }
+
+    Proposal.findByIdAndRemove(req.params[0], function (err, proposal) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json({deleted: true, message: "Successfully deleted proposal titled " + proposal.title});
+      }
+    });
+  });
+});
+
+
+
+
+
 app.get('/conference-submission/', loadUser, function(req, res) {
   console.log(" in get /conference-submission/");
 
    User.findOne({_id: req.currentUser.id},function(err,_user){
+
+    if(err){
+      res.redirect("/conference-submission/sessions/new");
+    }
+
     routeUser(req,_user);
+
   });
+
 });
 
 app.get('/conference-submission/admin',loadUser, function(req,res){
