@@ -111,7 +111,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
                 scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
                 art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d")}),
                 art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
-                videosView : new ProposalsView({parent: this, type: "videos", el: $("#video")})
+                videosView : new ProposalsView({parent: this, type: "videos", el: $("#video")}),
+                emailsView : new EmailsView({parent: this, el: $("#emails")})
             }
 
 
@@ -285,6 +286,21 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             })
         }
     });
+
+    var EmailsView = Backbone.View.extend({
+        initialize: function () {
+            _.bindAll(this,"render");
+            this.parent = this.options.parent;
+        },
+        render: function() {
+            var _allParticipants = this.parent.users.pluck("email");
+            var _oralPresenters = _(this.parent.getOrals()).map(function(pres){return pres.get("email");})
+            var _posterPresenters = _(this.parent.getPosters()).map(function(pres){return pres.get("email");})
+
+            this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
+                    oralPresenters: _oralPresenters, posterPresenters: _posterPresenters}));
+        }
+    })
 
     new AdminPage({el: $("#container")});
 });

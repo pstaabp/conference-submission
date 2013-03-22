@@ -21,6 +21,8 @@ block container
       a(href="#art-3d",data-toggle="tab",data-view="art3DView") 3D Art
     li
       a(href="#video",data-toggle="tab",data-view="videosView") Video
+    li
+      a(href="#emails",data-toggle="tab",data-view="emailsView") Emails
     
       
   .tab-content
@@ -32,6 +34,7 @@ block container
     .tab-pane#art-2d
     .tab-pane#art-3d
     .tab-pane#video
+    .tab-pane#emails
     
 
 block templates
@@ -128,6 +131,16 @@ block templates
         tr
       tbody
         tr
+  script#emails-template(type="text/template")
+    h3 
+      a(href!="mailto:<%=allParticipants%>") All Participants
+    p <%=allParticipants%>
+    h3
+      a(href!="mailto:<%=oralPresenters%>") Oral Participants
+    p <%=oralPresenters%>
+    h3
+      a(href!="mailto:<%=posterPresenters%>") Poster Participants
+    p <%=posterPresenters%>
 
   script#oral-presentation-template(type="text/template")
     li.oral-present(id!='<%=cid%>')
