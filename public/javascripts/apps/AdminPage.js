@@ -294,11 +294,16 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         },
         render: function() {
             var _allParticipants = this.parent.users.pluck("email");
-            var _oralPresenters = _(this.parent.getOrals()).map(function(pres){return pres.get("email");})
-            var _posterPresenters = _(this.parent.getPosters()).map(function(pres){return pres.get("email");})
+            var _oralPresenters = _.chain(this.parent.getOrals()).pluck("attributes").pluck("email").unique().value();
+            var _posterPresenters = _.chain(this.parent.getPosters()).pluck("attributes").pluck("email").unique().value();
+            var _missingNames = _(this.parent.users.filter(function(user) { return user.get("first_name")==="";}))
+                                    .chain().pluck("attributes").pluck("email").unique().value();
+            var _sponsors = _.chain(this.parent.getProposals()).pluck("attributes").pluck("sponsor_email").unique().value();
+
 
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
-                    oralPresenters: _oralPresenters, posterPresenters: _posterPresenters}));
+                    oralPresenters: _oralPresenters, posterPresenters: _posterPresenters,
+                    missingNames: _missingNames, sponsors: _sponsors}));
         }
     })
 

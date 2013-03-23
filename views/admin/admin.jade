@@ -141,6 +141,12 @@ block templates
     h3
       a(href!="mailto:<%=posterPresenters%>") Poster Participants
     p <%=posterPresenters%>
+    h3
+      a(href!="mailto:<%=missingNames%>") Missing Names
+    p <%=missingNames%>
+    h3
+      a(href!="mailto:<%=sponsors%>") Sponsors
+    p <%=sponsors%>
 
   script#oral-presentation-template(type="text/template")
     li.oral-present(id!='<%=cid%>')
