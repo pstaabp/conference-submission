@@ -8,6 +8,10 @@ block container
     li.active
       a(href="#users",data-toggle="tab",data-view="usersView") Users
     li
+      a(href="#students",data-toggle="tab",data-view="studentsView") Students
+    li
+      a(href="#sponsors",data-toggle="tab",data-view="sponsorsView") Sponsors
+    li
       a(href="#proposals",data-toggle="tab",data-view="proposalsView") Proposals
     li
       a(href="#oral-presentations",data-toggle="tab",data-view="oralsView") Oral 
@@ -27,6 +31,8 @@ block container
       
   .tab-content
     .tab-pane.active#users
+    .tab-pane#students
+    .tab-pane#sponsors
     .tab-pane#proposals
     .tab-pane#oral-presentations
     .tab-pane#posters
@@ -38,17 +44,6 @@ block container
     
 
 block templates
-  script#user-row-template(type='text/template')
-    td
-      .btn-group
-        button.btn.delete-user
-          i.icon-trash
-    td <%=first_name%>
-    td <%=last_name%>
-    td <%=major%>
-    td <%=role%>
-      td <%=email%>
-
   script#proposal-row-template(type='text/template')
     td
       table.table.table-bordered
@@ -102,16 +97,56 @@ block templates
       div.span4
         h3 Users
       div.span4.pull-right  total number of users: <%= numUsers %>
-    table#user-table.table
+    table.user-table.table
+      thead
+        tr
+          td
+          td First Name
+          td Last Name
+          td Role
+          td Email
+      tbody
+
+  script#user-row-template(type='text/template')
+    td
+      .btn-group
+        button.btn.delete-user
+          i.icon-trash
+    td <%=first_name%>
+    td <%=last_name%>
+    td <%=role%>
+    td <%=email%>
+
+  script#students-template(type="text/template")
+    div.row
+      div.span4
+        h3 Students
+      div.span4.pull-right  total number of users: <%= numUsers %>
+    table.user-table.table
       thead
         tr
           td
           td First Name
           td Last Name
           td Major
-          td Role
           td Email
+          td Proposals
       tbody
+
+  script#student-row-template(type='text/template')
+    td
+      .btn-group
+        button.btn.delete-user
+          i.icon-trash
+    td <%=first_name%>
+    td <%=last_name%>
+    td <%=major%>
+    td <%=email%>
+    td
+      ul
+        <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title)+"</a></li>")}); %>
+
+
   script#proposals-template(type="text/template")
     div.row
       div.span4

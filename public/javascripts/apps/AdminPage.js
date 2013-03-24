@@ -5,6 +5,7 @@ require.config({
         "backbone-validation":  "../vendor/backbone-validation",
         "underscore":           "../vendor/underscore",
         "jquery":               "../vendor/jquery",
+        "jquery-truncate":      "../vendor/jquery.truncate.min",
         "bootstrap":            "../vendor/bootstrap/js/bootstrap",
         "XDate":                "../vendor/xdate",
         "jquery-ui":            "../vendor/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min"
@@ -18,6 +19,7 @@ require.config({
         'bootstrap':['jquery'],
         'backbone-validation': ['Backbone'],
         'jquery-ui': ['jquery'],
+        'jquery-truncate': ['jquery'],
         'XDate':{ exports: 'XDate'}
     }
 });
@@ -25,7 +27,7 @@ require.config({
 require(['Backbone', 'underscore',
     '../models/UserList','../models/User','../models/ProposalList',
     '../models/Proposal','../views/EditableCell', '../views/WebPage',
-    './common','bootstrap','jquery-ui'],
+    './common','bootstrap','jquery-ui','jquery-truncate'],
 function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,common){
 
     var AdminPage = WebPage.extend({
@@ -104,8 +106,12 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             
 
             this.views = {
-                usersView : new UsersView({collection: this.users, el: $("#users")}),
-                proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals")}),
+                usersView : new UsersView({parent: this, type: "users", headerTemplate: "#users-template"
+                                    , rowTemplate: "#user-row-template", el: $("#users")}),
+                studentsView : new UsersView({parent: this, type: "students", el: $("#students"),
+                                    headerTemplate: "#students-template", rowTemplate: "#student-row-template"}),
+                sponsorsView : new UsersView({parent: this, type: "sponsors", el: $("#sponsors")}),
+                proposalsView : new UsersView({parent: this, type: "allProposals", el: $("#proposals")}),
                 oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations")}),
                 postersView : new ProposalsView({parent: this, type: "posters", el: $("#posters")}),
                 scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
@@ -143,13 +149,33 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
     var UsersView = Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, "render");
-            this.collection.on("remove",this.render);
+            this.parent = this.options.parent;
+            this.type= this.options.type;
+            this.headerTemplate = this.options.headerTemplate;
+            this.rowTemplate = this.options.rowTemplate;
+            this.parent.users.on("remove",this.render);
         },
         render: function(){
-            this.$el.html(_.template($("#users-template").html(),{numUsers: this.collection.size()}));
-            var userTable = this.$("#user-table tbody");
-            this.collection.each(function(_user){
-                userTable.append( (new UserRowView({model: _user})).render().el);
+            var self = this
+              , users;
+            switch(this.type){
+                case "users": 
+                    users = this.parent.users.models;
+                    break;
+                case "students":
+                    users = this.parent.users.filter(function(user) {return user.get("role")==="student"});
+                    
+                    break;
+                case "sponsors":
+                    users = this.parent.users.filter(function(user){return user.get("role")==="faculty"});
+                    break;
+            }
+
+            this.$el.html(_.template($(this.headerTemplate).html(),{numUsers: users.length}));
+            var userTable = this.$(".user-table tbody");
+            _(users).each(function(_user){
+                var props = self.parent.proposals.filter(function(proposal){ return proposal.get("email")===_user.get("email"); })
+                userTable.append( (new UserRowView({model: _user, template: self.rowTemplate, proposals: props})).render().el);
             });
         },
     });
@@ -158,9 +184,13 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         tagName: "tr",
         initialize: function() {
             _.bindAll(this, "render");
+            this.template = this.options.template;
+            this.proposals = this.options.proposals;
         },
         render: function (){
-            this.$el.html(_.template($("#user-row-template").html(),this.model.attributes));
+            var templateVars = {proposals: this.proposals};
+            _.extend(templateVars,this.model.attributes);
+            this.$el.html(_.template($(this.template).html(),templateVars));
             return this;
         },
         events: {"click .delete-user": "deleteUser"},
