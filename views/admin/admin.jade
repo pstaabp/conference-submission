@@ -41,6 +41,8 @@ block container
     .tab-pane#art-3d
     .tab-pane#video
     .tab-pane#emails
+
+  .proposal-modal
     
 
 block templates
@@ -144,7 +146,34 @@ block templates
     td <%=email%>
     td
       ul
-        <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title)+"</a></li>")}); %>
+        <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title?p.attributes.title:"None")+"</a></li>")}); %>
+
+  script#sponsors-template(type="text/template")
+    div.row
+      div.span4
+        h3 Students
+      div.span4.pull-right  total number of users: <%= numUsers %>
+    table.user-table.table
+      thead
+        tr
+          td
+          td First Name
+          td Last Name
+          td Email
+          td Proposals
+      tbody
+
+  script#sponsor-row-template(type='text/template')
+    td
+      .btn-group
+        button.btn.delete-user
+          i.icon-trash
+    td <%=first_name%>
+    td <%=last_name%>
+    td <%=email%>
+    td
+      ul
+        <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title?p.attributes.title:"None")+"</a></li>")}); %>
 
 
   script#proposals-template(type="text/template")
@@ -193,3 +222,28 @@ block templates
       span.caret
     ul.dropdown-menu
       <% _(users).each(function(user){ print('<li><a class="user-info" href="/conference-submission/admin/' + user.id + '"">' + user.name + '</a></li>')}) %>
+
+  script#proposal-view-modal(type="text/template")
+    .modal.hide.fade
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h3 <%=title%>
+      .modal-body 
+        table.table.table-bordered
+          thead
+            tr
+              th Sess.
+              th Main Author
+              th Presentation Type
+          tbody
+            tr
+              td <%=session%>
+              td <%=author%>
+              td <%=type %>
+            tr
+              td(colspan="3")
+                <%=content %>
+      .modal-footer
+        a.btn(href="#",data-dismiss="modal") Close
+
+

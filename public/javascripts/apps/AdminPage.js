@@ -110,8 +110,9 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
                                     , rowTemplate: "#user-row-template", el: $("#users")}),
                 studentsView : new UsersView({parent: this, type: "students", el: $("#students"),
                                     headerTemplate: "#students-template", rowTemplate: "#student-row-template"}),
-                sponsorsView : new UsersView({parent: this, type: "sponsors", el: $("#sponsors")}),
-                proposalsView : new UsersView({parent: this, type: "allProposals", el: $("#proposals")}),
+                sponsorsView : new UsersView({parent: this, type: "sponsors", el: $("#sponsors"),
+                                    headerTemplate: "#sponsors-template", rowTemplate: "#sponsor-row-template"}),
+                proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals")}),
                 oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations")}),
                 postersView : new ProposalsView({parent: this, type: "posters", el: $("#posters")}),
                 scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
@@ -174,10 +175,34 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             this.$el.html(_.template($(this.headerTemplate).html(),{numUsers: users.length}));
             var userTable = this.$(".user-table tbody");
             _(users).each(function(_user){
-                var props = self.parent.proposals.filter(function(proposal){ return proposal.get("email")===_user.get("email"); })
+                var props;
+                switch(self.type){
+                    case "users":
+                        props = []
+                        break;
+                    case "students":
+                        props = self.parent.proposals.filter(function(proposal){ return proposal.get("email")===_user.get("email"); });
+                        break;
+                    case "sponsors":
+                        props = self.parent.proposals.filter(function(proposal){ return proposal.get("sponsor_email")===_user.get("email"); });
+                        break;
+                    }
                 userTable.append( (new UserRowView({model: _user, template: self.rowTemplate, proposals: props})).render().el);
             });
+
+            this.$("a.showProposal").truncate()
         },
+        events: {"click a.showProposal": "showProposal"},
+        showProposal: function (evt){
+            var proposal = this.parent.proposals.get($(evt.target).data("id"));  
+            
+            $(".proposal-modal").html(_.template($("#proposal-view-modal").html(),proposal.attributes));
+            $(".proposal-modal .modal").modal(); 
+            $(".proposal-modal .modal").width($(window).width()*0.75);
+            $(".proposal-modal .modal").css("margin-left", -1*$(".proposal-modal .modal").width()/2 + "px");
+
+        }
+
     });
 
     var UserRowView = Backbone.View.extend({
