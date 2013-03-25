@@ -544,6 +544,10 @@ app.get(/^\/conference-submission\/admin\/(\w+)$/,loadUser, function(req,res){
 });
 
 
+app.get('/conference-submission/judges',function(req,res){
+  res.render('users/judges.jade');
+});
+
 
 
 app.get('/conference-submission/faculty', loadUser, function(req, res) {
