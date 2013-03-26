@@ -576,7 +576,7 @@ app.post("/conference-submission/judges",function(req,res){
                 }
               });
 
-              res.render("/conference-submission/users/judge-email.jade");
+              res.render("users/judge-email.jade");
             }
           });
 
