@@ -3,10 +3,146 @@ extends ../layout
 block container
   h2 Sign up for Judging the Conference
 
-  form
-    table
+  form(action='/conference-submission/judges',method='post')
+    table.span12.table
       tbody
         tr
-          td Name
-          td
+          td.span2 Name
+          td.span8
             input(type="text",name="name")
+        tr
+          td.span2 Email
+          td.span8
+            input(type="text",name="email")
+        tr
+          td.span2 I'm willing to judge
+          td.span8
+            label.radio.inline
+              input(type="radio",name="type",value="poster") 
+              | Poster Presentation
+            label.radio.inline
+              input(type="radio",name="type",value="oral") 
+              | Oral Presentation
+            label.radio.inline
+              input(type="radio",name="type",value="either") 
+              | Either
+        tr
+          td.span2 I'd like to judge any of the following types of projects
+          td.span8 
+            table
+              tbody
+                tr
+                  td 
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Biology]")
+                      | Biology
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Business_Administration]")
+                      | Business Administration
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Communications_Media]")
+                      | Communications Media
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Computer_Information_Systems]")
+                      | Computer Information Systems
+                tr
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Computer_Science]")
+                      | Computer Science
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Criminal_Justice]")
+                      | Criminal Justice
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Early_Childhood_Education]")
+                      | Early Childhood Education
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Earth_Systems_Science]")
+                      | Earth Systems Science
+                tr
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Economics]")
+                      | Economics
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Elementary_Education]")
+                      | Elementary Education
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[English_Studies]")
+                      | English Studies
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Exercise_and_Sports_Science]")
+                      | Exercise and Sports Science
+                tr
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Game_Design]")
+                      | Game Design
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Geography]")
+                      | Geography
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[History]")
+                      | History
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Human_Services]")
+                      | Human Services
+                tr
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Industrial_Technology]")
+                      | Industrial Technology
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Mathematics]")
+                      | Mathematics
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Middle_School_Education]")
+                      | Middle School Education
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Nursing]")
+                      | Nursing
+                tr
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Occupational_Vocational_Education]")
+                      | Occupational/Vocational Education
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Political_Science]")
+                      | Political Science
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Psychological_Science]")
+                      | Psychological Science
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Sociology]")
+                      | Sociology
+                tr
+                  td
+                    label.checkbox.inline
+                      input(type="checkbox",name="presentation[Technology_Education]")
+                      | Technology Education
+        tr
+          td
+            button.btn(type="submit") Submit             
+
+
+            
+
+

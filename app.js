@@ -21,14 +21,8 @@ var express = require('express')
   , User
   , Proposal
   , LoginToken
-  , Settings = { development: {}, test: {}, production: {} }
-  ;
-
-
-//var Schema = mongoose.Schema; 
-
-//require('./models/server/ProposalSchema.js').make(Schema, mongoose);
-//var User = require("./models/server/UserSchema.js").make(Schema,mongoose);
+  , Judge
+  , Settings = { development: {}, test: {}, production: {} };
 
 var app = express();
 
@@ -59,9 +53,6 @@ function mongoStoreConnectionArgs() {
 }
 
 
-// connect to Mongo when the app initializes
-//mongoose.connect('mongodb://localhost:27017/conf');
-//mongoose.set('debug',true);
 console.log("Connecting to mongodb, port 27017");
 
 mongoose.connection.on('error', function(err){console.log("err: " + err)});
@@ -87,6 +78,7 @@ models.defineModels(mongoose, function() {
   app.Proposal = Proposal = mongoose.model('Proposal');
   app.User = User = mongoose.model('User');
   app.LoginToken = LoginToken = mongoose.model('LoginToken');
+  app.Judge = Judge = mongoose.model('Judge');
   db = mongoose.connect(app.set('db-uri'));
 });
 
@@ -546,6 +538,60 @@ app.get(/^\/conference-submission\/admin\/(\w+)$/,loadUser, function(req,res){
 
 app.get('/conference-submission/judges',function(req,res){
   res.render('users/judges.jade');
+});
+
+app.post("/conference-submission/judges",function(req,res){
+  var pres = _und(req.body.presentation).keys();
+  var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.email, presentation: pres});
+  judge.save(function (err, _judge) {
+    if (err) {console.log(err);}
+
+
+      emailTemplates(templatesDir, function(err, template) {
+
+        if (err) {
+          console.log(err);
+        } else {
+
+//          var locals = {};
+  //        _und.extend(locals, _judge);
+           // Send a single email
+          template('judge', _judge, function(err, html, text) {
+            if (err) {
+              console.log(err);
+            } else {
+              smtpTransport.sendMail({
+                from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
+                subject: "Judging for FSU Conference", // Subject line
+                to: locals.email,
+                cc: "ugrad-conf@fitchburgstate.edu",
+                html: html,
+                // generateTextFromHTML: true,
+                text: text
+              }, function(err, responseStatus) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log(responseStatus.message);
+                }
+              });
+            }
+          });
+
+       
+
+
+
+        }
+      });
+
+
+
+
+
+
+    res.json(_judge);
+  });
 });
 
 

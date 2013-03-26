@@ -100,6 +100,21 @@ function defineModels(mongoose, fn) {
     return returnObject;
 };
 
+/** 
+ *  Model: Judge
+ *
+ * Used to store information on judges.
+ *
+ **/
+
+var Judge = new Schema({
+  name: String,
+  email: String,
+  type: String,
+  presentation: Array
+})
+
+
   /**
     * Model: LoginToken
     *
@@ -138,6 +153,7 @@ function defineModels(mongoose, fn) {
   mongoose.model('Proposal', Proposal);
   mongoose.model('User', User);
   mongoose.model('LoginToken', LoginToken);
+  mongoose.model('Judge',Judge);
 
   fn();
 }
