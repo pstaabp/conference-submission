@@ -144,7 +144,7 @@ block templates
     td <%=last_name%>
     td <%=major%>
     td 
-      a(href!="mailto:<%=email%") <%=email%>
+      a(href!="mailto:<%=email%>") <%=email%>
     td
       ul
         <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title?p.attributes.title:"None")+"</a></li>")}); %>

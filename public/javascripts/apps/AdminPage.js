@@ -172,6 +172,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
                     break;
             }
 
+            console.log(users);
+
             this.$el.html(_.template($(this.headerTemplate).html(),{numUsers: users.length}));
             var userTable = this.$(".user-table tbody");
             _(users).each(function(_user){
