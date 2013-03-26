@@ -61,7 +61,8 @@ block templates
             td
               input(type='checkbox',val='<%=accepted%>')
             td.session <%=session%>
-            td.author <%=author%>
+            td.author
+              a(href!="mailto:<%=email%>") <%=author%>
             td.title(colspan="2") <%=title%>
             td.type <%=type%>
           tr
