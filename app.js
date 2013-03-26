@@ -573,10 +573,11 @@ app.post("/conference-submission/judges",function(req,res){
                   console.log(err);
                 } else {
                   console.log(responseStatus.message);
+                  res.render("users/judge-email.jade");
                 }
               });
 
-              res.render("users/judge-email.jade");
+
             }
           });
 
@@ -592,7 +593,7 @@ app.post("/conference-submission/judges",function(req,res){
 
 
 
-    res.json(_judge);
+ //   res.json(_judge);
   });
 });
 
