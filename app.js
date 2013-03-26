@@ -563,7 +563,7 @@ app.post("/conference-submission/judges",function(req,res){
               smtpTransport.sendMail({
                 from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
                 subject: "Judging for FSU Conference", // Subject line
-                to: locals.email,
+                to: _judge.email,
                 cc: "ugrad-conf@fitchburgstate.edu",
                 html: html,
                 // generateTextFromHTML: true,
@@ -575,6 +575,8 @@ app.post("/conference-submission/judges",function(req,res){
                   console.log(responseStatus.message);
                 }
               });
+
+              res.render("/conference-submission/users/judge-email.jade");
             }
           });
 
