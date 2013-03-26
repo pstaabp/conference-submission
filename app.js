@@ -360,6 +360,8 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
       console.log(err);
     }
     
+
+    /*
     console.log("updated!!");
 
     // send email that a proposal was received. 
@@ -449,7 +451,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
 
 
     });
-  });
+  }); */
 
     res.json(prop);
   });
