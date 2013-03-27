@@ -261,7 +261,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         tagName: "tr",
         className: "proposal-row",
         initialize: function(){
-            _.bindAll(this,"render");
+            _.bindAll(this,"render","editContent");
 
         },
         render: function() {
@@ -278,12 +278,23 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             })
             return this;
         },
-        events: {"click .delete-proposal": "deleteProposal"},
+        events: {"click .delete-proposal": "deleteProposal",
+                 "dblclick .proposal-content": "editContent"},
         deleteProposal: function(){
             var del = confirm("Do you wish to delete the proposal " + this.model.get("title") +"?");
             if(del){
                 this.model.destroy();
             }
+        },
+        editContent: function(){
+            var self = this;
+            var content = this.$(".proposal-content").text();
+            this.$(".proposal-content").html("<textarea class='edit-content'>" + content + "</textarea>")
+                .on("change",function(){
+                    var newContent = self.$(".edit-content").val();
+                    self.model.set({content: newContent});
+                    self.model.save();
+                });
         }
 
     });

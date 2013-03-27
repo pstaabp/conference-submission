@@ -92,13 +92,13 @@ block templates
             td
             td <% print(use_human_subjects?"Yes":"No") %>
             td <% print(use_animal_subjects?"Yes":"No") %>
-            td <% var authors = other_authors || []; print(_(authors).pluck("name").join(", ")); %>
+            td(colspan="2") <% var authors = other_authors || []; print(_(authors).pluck("name").join(", ")); %>
           tr
             td
             td(colspan="6").header Proposal Text
           tr
             td
-            td(colspan="6") <%=content%>
+            td.proposal-content(colspan="6") <%=content%>
           tr
             td
             td(colspan="6").header Sponsor Statement
