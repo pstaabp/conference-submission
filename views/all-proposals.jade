@@ -1,16 +1,60 @@
-!!!
-html
-  body
-    h2 Hi
-  // 
-    table
-      tbody
-        each proposal in proposals
-          tr
-            td #{proposal.title}
+extends layout
 
-            extends layout
+block container
+  h2 All Proposals
 
-// 
-  block content
-    h2 All Proposals
+  table.table.table-bordered
+    tbody
+      each proposal in proposals
+        tr
+          td.header Title
+          td.header Author
+          td.header Type
+        tr
+          td #{proposal.title}
+          td #{proposal.author}
+          td #{proposal.type}
+        tr
+          td.header(colspan="3") Other Authors
+        tr
+          td(colspan="3")
+            - var authors = proposal.other_authors || []
+            for author in authors
+              | #{author.name},&nbsp;
+        tr
+          td.header Sponsor Name
+          td.header Sponsor Email
+          td.header Sponsor Dept
+        tr
+          td #{proposal.sponsor_name}
+          td #{proposal.sponsor_email}
+          td #{proposal.sponsor_dept}
+        tr
+          td.header Other Equipment?
+          td.header Human Subjects?
+          td.header Animal Subjects?
+        tr
+          td #{proposal.other_equipment}
+          td 
+            if proposal.use_human_subjects
+              | Yes
+            else
+              | No
+          td 
+            if proposal.use_animal_subjects
+              | Yes
+            else
+              | No
+        tr
+          td.header(colspan="3") Proposal
+        tr
+          td(colspan="3") #{proposal.content}
+        tr(style="background: lightgray")
+          td
+          td
+          td
+
+
+
+
+  

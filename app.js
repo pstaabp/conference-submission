@@ -486,12 +486,14 @@ app.del(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
 
 app.get("/conference-submission/views",function(req,res){
 
-  // var proposals = Proposal.find();
+  console.log("in /proposal-views");
 
-  console.log("in /views");
+  Proposal.find({}).exec(function(err,_proposals){
 
-  res.render('all-proposals.jade');
+    console.log(_proposals);
 
+    res.render('all-proposals.jade',{proposals: _proposals});
+  });
 
 });
 
