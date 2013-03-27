@@ -340,6 +340,8 @@ app.get("/conference-submission/proposals", loadUser, function(req,res){
   });
 });
 
+
+
 app.post("/conference-submission/proposals",function(req,res){
    console.log("in post /proposals");
    console.log(req.body);
@@ -360,6 +362,8 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
       console.log(err);
     }
     
+
+    /*
     console.log("updated!!");
 
     // send email that a proposal was received. 
@@ -449,7 +453,7 @@ app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
 
 
     });
-  });
+  }); */
 
     res.json(prop);
   });
@@ -475,7 +479,21 @@ app.del(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,r
   });
 });
 
+/***
+*   These are definitions of public views
+*
+*/
 
+app.get("/conference-submission/views",function(req,res){
+
+  // var proposals = Proposal.find();
+
+  console.log("in /views");
+
+  res.render('all-proposals.jade');
+
+
+});
 
 
 
