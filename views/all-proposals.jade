@@ -1,0 +1,16 @@
+!!!
+html
+  body
+    h2 Hi
+  // 
+    table
+      tbody
+        each proposal in proposals
+          tr
+            td #{proposal.title}
+
+            extends layout
+
+// 
+  block content
+    h2 All Proposals
