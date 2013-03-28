@@ -48,7 +48,7 @@ block container
 block templates
   script#proposal-row-template(type='text/template')
     td
-      table.table.table-bordered
+      table.table.table-bordered.not-accepted
         thead
           tr
             th Acc.
@@ -57,7 +57,7 @@ block templates
             th(colspan="2") Title
             th Presentation Type
         tbody
-          tr.not-accepted
+          tr
             td
               input(type='checkbox',val='<%=accepted%>')
             td.session <%=session%>

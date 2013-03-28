@@ -261,7 +261,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         tagName: "tr",
         className: "proposal-row",
         initialize: function(){
-            _.bindAll(this,"render");
+            _.bindAll(this,"render","deleteProposal","changeAcceptedStatus");
 
         },
         render: function() {
@@ -278,12 +278,17 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             })
             return this;
         },
-        events: {"click .delete-proposal": "deleteProposal"},
+        events: {"click .delete-proposal": "deleteProposal",
+                "change input[type='checkbox']": "changeAcceptedStatus"},
         deleteProposal: function(){
             var del = confirm("Do you wish to delete the proposal " + this.model.get("title") +"?");
             if(del){
                 this.model.destroy();
             }
+        },
+        changeAcceptedStatus: function(evt){
+            this.model.update({accepted: $(evt.target).prop("checked")});
+            this.model.save();
         }
 
     });
