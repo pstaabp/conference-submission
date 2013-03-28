@@ -261,7 +261,11 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
         tagName: "tr",
         className: "proposal-row",
         initialize: function(){
+<<<<<<< HEAD
             _.bindAll(this,"render","deleteProposal","changeAcceptedStatus");
+=======
+            _.bindAll(this,"render","editContent");
+>>>>>>> 8cc15c30c7bbe1a67d00fd1020e5130fae4b9ad2
 
         },
         render: function() {
@@ -279,13 +283,22 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             return this;
         },
         events: {"click .delete-proposal": "deleteProposal",
+<<<<<<< HEAD
+                "change input[type='checkbox']": "changeAcceptedStatus"},
+=======
                  "dblclick .proposal-content": "editContent"},
+>>>>>>> 8cc15c30c7bbe1a67d00fd1020e5130fae4b9ad2
         deleteProposal: function(){
             var del = confirm("Do you wish to delete the proposal " + this.model.get("title") +"?");
             if(del){
                 this.model.destroy();
             }
         },
+<<<<<<< HEAD
+        changeAcceptedStatus: function(evt){
+            this.model.update({accepted: $(evt.target).prop("checked")});
+            this.model.save();
+=======
         editContent: function(){
             var self = this;
             var content = this.$(".proposal-content").text();
@@ -295,6 +308,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
                     self.model.set({content: newContent});
                     self.model.save();
                 });
+>>>>>>> 8cc15c30c7bbe1a67d00fd1020e5130fae4b9ad2
         }
 
     });

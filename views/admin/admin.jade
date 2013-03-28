@@ -83,10 +83,22 @@ block templates
             td.submitted-date <%=date%> at <%=time%>
           tr
             td
+            td
+            td.header Use Human Subjects
+            td.header Use Animal Subjects
+            td.header(colspan="2") Other Authors
+          tr
+            td
+            td
+            td <% print(use_human_subjects?"Yes":"No") %>
+            td <% print(use_animal_subjects?"Yes":"No") %>
+            td(colspan="2") <% var authors = other_authors || []; print(_(authors).pluck("name").join(", ")); %>
+          tr
+            td
             td(colspan="6").header Proposal Text
           tr
             td
-            td(colspan="6") <%=content%>
+            td.proposal-content(colspan="6") <%=content%>
           tr
             td
             td(colspan="6").header Sponsor Statement
