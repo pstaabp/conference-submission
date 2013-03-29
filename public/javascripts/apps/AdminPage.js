@@ -382,17 +382,21 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             this.parent = this.options.parent;
         },
         render: function() {
-            var _allParticipants = this.parent.users.pluck("email");
-            var _oralPresenters = _.chain(this.parent.getOrals()).pluck("attributes").pluck("email").unique().value();
-            var _posterPresenters = _.chain(this.parent.getPosters()).pluck("attributes").pluck("email").unique().value();
+            var _allParticipants = this.parent.users.pluck("email").join(", ");
+            var _oralPresenters = _.chain(this.parent.getOrals()).pluck("attributes").pluck("email").unique().value().join(", ");
+            var _posterPresenters = _.chain(this.parent.getPosters()).pluck("attributes").pluck("email").unique().value().join(", ");
             var _missingNames = _(this.parent.users.filter(function(user) { return user.get("first_name")==="";}))
-                                    .chain().pluck("attributes").pluck("email").unique().value();
-            var _sponsors = _.chain(this.parent.getProposals()).pluck("attributes").pluck("sponsor_email").unique().value();
+                                    .chain().pluck("attributes").pluck("email").unique().value().join(", ");
+            var _sponsors = _.chain(this.parent.getProposals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+
+            var _missing_statments = _.chain(this.parent.getProposals()).filter(function(proposal){
+                                            return proposal.get("sponsor_statement")==="";
+                                        }).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
 
 
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
                     oralPresenters: _oralPresenters, posterPresenters: _posterPresenters,
-                    missingNames: _missingNames, sponsors: _sponsors}));
+                    missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments}));
         }
     })
 
