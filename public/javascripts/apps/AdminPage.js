@@ -330,17 +330,19 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
 
         },
         render: function (){
-            this.$el.html(_.template($("#schedule-template").html()));
-            var sessionNames = "ABCDEFGHIJKL"
+            var sessionNames = "ABCDEFGHIJKL";
+
+            this.$el.html(_.template($("#schedule-template").html(),{numSessions: 12 }));
             
-            var numCols = 6
+            
+/*            var numSessions = 12;
               , i =0; 
             var tableBody = this.$("#oral-present-table tbody tr");
             var tableHead = this.$("#oral-present-table thead tr");
             for(i=0;i< numCols; i++){
                 tableBody.append("<td><ul class='oral-present-col' id='col" + i + "'></ul></td>");
-                tableHead.append("<th>Session " + sessionNames.charAt(i) + "</td>");
-            }
+                tableHead.append("<th>Session " + sessionNames.charAt(i) + "</th>");
+            } */
 
            // var sortedProposals = _(this.proposals).sort(function(prop){ return prop.get("session")});
             var re = /OP-(\d)-(\d)/;
@@ -362,13 +364,14 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
                                 placeholder: "ui-state-highlight",
                                 receive: this.reorder});
 
+            this.$(".op-title").truncate();
 
         },
         reorder: function (){
             var self = this; 
             this.$("li").each(function(i,item){
                 var cid = $(item).attr("id")
-                var proposal = _(self.proposals).find(function(prop) { return prop.cid===cid;})
+                var proposal = self.parent.proposals.find(function(prop) { return prop.cid===cid;})
                 var list = parseInt($(item).parent().attr("id").split("col")[1]); 
                 proposal.set("session","OP-"+list + "-"+$(item).index());
                 proposal.save();

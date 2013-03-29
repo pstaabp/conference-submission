@@ -205,10 +205,10 @@ block templates
     ul.oral-present-col#extra-ops
 
     table#oral-present-table.table.table-bordered
-      thead
-        tr
       tbody
-        tr
+        <% sessionNames = "ABCDEFGHIJLKMN" %>
+        <% for(i=0;i<2;i++) {print("<tr>"); for(j=0;j<6;j++) {print("<td class='header'>Session " + sessionNames.charAt(6*i+j) + "</td>");} print("</tr>");print("<tr>"); for(j=0;j<6;j++) {print("<td class='oral-present-col' id='col" + (6*i+j) +"'></td>");} print("</tr>");}%>
+
   script#emails-template(type="text/template")
     h3 
       a(href!="mailto:<%=allParticipants%>") All Participants
@@ -231,8 +231,8 @@ block templates
 
   script#oral-presentation-template(type="text/template")
     li.oral-present(id!='<%=cid%>')
-      .title <%=title%>
-      .author <%=author%>   
+      .op-title <%=title%>
+      .op-author <%=author%>   
 
   script#act-as-user-template(type="text/template")
     a.btn.dropdown-toggle(data-toggle="dropdown",href="#") Act As User
