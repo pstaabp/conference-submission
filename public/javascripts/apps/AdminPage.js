@@ -26,9 +26,9 @@ require.config({
 
 require(['Backbone', 'underscore',
     '../models/UserList','../models/User','../models/ProposalList',
-    '../models/Proposal','../views/EditableCell', '../views/WebPage',
+    '../models/Proposal',"../models/Judge","../models/JudgeList",'../views/EditableCell', '../views/WebPage',
     './common','bootstrap','jquery-ui','jquery-truncate'],
-function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,common){
+function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,EditableCell,WebPage,common){
 
     var AdminPage = WebPage.extend({
         initialize: function () {
@@ -40,6 +40,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             
             this.proposals = new ProposalList();
             this.users = new UserList();
+            this.judges = new JudgeList();
             
             this.users.fetch({success: this.usersFetched});
             this.proposals.on("add",this.render);
@@ -100,9 +101,14 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             this.proposals.fetch({success: this.proposalsFetched});
 
         },
+        judgesFetched: function(collection, response, options) {
+            console.log("Judges Fetched");
+        },
         proposalsFetched: function(collection, response, options) {          
             
             console.log("proposalsFetched");
+
+            this.judges.fetch({success: this.judgesFetched});
             
 
             this.views = {
@@ -345,7 +351,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             } */
 
            // var sortedProposals = _(this.proposals).sort(function(prop){ return prop.get("session")});
-            var re = /OP-(\d)-(\d)/;
+            var re = /OP-(\d+)-(\d+)/;
 
             _(this.parent.getOrals()).each(function(prop){
                 var matches = prop.get("session").match(re);
@@ -395,11 +401,14 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,EditableCell,WebPage,c
             var _missing_statments = _.chain(this.parent.getProposals()).filter(function(proposal){
                                             return proposal.get("sponsor_statement")==="";
                                         }).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+            var _judges = _(this.parent.judges.pluck("email")).unique().join(", ");
 
 
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
                     oralPresenters: _oralPresenters, posterPresenters: _posterPresenters,
-                    missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments}));
+                    missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments,
+                    judges: _judges}));
+
         }
     })
 

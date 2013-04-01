@@ -36,4 +36,6 @@ label:hover {cursor: pointer};
 
 .op-author {font-style: italic;}
 
+.op-prop {width: 200px;}
+
 .not-accepted {background-color: pink;}

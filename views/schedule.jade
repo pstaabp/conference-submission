@@ -1,0 +1,41 @@
+extends layout
+
+block proprow
+  tr
+    td.header #{time}
+    each proposal in props
+      - var authors = proposal.author
+      - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+      td.op-prop 
+        
+        a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
+        span.op-author 
+          | #{authors}
+
+block container
+  h2 Oral Presentation Schedule
+
+  table.table.table-bordered
+    thead
+      tr
+        th Time
+        th Room A
+        th Room B
+        th Room C
+        th Room D
+        th Room E
+        th Room F
+    tbody
+      - var times = ["9:00-9:15","9:20-9:35","9:40-9:55","10:00-10:15","11:00-11:15","11:20-11:35","11:40-11:55","12:00-12:15"];
+      - for (var i = 0; i<8 ; i++) {
+      - var time = times[i];
+      -   var props =[];
+      -   for(var j = 0; j<6; j++) { props.push(proposals[6*i+j]); } 
+      block proprow
+      - }
+      
+      
+
+
+
+  

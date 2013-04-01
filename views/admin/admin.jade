@@ -206,7 +206,7 @@ block templates
 
     table#oral-present-table.table.table-bordered
       tbody
-        <% sessionNames = "ABCDEFGHIJLKMN" %>
+        <% sessionNames = "ABCDEFGHIJKL" %>
         <% for(i=0;i<2;i++) {print("<tr>"); for(j=0;j<6;j++) {print("<td class='header'>Session " + sessionNames.charAt(6*i+j) + "</td>");} print("</tr>");print("<tr>"); for(j=0;j<6;j++) {print("<td class='oral-present-col' id='col" + (6*i+j) +"'></td>");} print("</tr>");}%>
 
   script#emails-template(type="text/template")
@@ -228,6 +228,10 @@ block templates
     h3
       a(href!="mailto:<%=missing_statements%>") Missing Statements
     p <%=missing_statements%>
+    h3
+      a(href!="mailto:<%=judges%>") Judges
+    p <%=judges%>
+
 
   script#oral-presentation-template(type="text/template")
     li.oral-present(id!='<%=cid%>')
