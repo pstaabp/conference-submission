@@ -1,10 +1,14 @@
 extends iframe-layout
 
 block container
-  - var authors = proposal.author
-  - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+  - var authors;
+  - if(proposal) {
+  -    authors = proposal.author;
+  -    proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+  - }
 
   h3 #{proposal.title}
   h4 #{authors}
+  h4 Sponsor: #{proposal.sponsor_name}
 
   p #{proposal.content}
