@@ -4,8 +4,11 @@ block proprow
   tr
     td.header #{time}
     each proposal in props
-      - var authors = proposal.author
-      - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+      - var authors;
+      - if(proposal) {
+      -    authors = proposal.author;
+      -    proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+      - }
       td.op-prop 
         
         a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
