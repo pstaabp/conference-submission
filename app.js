@@ -515,7 +515,11 @@ app.get("/conference-submission/view-proposal",function(req,res){
   var session = req.query.session;
   console.log(session);
 
-  res.json({test: true});
+  Proposal.findOne({session: req.query.session}, function (err,_proposal){
+    if (err ) console.log(err);
+    console.log(_proposal);
+    res.render("show-proposal.jade", {proposal: _proposal});
+  });
 
 });
 

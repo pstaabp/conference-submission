@@ -1,0 +1,10 @@
+extends iframe-layout
+
+block container
+  - var authors = proposal.author
+  - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+
+  h3 #{proposal.title}
+  h4 #{authors}
+
+  p #{proposal.content}
