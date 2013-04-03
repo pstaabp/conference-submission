@@ -80,6 +80,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             var self = this; 
             $("#posters .poster-table").sortable({ 
                 axis: "y",
+                items: "tr.poster-row",
                 // handle: "tr.poster-row button",
                 update: function( event, ui ) {
                   console.log("I was sorted!!");
@@ -247,10 +248,25 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             var self = this;
             var proposals = this.options.parent.getPosters();
             this.$el.html($("#poster-table-template").html());
-            var posterTable = this.$(".poster-table");
+            var posterTable = this.$(".poster-table tbody");
             _(proposals).each(function(proposal){
-                posterTable.append(self.rowTemplate(proposal));
+                posterTable.append((new PosterRowView({model: proposal, parent: self})).render().el);
             })
+        }
+    });
+
+    var PosterRowView = Backbone.View.extend({
+        tagName: "tr",
+        className: "poster-row",
+        initialize: function (){
+            _.bindAll(this, "render");
+            this.parent=this.options.parent;
+            this.model.on("change:session",this.render);
+        },
+        render: function(){
+            this.$el.html(this.parent.rowTemplate(this.model.attributes));
+            this.$el.attr("id",this.model.cid);
+            return this;
         }
     });
 

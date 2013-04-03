@@ -277,14 +277,11 @@ block templates
           th Title
       tbody
 
-
   script#poster-row-template(type="text/template")
-    tr.poster-row(id!="<%=cid%>")
-      td
-        span
-          i.icon-resize-vertical
-      td <%=attributes.session%>
-      td <%=attributes.author%>
-      td <%=attributes.title%>     
-
+    td
+      span
+        i.icon-resize-vertical
+    td <%=session%>
+    td <%=author%>
+    td <%=title%>
 
