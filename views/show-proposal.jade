@@ -16,4 +16,7 @@ block container
   p #{proposal.content}
 
   div 
-    a(href="/conference-submission/schedule") Return to the FSU Conference Oral Presentation Schedule
+    if #{proposal.type} == "Oral Presentation"
+      a(href="/conference-submission/schedule") Return to the FSU Conference Oral Presentation Schedule
+    else
+      a(href="/conference-submission/posters") Return to the FSU Conference Poster Presentations
