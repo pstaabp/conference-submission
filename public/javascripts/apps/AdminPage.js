@@ -59,7 +59,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
         render: function () {
             this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
 
-            var userNames = this.users.map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
+            var userNames = _(this.users.sortBy(function(user) { return user.get("last_name");}))
+                        .map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
 
             $("#act-as-user").removeAttr("style").html(_($("#act-as-user-template").html()).template({users: userNames}));
 
@@ -340,22 +341,10 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
 
             this.$el.html(_.template($("#schedule-template").html(),{numSessions: 12 }));
             
-            
-/*            var numSessions = 12;
-              , i =0; 
-            var tableBody = this.$("#oral-present-table tbody tr");
-            var tableHead = this.$("#oral-present-table thead tr");
-            for(i=0;i< numCols; i++){
-                tableBody.append("<td><ul class='oral-present-col' id='col" + i + "'></ul></td>");
-                tableHead.append("<th>Session " + sessionNames.charAt(i) + "</th>");
-            } */
-
-           // var sortedProposals = _(this.proposals).sort(function(prop){ return prop.get("session")});
             var re = /OP-(\d+)-(\d+)/;
 
             _(this.parent.getOrals()).each(function(prop){
                 var matches = prop.get("session").match(re);
-                console.log(matches);
                 if(matches){
                     this.$("#col" + matches[1]).append(_.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid})));
                 } else {
