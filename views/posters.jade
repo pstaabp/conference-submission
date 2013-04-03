@@ -11,11 +11,13 @@ block container
         th Title
     tbody
       each proposal in proposals
+        - var authors = proposal.author;
+        - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
         tr
           td #{proposal.session}
-          td #{proposal.author}
-          td #{proposal.title}
-      
+          td #{authors}
+          td 
+            a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
       
 
 
