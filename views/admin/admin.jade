@@ -267,4 +267,24 @@ block templates
       .modal-footer
         a.btn(href="#",data-dismiss="modal") Close
 
+  script#poster-table-template(type="text/template")
+    table.poster-table.table
+      thead
+        tr
+          th
+          th number
+          th Author
+          th Title
+      tbody
+
+
+  script#poster-row-template(type="text/template")
+    tr.poster-row(id!="<%=cid%>")
+      td
+        span
+          i.icon-resize-vertical
+      td <%=attributes.session%>
+      td <%=attributes.author%>
+      td <%=attributes.title%>     
+
 

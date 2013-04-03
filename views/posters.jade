@@ -1,0 +1,23 @@
+extends iframe-layout
+
+block container
+  h2 Poster Presentations
+
+  table.table.table-bordered
+    thead
+      tr
+        th Poster #
+        th Author(s)
+        th Title
+    tbody
+      each proposal in proposals
+        tr
+          td #{proposal.session}
+          td #{proposal.author}
+          td #{proposal.title}
+      
+      
+
+
+
+  

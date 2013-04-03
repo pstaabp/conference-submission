@@ -78,14 +78,15 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
         },
         setSortable: function (){
             var self = this; 
-            console.log(self.$("#posters .proposal-row"));
-            $("#poster-table-header").sortable({ items: "tr.proposal-row",
+            $("#posters .poster-table").sortable({ 
+                axis: "y",
+                // handle: "tr.poster-row button",
                 update: function( event, ui ) {
                   console.log("I was sorted!!");
-                  self.$("#posters .proposal-row").each(function(i,prop){
+                  self.$("#posters .poster-row").each(function(i,prop){
                     var cid = $(prop).attr("id");
                     var updateProp = self.proposals.get(cid);
-                    var sess = "P" + ( (i<9)? "0"+(i+1): ""+i);
+                    var sess = "P" + ( (i<10)? "0"+(i+1): ""+i);
                     console.log(cid);
                     if (sess !== updateProp.get("session")){
 
@@ -121,7 +122,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                                     headerTemplate: "#sponsors-template", rowTemplate: "#sponsor-row-template"}),
                 proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals")}),
                 oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations")}),
-                postersView : new ProposalsView({parent: this, type: "posters", el: $("#posters")}),
+                postersView : new PostersView({parent: this, type: "posters", el: $("#posters")}),
                 scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
                 art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d")}),
                 art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
@@ -234,6 +235,23 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             }
         }
 
+    });
+
+    var PostersView = Backbone.View.extend({
+        initialize: function(){
+            _.bindAll(this, "render");
+            this.rowTemplate =  _.template($("#poster-row-template").html());
+            
+        },
+        render: function (){
+            var self = this;
+            var proposals = this.options.parent.getPosters();
+            this.$el.html($("#poster-table-template").html());
+            var posterTable = this.$(".poster-table");
+            _(proposals).each(function(proposal){
+                posterTable.append(self.rowTemplate(proposal));
+            })
+        }
     });
 
     var ProposalsView = Backbone.View.extend({

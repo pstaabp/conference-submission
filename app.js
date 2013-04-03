@@ -494,8 +494,8 @@ app.get("/conference-submission/views",function(req,res){
 
 app.get("/conference-submission/schedule",function(req,res){
 
-  console.log("in /schedule");
-  var sessionRE = /OP-(\d+)-(\d+)/
+//  var sessionRE = /OP-(\d+)-(\d+)/
+
 
   Proposal.find({type: "Oral Presentation"}).exec(function(err,_proposals){
     var props = [], row,col,session,theProp;
@@ -514,6 +514,12 @@ app.get("/conference-submission/schedule",function(req,res){
     res.render('schedule.jade',{proposals: props});
   });
 
+});
+
+app.get("/conference-submission/posters",function(req,res){
+  Proposal.find({type: "Poster Presentation"}).sort('session').exec(function(err,_proposals){
+    res.render('posters.jade',{proposals: _proposals});
+  });
 });
 
 
