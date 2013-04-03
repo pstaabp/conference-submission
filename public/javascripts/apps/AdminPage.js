@@ -86,7 +86,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                   self.$("#posters .poster-row").each(function(i,prop){
                     var cid = $(prop).attr("id");
                     var updateProp = self.proposals.get(cid);
-                    var sess = "P" + ( (i<10)? "0"+(i+1): ""+i);
+                    var sess = "P" + ( (i<9)? "0"+(i+1): ""+(i+1));
                     console.log(cid);
                     if (sess !== updateProp.get("session")){
 
