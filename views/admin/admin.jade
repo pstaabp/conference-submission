@@ -251,16 +251,23 @@ block templates
         h3 <%=title%>
       .modal-body 
         table.table.table-bordered
-          thead
-            tr
-              th Sess.
-              th Main Author
-              th Presentation Type
           tbody
+            tr
+              td.header Sess.
+              td.header Main Author
+              td.header Presentation Type
             tr
               td <%=session%>
               td <%=author%>
               td <%=type %>
+            tr
+              td.header Sponsor Name
+              td.header Sponsor Dept
+              td
+            tr
+              td <%=sponsor_name%>
+              td <%=sponsor_dept%>
+              td
             tr
               td(colspan="3")
                 <%=content %>
@@ -281,7 +288,8 @@ block templates
     td
       span
         i.icon-resize-vertical
-    td <%=session%>
-    td <%=author%>
-    td <%=title%>
+    td <%=attributes.session%>
+    td <%=attributes.author%>
+    td 
+      a.showProposal(href="#",data-id!="<%id%>") <%=attributes.title%>
 
