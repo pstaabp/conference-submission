@@ -441,13 +441,21 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                                             return proposal.get("sponsor_statement")==="";
                                         }).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
 
-            var _acceptedPapers = _.chain(this.parent.getProposals()).filter(function(proposal) { 
+            var _acceptedPosters = _.chain(this.parent.getPosters()).filter(function(proposal) { 
                     return proposal.get("accepted")===true;}).pluck("attributes").pluck("email").value();
 
 
-            var _acceptedPapersOther = _.chain(this.parent.getProposals()).filter(function(p){ 
+            var _acceptedPostersOther = _.chain(this.parent.getPosters()).filter(function(p){ 
                     return p.get("accepted")===true;}).pluck("attributes").pluck("other_authors")
-                            .flatten().pluck("email").union(_acceptedPapers).value().join(", ");
+                            .flatten().pluck("email").union(_acceptedPosters).value().join(", ");
+
+            var _acceptedOrals = _.chain(this.parent.getOrals()).filter(function(proposal) { 
+                    return proposal.get("accepted")===true;}).pluck("attributes").pluck("email").value();
+
+
+            var _acceptedOralsOther = _.chain(this.parent.getOrals()).filter(function(p){ 
+                    return p.get("accepted")===true;}).pluck("attributes").pluck("other_authors")
+                            .flatten().pluck("email").union(_acceptedOrals).value().join(", ");
 
 
             var _judges = _(this.parent.judges.pluck("email")).unique().join(", ");
@@ -456,7 +464,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
                     oralPresenters: _oralPresentersOther, posterPresenters: _posterPresentersOther,
                     missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments,
-                    acceptedPapers: _acceptedPapersOther, judges: _judges}));
+                    acceptedPosters: _acceptedPostersOther, acceptedOrals: _acceptedOralsOther, judges: _judges}));
 
         }
     })
