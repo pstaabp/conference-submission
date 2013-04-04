@@ -440,13 +440,23 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             var _missing_statments = _.chain(this.parent.getProposals()).filter(function(proposal){
                                             return proposal.get("sponsor_statement")==="";
                                         }).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+
+            var _acceptedPapers = _.chain(this.parent.getProposals()).filter(function(proposal) { 
+                    return proposal.get("accepted")===true;}).pluck("attributes").pluck("email").value();
+
+
+            var _acceptedPapersOther = _.chain(this.parent.getProposals()).filter(function(p){ 
+                    return p.get("accepted")===true;}).pluck("attributes").pluck("other_authors")
+                            .flatten().pluck("email").union(_acceptedPapers).value().join(", ");
+
+
             var _judges = _(this.parent.judges.pluck("email")).unique().join(", ");
 
 
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
                     oralPresenters: _oralPresentersOther, posterPresenters: _posterPresentersOther,
                     missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments,
-                    judges: _judges}));
+                    acceptedPapers: _acceptedPapersOther, judges: _judges}));
 
         }
     })
