@@ -229,6 +229,12 @@ block templates
       a(href!="mailto:<%=missing_statements%>") Missing Statements
     p <%=missing_statements%>
     h3
+      a(href!="mailto:<%=acceptedPosters%>") Accepted Posters
+    p <%=acceptedPosters%>
+    h3
+      a(href!="mailto:<%=acceptedOrals%>") Accepted Orals
+    p <%=acceptedOrals%>
+    h3
       a(href!="mailto:<%=judges%>") Judges
     p <%=judges%>
 
@@ -251,20 +257,45 @@ block templates
         h3 <%=title%>
       .modal-body 
         table.table.table-bordered
-          thead
-            tr
-              th Sess.
-              th Main Author
-              th Presentation Type
           tbody
+            tr
+              td.header Sess.
+              td.header Main Author
+              td.header Presentation Type
             tr
               td <%=session%>
               td <%=author%>
               td <%=type %>
+            tr
+              td.header Sponsor Name
+              td.header Sponsor Dept
+              td
+            tr
+              td <%=sponsor_name%>
+              td <%=sponsor_dept%>
+              td
             tr
               td(colspan="3")
                 <%=content %>
       .modal-footer
         a.btn(href="#",data-dismiss="modal") Close
 
+  script#poster-table-template(type="text/template")
+    table.poster-table.table
+      thead
+        tr
+          th
+          th number
+          th Author
+          th Title
+      tbody
+
+  script#poster-row-template(type="text/template")
+    td
+      span
+        i.icon-resize-vertical
+    td <%=attributes.session%>
+    td <%=attributes.author%>
+    td 
+      a.showProposal(href="#",data-id!="<%id%>") <%=attributes.title%>
 

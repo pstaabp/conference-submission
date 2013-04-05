@@ -1,0 +1,25 @@
+extends iframe-layout
+
+block container
+  h2 Poster Presentations
+
+  table.table.table-bordered
+    thead
+      tr
+        th Poster #
+        th Author(s)
+        th Title
+    tbody
+      each proposal in proposals
+        - var authors = proposal.author;
+        - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+        tr
+          td #{proposal.session}
+          td #{authors}
+          td 
+            a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
+      
+
+
+
+  

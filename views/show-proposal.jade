@@ -1,0 +1,22 @@
+extends iframe-layout
+
+block container
+
+  - var authors;
+  - if(proposal) {
+  -    authors = proposal.author;
+  -    proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+  - }
+
+
+  h3 #{proposal.title}
+  h4 Authors: #{authors}
+  h4 Sponsor: #{proposal.sponsor_name}
+
+  p #{proposal.content}
+
+  div 
+    if proposal.type == "Oral Presentation"
+      a(href="/conference-submission/schedule") Return to the FSU Conference Oral Presentation Schedule
+    else
+      a(href="/conference-submission/posters") Return to the FSU Conference Poster Presentations

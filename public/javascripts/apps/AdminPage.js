@@ -59,7 +59,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
         render: function () {
             this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
 
-            var userNames = this.users.map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
+            var userNames = _(this.users.sortBy(function(user) { return user.get("last_name");}))
+                        .map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
 
             $("#act-as-user").removeAttr("style").html(_($("#act-as-user-template").html()).template({users: userNames}));
 
@@ -77,14 +78,16 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
         },
         setSortable: function (){
             var self = this; 
-            console.log(self.$("#posters .proposal-row"));
-            $("#poster-table-header").sortable({ items: "tr.proposal-row",
+            $("#posters .poster-table").sortable({ 
+                axis: "y",
+                items: "tr.poster-row",
+                // handle: "tr.poster-row button",
                 update: function( event, ui ) {
                   console.log("I was sorted!!");
-                  self.$("#posters .proposal-row").each(function(i,prop){
+                  self.$("#posters .poster-row").each(function(i,prop){
                     var cid = $(prop).attr("id");
                     var updateProp = self.proposals.get(cid);
-                    var sess = "P" + ( (i<9)? "0"+(i+1): ""+i);
+                    var sess = "P" + ( (i<9)? "0"+(i+1): ""+(i+1));
                     console.log(cid);
                     if (sess !== updateProp.get("session")){
 
@@ -120,7 +123,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                                     headerTemplate: "#sponsors-template", rowTemplate: "#sponsor-row-template"}),
                 proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals")}),
                 oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations")}),
-                postersView : new ProposalsView({parent: this, type: "posters", el: $("#posters")}),
+                postersView : new PostersView({parent: this, type: "posters", el: $("#posters")}),
                 scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
                 art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d")}),
                 art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
@@ -235,6 +238,47 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
 
     });
 
+    var PostersView = Backbone.View.extend({
+        initialize: function(){
+            _.bindAll(this, "render");
+            this.rowTemplate =  _.template($("#poster-row-template").html());
+            
+        },
+        render: function (){
+            var self = this;
+            this.proposals = this.options.parent.getPosters();
+            this.$el.html($("#poster-table-template").html());
+            var posterTable = this.$(".poster-table tbody");
+            _(this.proposals).each(function(proposal){
+                posterTable.append((new PosterRowView({model: proposal, parent: self})).render().el);
+            })
+        }
+    });
+
+    var PosterRowView = Backbone.View.extend({
+        tagName: "tr",
+        className: "poster-row",
+        initialize: function (){
+            _.bindAll(this, "render","showProposal");
+            this.parent=this.options.parent;
+            this.model.on("change:session",this.render);
+        },
+        render: function(){
+            this.$el.html(this.parent.rowTemplate(this.model));
+            this.$el.attr("id",this.model.cid);
+            return this;
+        },
+        events: {"click a.showProposal": "showProposal"},
+        showProposal: function (evt){
+            $(".proposal-modal").html(_.template($("#proposal-view-modal").html(),this.model.attributes));
+            $(".proposal-modal .modal").modal(); 
+            $(".proposal-modal .modal").width($(window).width()*0.75);
+            $(".proposal-modal .modal").css("margin-left", -1*$(".proposal-modal .modal").width()/2 + "px");
+
+        }
+
+    });
+
     var ProposalsView = Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, "render");
@@ -340,22 +384,10 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
 
             this.$el.html(_.template($("#schedule-template").html(),{numSessions: 12 }));
             
-            
-/*            var numSessions = 12;
-              , i =0; 
-            var tableBody = this.$("#oral-present-table tbody tr");
-            var tableHead = this.$("#oral-present-table thead tr");
-            for(i=0;i< numCols; i++){
-                tableBody.append("<td><ul class='oral-present-col' id='col" + i + "'></ul></td>");
-                tableHead.append("<th>Session " + sessionNames.charAt(i) + "</th>");
-            } */
-
-           // var sortedProposals = _(this.proposals).sort(function(prop){ return prop.get("session")});
             var re = /OP-(\d+)-(\d+)/;
 
             _(this.parent.getOrals()).each(function(prop){
                 var matches = prop.get("session").match(re);
-                console.log(matches);
                 if(matches){
                     this.$("#col" + matches[1]).append(_.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid})));
                 } else {
@@ -391,9 +423,16 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             this.parent = this.options.parent;
         },
         render: function() {
-            var _allParticipants = this.parent.users.pluck("email").join(", ");
-            var _oralPresenters = _.chain(this.parent.getOrals()).pluck("attributes").pluck("email").unique().value().join(", ");
+            var _allUsers = this.parent.users.pluck("email");
+            var _otherAuthors = _.chain(this.parent.getProposals()).pluck("attributes").pluck("other_authors")
+                                    .flatten().pluck("email").value(); 
+            var _allParticipants = _.unique(_allUsers,_otherAuthors).join(", ");
+            var _oralPresenters = _.chain(this.parent.getOrals()).pluck("attributes").pluck("email").unique().value();
+            var _oralPresentersOther = _.chain(this.parent.getOrals()).pluck("attributes").pluck("other_authors")
+                                            .flatten().pluck("email").union(_oralPresenters).value().join(", ");
             var _posterPresenters = _.chain(this.parent.getPosters()).pluck("attributes").pluck("email").unique().value().join(", ");
+            var _posterPresentersOther = _.chain(this.parent.getOrals()).pluck("attributes").pluck("other_authors")
+                                            .flatten().pluck("email").union(_posterPresenters).value();
             var _missingNames = _(this.parent.users.filter(function(user) { return user.get("first_name")==="";}))
                                     .chain().pluck("attributes").pluck("email").unique().value().join(", ");
             var _sponsors = _.chain(this.parent.getProposals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
@@ -401,13 +440,31 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             var _missing_statments = _.chain(this.parent.getProposals()).filter(function(proposal){
                                             return proposal.get("sponsor_statement")==="";
                                         }).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+
+            var _acceptedPosters = _.chain(this.parent.getPosters()).filter(function(proposal) { 
+                    return proposal.get("accepted")===true;}).pluck("attributes").pluck("email").value();
+
+
+            var _acceptedPostersOther = _.chain(this.parent.getPosters()).filter(function(p){ 
+                    return p.get("accepted")===true;}).pluck("attributes").pluck("other_authors")
+                            .flatten().pluck("email").union(_acceptedPosters).value().join(", ");
+
+            var _acceptedOrals = _.chain(this.parent.getOrals()).filter(function(proposal) { 
+                    return proposal.get("accepted")===true;}).pluck("attributes").pluck("email").value();
+
+
+            var _acceptedOralsOther = _.chain(this.parent.getOrals()).filter(function(p){ 
+                    return p.get("accepted")===true;}).pluck("attributes").pluck("other_authors")
+                            .flatten().pluck("email").union(_acceptedOrals).value().join(", ");
+
+
             var _judges = _(this.parent.judges.pluck("email")).unique().join(", ");
 
 
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
-                    oralPresenters: _oralPresenters, posterPresenters: _posterPresenters,
+                    oralPresenters: _oralPresentersOther, posterPresenters: _posterPresentersOther,
                     missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments,
-                    judges: _judges}));
+                    acceptedPosters: _acceptedPostersOther, acceptedOrals: _acceptedOralsOther, judges: _judges}));
 
         }
     })

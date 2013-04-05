@@ -494,20 +494,32 @@ app.get("/conference-submission/views",function(req,res){
 
 app.get("/conference-submission/schedule",function(req,res){
 
-  console.log("in /schedule");
+//  var sessionRE = /OP-(\d+)-(\d+)/
+
 
   Proposal.find({type: "Oral Presentation"}).exec(function(err,_proposals){
-
-    var props = _und(_proposals).sortBy(function(p) {
-                                  var sess = p.session.split("-"); 
-                                  return parseInt(sess[2])*12+((parseInt(sess[1])<6)?parseInt(sess[1]):parseInt(sess[1])+100)
-                                });
-    console.log(_und(props).pluck("session"));
-
+    var props = [], row,col,session,theProp;
+    for(k=0;k<2;k++){
+      for(row=0;row<5;row++){
+        for(col=0; col<6; col++){
+          session = 6*k+col;
+          theProp = _und.find(_proposals,function(proposal){ return proposal.session === "OP-" + session + "-" + row});
+          var sess = (theProp)? theProp.session: "none";
+          console.log(sess);
+          props.push(theProp);
+        }
+      }
+    }
 
     res.render('schedule.jade',{proposals: props});
   });
 
+});
+
+app.get("/conference-submission/posters",function(req,res){
+  Proposal.find({type: "Poster Presentation"}).sort('session').exec(function(err,_proposals){
+    res.render('posters.jade',{proposals: _proposals});
+  });
 });
 
 
@@ -515,7 +527,11 @@ app.get("/conference-submission/view-proposal",function(req,res){
   var session = req.query.session;
   console.log(session);
 
-  res.json({test: true});
+  Proposal.findOne({session: req.query.session}, function (err,_proposal){
+    if (err ) console.log(err);
+    console.log(_proposal);
+    res.render("show-proposal.jade", {proposal: _proposal});
+  });
 
 });
 
