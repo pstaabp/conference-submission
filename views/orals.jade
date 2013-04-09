@@ -7,7 +7,7 @@ block container
     thead
       tr
         th Time
-        th Session
+        //th Session
         th Author(s)
         th Title
         th Room
@@ -17,7 +17,7 @@ block container
         - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
         tr
           td #{proposal.time}
-          td #{proposal.session}
+          //td #{proposal.session}
           td #{authors}
           td 
             a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
