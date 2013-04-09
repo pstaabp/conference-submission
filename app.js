@@ -539,7 +539,7 @@ app.get("/conference-submission/orals",function(req,res){
   Proposal.find({type: "Oral Presentation"}).sort("session").exec(function(err,_proposals){
 
     var rooms = ["Hammond 214","Hammond 314","Alumni A", "Alumni C", "Hammond G19", "CTL"];
-    var times = ["9:00-9:15","9:20-9:35","9:40-9:55","10:00-10:15","10:20-10:35","11:00-11:15","11:20-11:35","11:40-11:55","12:00-12:15","12:20-12:35"]
+    var times = ["9:00-9:15","9:20-9:35","9:40-9:55","10:00-10:15","11:00-11:15","11:20-11:35","11:40-11:55","12:00-12:15","12:20-12:35"]
 
     var props = [], row,col,session,theProp;
     for(k=0;k<2;k++){
