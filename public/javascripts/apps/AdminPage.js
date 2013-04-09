@@ -128,6 +128,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                 art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d")}),
                 art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
                 videosView : new ProposalsView({parent: this, type: "videos", el: $("#video")}),
+                judgesView : new JudgesView({parent: this, el: $("#judges")}),
                 emailsView : new EmailsView({parent: this, el: $("#emails")})
             }
 
@@ -416,6 +417,42 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             })
         }
     });
+
+    var JudgesView = Backbone.View.extend({
+        initialize: function () {
+            _.bindAll(this,"render");
+            this.parent = this.options.parent;
+            this.rowTemplate = _.template($("#judges-row-template").html());
+            this.parent.judges.on("remove", this.render);
+        },
+        render: function() {
+            var self = this; 
+            this.$el.html($("#judges-table-template").html());
+            var judgesTable = this.$(".judges-table tbody");
+            this.parent.judges.each(function(judge){
+                judgesTable.append((new JudgesRowView({model: judge, rowTemplate: self.rowTemplate})).render().el);
+            })
+        }
+    });
+
+    var JudgesRowView = Backbone.View.extend({
+        tagName: "tr",
+        initialize: function () {
+            _.bindAll(this,"render");
+            this.rowTemplate = this.options.rowTemplate;
+        },
+        render: function() {
+            this.$el.html(this.rowTemplate(this.model.attributes));
+            return this;
+        },
+        events: {"click .delete-judge": "deleteJudge"},
+        deleteJudge: function() { 
+            var del = confirm("Do you want to delete the judge " + this.model.get("name") + "?");
+            if(del){
+               this.model.destroy();
+           }
+       }
+    })
 
     var EmailsView = Backbone.View.extend({
         initialize: function () {
