@@ -550,7 +550,7 @@ app.get("/conference-submission/orals",function(req,res){
           var sess = (theProp)? theProp.session: "none";
           if(theProp) {
             theProp.room = rooms[col];
-            theProp.time = times[6*k+row];
+            theProp.time = times[4*k+row];
             props.push(theProp);
             
           }
