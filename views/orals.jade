@@ -6,19 +6,23 @@ block container
   table.table.table-bordered
     thead
       tr
-        th Session
+        th Time
+        //th Session
         th Author(s)
         th Title
+        th Room
     tbody
       each proposal in proposals
         - var authors = proposal.author;
         - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
         tr
-          td #{proposal.session}
+          td #{proposal.time}
+          //td #{proposal.session}
           td #{authors}
           td 
             a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
-      
+          td #{proposal.room}
+
 
 
 

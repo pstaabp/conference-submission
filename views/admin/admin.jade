@@ -26,6 +26,8 @@ block container
     li
       a(href="#video",data-toggle="tab",data-view="videosView") Video
     li
+      a(href="#judges",data-toggle="tab",data-view="judgesView") Judges
+    li
       a(href="#emails",data-toggle="tab",data-view="emailsView") Emails
     
       
@@ -40,6 +42,7 @@ block container
     .tab-pane#art-2d
     .tab-pane#art-3d
     .tab-pane#video
+    .tab-pane#judges
     .tab-pane#emails
 
   .proposal-modal
@@ -306,4 +309,22 @@ block templates
     td <%=attributes.author%>
     td 
       a.showProposal(href="#",data-id!="<%id%>") <%=attributes.title%>
+
+  script#judges-table-template(type="text/template")
+    table.judges-table.table
+      thead
+        tr
+          th
+          th Name
+          th Email
+          th Fields
+      tbody
+
+  script#judges-row-template(type="text/template")
+    td
+      span.btn.delete-judge
+        i.icon-trash
+    td <%= name %>
+    td <%= email %>
+    td <%= presentation %> 
 
