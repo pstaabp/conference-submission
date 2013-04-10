@@ -431,8 +431,12 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             var _oralPresentersOther = _.chain(this.parent.getOrals()).pluck("attributes").pluck("other_authors")
                                             .flatten().pluck("email").union(_oralPresenters).value().join(", ");
             var _posterPresenters = _.chain(this.parent.getPosters()).pluck("attributes").pluck("email").unique().value().join(", ");
-            var _posterPresentersOther = _.chain(this.parent.getOrals()).pluck("attributes").pluck("other_authors")
+            var _posterPresentersOther = _.chain(this.parent.getPosters()).pluck("attributes").pluck("other_authors")
                                             .flatten().pluck("email").union(_posterPresenters).value();
+
+            var _oralSponsors = _.chain(this.parent.getOrals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+            var _posterSponsors = _.chain(this.parent.getOrals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+
             var _missingNames = _(this.parent.users.filter(function(user) { return user.get("first_name")==="";}))
                                     .chain().pluck("attributes").pluck("email").unique().value().join(", ");
             var _sponsors = _.chain(this.parent.getProposals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
@@ -464,7 +468,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             this.$el.html(_.template($("#emails-template").html(),{allParticipants: _allParticipants,
                     oralPresenters: _oralPresentersOther, posterPresenters: _posterPresentersOther,
                     missingNames: _missingNames, sponsors: _sponsors, missing_statements: _missing_statments,
-                    acceptedPosters: _acceptedPostersOther, acceptedOrals: _acceptedOralsOther, judges: _judges}));
+                    acceptedPosters: _acceptedPostersOther, acceptedOrals: _acceptedOralsOther, judges: _judges,
+                    oralSponsors: _oralSponsors, posterSponsors: _posterSponsors}));
 
         }
     })
