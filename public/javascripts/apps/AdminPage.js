@@ -472,7 +472,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                                             .flatten().pluck("email").union(_posterPresenters).value();
 
             var _oralSponsors = _.chain(this.parent.getOrals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
-            var _posterSponsors = _.chain(this.parent.getOrals()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
+            var _posterSponsors = _.chain(this.parent.getPosters()).pluck("attributes").pluck("sponsor_email").unique().value().join(", ");
 
             var _missingNames = _(this.parent.users.filter(function(user) { return user.get("first_name")==="";}))
                                     .chain().pluck("attributes").pluck("email").unique().value().join(", ");
