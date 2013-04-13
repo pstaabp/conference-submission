@@ -399,9 +399,9 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             });
 
             $(".oral-present-col").sortable({ 
-                connectWith: ".oral-present-col", 
-                                placeholder: "ui-state-highlight",
-                                receive: this.reorder});
+                    connectWith: ".oral-present-col", 
+                    placeholder: "ui-state-highlight",
+                    stop: this.reorder});
 
             this.$(".op-title").truncate();
 

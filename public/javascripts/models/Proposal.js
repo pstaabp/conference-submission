@@ -8,13 +8,16 @@ define(['Backbone', 'underscore'], function(Backbone, _){
 
     var Proposal = Backbone.Model.extend({
         defaults: {
-            author: "",
+            author: "",  // change this to main_author:  Author   then get rid of email field below. 
             email: "",
             session: "",
             other_authors: [],
+            // A better way to do this is  other_authors: AuthorList which is a collection of Authors.  
             sponsor_email:"",
             sponsor_name:"",
             sponsor_dept:"",
+
+            // perhaps also make the sponsor information its own model as well.  
             type: "",
             title: "",
             accepted: false,
