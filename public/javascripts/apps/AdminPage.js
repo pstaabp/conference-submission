@@ -471,14 +471,26 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
         events: {"change input[name='jsview']": "render"},
         showOrals: function (){
             var self = this;
+
+            // Need to empty all of the ul's in the table. 
+
+            this.$("ul").html("");
+
             var template = _.template($("#judges-schedule-row-template").html());
             var judgeListCell = this.$("#judge-list-oral"); 
             var judges = this.parent.judges.filter(function(judge){ return (judge.get("type")==="oral") || (judge.get("type")==="either"); });
+
+            var sessionNames = "ABCDEFGHIJKL";
 
             _(judges).each(function(judge){  
                 var obj = {};
                 _.extend(obj,judge.attributes,{cid: judge.cid});
                 judgeListCell.append(template(obj));
+                for(var i =0; i<sessionNames.length;i++){
+                    if (_(judge.get("session")).contains(sessionNames[i])) {
+                        self.$("#"+sessionNames[i]+ " ul").append(template(obj));
+                    }
+                }
             });
 
             this.$(".judge-popover").popover().draggable({revert: true});
@@ -487,10 +499,11 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                 drop: function( event, ui ) {  
                     console.log("dropped"); 
                     $(event.target).children("ul").append("<li>" + $(ui.draggable).text() + "</li>");
-                    $(ui.draggable).remove();
-                    var cid = $(ui.draggable).attr("id");
-                    var judge = self.parent.judges.get(cid);
-                    judge.set({session: judge.get("session").push($(event.ui).attr("id"))});
+                    $(ui.draggable).remove();  // remove the dragged item from the list it came from 
+                    var judge = self.parent.judges.get($(ui.draggable).attr("id"));
+                    var _sessions = judge.get("session");
+                    _sessions.push($(event.target).attr("id"));
+                    judge.set({session: _sessions});
                     judge.save();
                 }
             });

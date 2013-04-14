@@ -11,7 +11,8 @@ define(['Backbone', 'underscore'], function(Backbone, _){
             name: "",
             email: "",
             type: "",
-            presentation: []
+            presentation: [],
+            session: []
         },
         idAttribute: "_id",
         initialize:function () {

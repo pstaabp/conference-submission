@@ -1,7 +1,7 @@
 define(['Backbone', 'underscore','./Judge'], function(Backbone, _,Judge){
     /**
      *
-     * This defines a User
+     * This defines a Judge
      * 
      * @type {*}
      */
@@ -12,10 +12,10 @@ define(['Backbone', 'underscore','./Judge'], function(Backbone, _,Judge){
     
         },
         url: '/conference-submission/judges',
-        parse: function (response){
+        /*parse: function (response){
             console.log(response);
             return response;
-        }
+        } */
     });
 
     return JudgeList;
