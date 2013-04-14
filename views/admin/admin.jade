@@ -28,6 +28,8 @@ block container
     li
       a(href="#judges",data-toggle="tab",data-view="judgesView") Judges
     li
+      a(href="#judge-schedule",data-toggle="tab",data-view="judgeScheduleView") Judge Schedule
+    li
       a(href="#emails",data-toggle="tab",data-view="emailsView") Emails
     
       
@@ -43,7 +45,73 @@ block container
     .tab-pane#art-3d
     .tab-pane#video
     .tab-pane#judges
+    .tab-pane#judge-schedule
+      label.radio.inline
+        input(type="radio",name="jsview",value="orals",checked)
+        | View Oral Presentations
+      label.radio.inline
+        input(type="radio",name="jsview",value="posters")
+        | View Poster Presentations
+      div.orals
+        table.table.table-bordered
+          thead
+            tr
+              th Judge
+              th Session A
+              th Session B
+              th Session C
+              th Session D
+              th Session E
+              th Session F
+          tbody
+            tr
+              td(rowspan="3")
+                ul#judge-list-oral
+              td.session#A
+                ul
+              td.session#B
+                ul
+              td.session#C
+                ul
+              td.session#D
+                ul
+              td.session#E
+                ul
+              td.session#F
+                ul
+            tr
+              td.header Session G
+              td.header Session H
+              td.header Session I
+              td.header Session J
+              td.header Session K
+              td.header Session L
+            tr
+              td.session#G
+                ul
+              td.session#H
+                ul
+              td.session#I
+                ul
+              td.session#J
+                ul
+              td.session#K
+                ul
+              td.session#L
+                ul
+      div.posters
+        table.table.table-bordered
+          thead
+            tr
+              th All Judges
+              th Poster Title
+              th Author
+              th Judges
+          tbody
+            tr
+              td.judge-list-poster
     .tab-pane#emails
+
 
   .proposal-modal
     
@@ -308,7 +376,7 @@ block templates
     td <%=attributes.session%>
     td <%=attributes.author%>
     td 
-      a.showProposal(href="#",data-id!="<%id%>") <%=attributes.title%>
+      a.showProposal(href="#",data-id!="<%=id%>") <%=attributes.title%>
 
   script#judges-table-template(type="text/template")
     table.judges-table.table
@@ -317,6 +385,7 @@ block templates
           th
           th Name
           th Email
+          th Type
           th Fields
       tbody
 
@@ -326,5 +395,11 @@ block templates
         i.icon-trash
     td <%= name %>
     td <%= email %>
+    td <%= type %>
     td <%= presentation %> 
+
+  script#judges-schedule-row-template(type="text/template")
+    li 
+      <%var pres = presentation.join(", "); %>
+      span.judge-popover(data-content!="<%=pres%>",id!="<%=cid%>") <%=name %>
 

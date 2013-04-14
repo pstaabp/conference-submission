@@ -129,6 +129,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                 art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
                 videosView : new ProposalsView({parent: this, type: "videos", el: $("#video")}),
                 judgesView : new JudgesView({parent: this, el: $("#judges")}),
+                judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
                 emailsView : new EmailsView({parent: this, el: $("#emails")})
             }
 
@@ -452,6 +453,48 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                this.model.destroy();
            }
        }
+    });
+
+    var JudgeScheduleView = Backbone.View.extend({
+        initialize: function(){
+            _.bindAll(this,"render");
+            this.parent = this.options.parent;
+        },
+        render: function () {
+            this.$(".posters,.orals").css("display","none");
+            var viewType =  $("input[name='jsview']:checked").val();
+            this.$("."+viewType).css("display","block");
+
+            if(viewType==="orals") {this.showOrals();}
+            else if (viewType==="posters"){this.showPosters();}
+        },
+        events: {"change input[name='jsview']": "render"},
+        showOrals: function (){
+            var self = this;
+            var template = _.template($("#judges-schedule-row-template").html());
+            var judgeListCell = this.$("#judge-list-oral"); 
+            var judges = this.parent.judges.filter(function(judge){ return (judge.get("type")==="oral") || (judge.get("type")==="either"); });
+
+            _(judges).each(function(judge){  
+                var obj = {};
+                _.extend(obj,judge.attributes,{cid: judge.cid});
+                judgeListCell.append(template(obj));
+            });
+
+            this.$(".judge-popover").popover().draggable({revert: true});
+            this.$(".session").droppable({
+                hoverClass: "ui-session-highlight",
+                drop: function( event, ui ) {  
+                    console.log("dropped"); 
+                    $(event.target).children("ul").append("<li>" + $(ui.draggable).text() + "</li>");
+                    $(ui.draggable).remove();
+                    var cid = $(ui.draggable).attr("id");
+                    var judge = self.parent.judges.get(cid);
+                    judge.set({session: judge.get("session").push($(event.ui).attr("id"))});
+                    judge.save();
+                }
+            });
+        }
     })
 
     var EmailsView = Backbone.View.extend({

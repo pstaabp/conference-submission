@@ -27,7 +27,11 @@ label:hover {cursor: pointer};
 
 .ui-state-highlight { border: 1px dashed black; width: 120px; height: 100px; float: left; background-color: lightgray;}
 
+.ui-session-highlight {background-color: pink}
+
 #extra-ops {height: auto;}
+
+#judge-list-oral {list-style: none}
 
 
 .title {font: italic;}

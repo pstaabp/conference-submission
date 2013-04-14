@@ -111,6 +111,7 @@ var Judge = new Schema({
   name: String,
   email: String,
   type: String,
+  session: Array,
   presentation: Array
 })
 

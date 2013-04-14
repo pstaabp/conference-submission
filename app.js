@@ -636,7 +636,7 @@ app.get('/conference-submission/judges',function(req,res){
 
 app.post("/conference-submission/judges",function(req,res){
   var pres = _und(req.body.presentation).keys();
-  var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.email, presentation: pres});
+  var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.type, presentation: pres});
   judge.save(function (err, _judge) {
     if (err) {console.log(err);}
 
@@ -711,6 +711,15 @@ app.post("/conference-submission/judges",function(req,res){
   });
 });
 
+app.put("/conference-submission/judges/:id",loadUser,function(req,res){
+  
+  var obj = _und.omit(_und.clone(req.body),"_id");
+  console.log(obj);
+  Judge.findByIdAndUpdate(req.params.id,obj, function(err,_judge){
+    if(err) {console.log(err);}
+    res.json(_judge);
+  });
+});
 
 
 app.get('/conference-submission/faculty', loadUser, function(req, res) {
