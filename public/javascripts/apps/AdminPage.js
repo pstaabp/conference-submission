@@ -457,7 +457,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
 
     var JudgeScheduleView = Backbone.View.extend({
         initialize: function(){
-            _.bindAll(this,"render");
+            _.bindAll(this,"render","showPosters","showOrals");
             this.parent = this.options.parent;
         },
         render: function () {
@@ -468,7 +468,92 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
             if(viewType==="orals") {this.showOrals();}
             else if (viewType==="posters"){this.showPosters();}
         },
-        events: {"change input[name='jsview']": "render"},
+        events: {"change input[name='jsview']": "render",
+                "click .remove-judge": "removeJudgeFromSession"},
+        removeJudgeFromSession: function(evt){
+            
+            var judgeID = $(evt.target).data("judgeid");
+            var judge= this.parent.judges.get(judgeID);
+            var sessions = judge.get("session");
+            var sessionName = $(evt.target).data("session");
+            judge.set({session: _(sessions).without(sessionName)});
+
+            judge.save();
+            this.render();
+        },
+        showPosters: function () {
+            var self = this;
+            // Need to empty all of the ul's in the table. 
+
+            this.$("ul").html("");
+
+            var posterTemplate = _.template($("#judges-schedule-poster-row").html());
+            var judgeTemplate = _.template($("#judges-schedule-row-template").html());
+
+            var judgeListCell = this.$("#judge-list-poster"); 
+            var judges = this.parent.judges.filter(function(judge){ return (judge.get("type")==="poster") || (judge.get("type")==="either"); });
+
+            var sessionNames = "ABCDEFGHIJKL";
+
+            var posters = _(this.parent.getPosters()).sort(function(poster){ return poster.get("session");});
+
+            for(var i=0; i<posters.length; i+=4){
+                var rowString = "<tr>";
+                for(var j=0; j<4;j++){
+                    if(i+j>=posters.length) { break;}
+                    rowString += posterTemplate(posters[i+j].attributes);
+                }
+                rowString += "</tr>";
+                self.$("div.posters table tbody").append(rowString);
+            }
+
+            // Add the judges to each session
+
+            _(posters).each(function(poster,i){
+                var _sessionName = (i)<9?"P0"+(i+1):"P"+(i+1);
+                var sessionJudges = _(judges).filter(function(judge) { return _(judge.get("session")).contains(_sessionName)});
+               
+                _(sessionJudges).each(function(judge) {
+                    var obj = {};
+                    _.extend(obj,judge.attributes,{cid: judge.cid, removable: true, sessionName: _sessionName});
+                    $(".poster-judge[data-session='" + _sessionName + "'] ul").append(judgeTemplate(obj));
+                });
+            });
+
+
+            this.$("#judge-list-poster").parent().attr("rowspan",this.parent.getPosters().length+1);
+            _(judges).each(function(judge){  
+                var obj = {};
+                _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
+                judgeListCell.append(judgeTemplate(obj));
+            });
+
+
+            this.$(".judge-popover").popover().draggable({revert: true});
+            this.$(".poster-judge").droppable({
+                hoverClass: "ui-session-highlight",
+                scroll: true,
+                helper: "clone",
+                drop: function( event, ui ) {  
+                    console.log("dropped"); 
+                    $(ui.draggable).removeClass("no-sessions"); 
+                    
+                    var _sessionName = $(event.target).data("session");
+                    var judge = self.parent.judges.get($(ui.draggable).data("judgeid"));
+                    var _sessions = judge.get("session");
+                    _sessions.push(_sessionName);
+
+                    judge.set({session: _sessions});
+                    judge.save();
+
+                    var obj = {};
+                    _.extend(obj,judge.attributes,{cid: judge.cid,removable: true, sessionName: _sessionName});
+                    $(event.target).children("ul").append(judgeTemplate(obj));
+                }
+            });
+
+
+        },
         showOrals: function (){
             var self = this;
 
@@ -484,27 +569,36 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
 
             _(judges).each(function(judge){  
                 var obj = {};
-                _.extend(obj,judge.attributes,{cid: judge.cid});
+                _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
                 judgeListCell.append(template(obj));
                 for(var i =0; i<sessionNames.length;i++){
                     if (_(judge.get("session")).contains(sessionNames[i])) {
+                        obj[removable]=true;
                         self.$("#"+sessionNames[i]+ " ul").append(template(obj));
                     }
                 }
             });
+
+
+
+
 
             this.$(".judge-popover").popover().draggable({revert: true});
             this.$(".session").droppable({
                 hoverClass: "ui-session-highlight",
                 drop: function( event, ui ) {  
                     console.log("dropped"); 
-                    $(event.target).children("ul").append("<li>" + $(ui.draggable).text() + "</li>");
-                    $(ui.draggable).remove();  // remove the dragged item from the list it came from 
-                    var judge = self.parent.judges.get($(ui.draggable).attr("id"));
+                    var _sessionName = $(ui.draggable).data("session"); 
+                    var judge = self.parent.judges.get($(ui.draggable).data("judgeid"));
                     var _sessions = judge.get("session");
-                    _sessions.push($(event.target).attr("id"));
+                    _sessions.push($(event.target).data(_sessionName));
                     judge.set({session: _sessions});
                     judge.save();
+                    var obj = {};
+                    _.extend(obj,judge.attributes,{cid: judge.cid, removable: true, sessionName: _sessionName});
+                    $(event.target).children("ul").append(judgeTemplate(obj));
+                    $(ui.draggable).removeClass("no-sessions");   
+
                 }
             });
         }

@@ -1,0 +1,26 @@
+extends iframe-layout
+
+block container
+  h2 Judges
+
+  table.table.table-bordered
+    thead
+      tr
+        th Name
+        th Session Judging
+        th Presentation Types
+        th Subjects
+    tbody
+      each judge in judges
+        - var theSessions = judge.session.join(", ");
+        - var thePresentations = judge.presentation.join(", ");
+        tr
+          td #{judge.name}
+          td #{theSessions}
+          td #{judge.type}
+          td #{thePresentations}
+      
+
+
+
+  

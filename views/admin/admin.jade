@@ -104,12 +104,22 @@ block container
           thead
             tr
               th All Judges
-              th Poster Title
-              th Author
+              th Title/Author
+              th Judges
+              th Title/Author
+              th Judges
+              th Title/Author
+              th Judges
+              th Title/Author
               th Judges
           tbody
             tr
-              td.judge-list-poster
+              td
+                ul#judge-list-poster
+              td
+              td
+              td
+
     .tab-pane#emails
 
 
@@ -400,10 +410,18 @@ block templates
 
   script#judges-schedule-row-template(type="text/template")
     li 
-      <%var pres = presentation.join(", "), sess = session.join(", ")%>
+      <%var pres = presentation.join(", "), sess = session.join(", ") %>
+      <%var popoverContent = "types: " + pres + "<br>sessions: " + sess; %>
+      <%if (removable) { %>
+      <%  popoverContent += "<br><span class='btn remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
       <% if (session.length == 0) {%>
-      span.judge-popover.no-sessions(data-content!="types: <%=pres%><br>sessions: <%=sess%>",id!="<%=cid%>",data-html="true") <%=name %>
+      span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeID!="<%=cid%>",data-html="true") <%=name %>
       <%} else {%>
-      span.judge-popover(data-content!="types: <%=pres%><br>sessions: <%=sess%>",id!="<%=cid%>",data-html="true") <%=name %>
+      span.judge-popover(data-content!="<%=popoverContent%>",data-judgeID!="<%=cid%>",data-html="true") <%=name %>
       <% } %>
+
+  script#judges-schedule-poster-row(type="text/template")
+      td <% print("<em>" + title + "</em>,  "  + author) %>
+      td.poster-judge(data-session!="<%=session%>")
+        ul
 

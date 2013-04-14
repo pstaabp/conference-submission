@@ -522,6 +522,12 @@ app.get("/conference-submission/posters",function(req,res){
   });
 });
 
+app.get("/conference-submission/showjudges",function(req,res){
+  Judge.find({}).sort('session').sort("name").exec(function(err,_judges){
+    res.render('showjudges.jade',{judges: _judges});
+  });
+});
+
 
 app.get("/conference-submission/view-proposal",function(req,res){
   var session = req.query.session;
