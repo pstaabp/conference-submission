@@ -595,8 +595,6 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
     else
       res.redirect("/conference-submission/"+_user.role);
   });
-  // check to make sure the user has the correct role. 
-  res.render('admin/admin.jade');
 });
 
 // Act as user view

@@ -403,11 +403,12 @@ block templates
     td
       span.btn.delete-judge
         i.icon-trash
-    td <%= name %>
-    td <%= email %>
-    td <%= type %>
-    td <%= presentation %> 
-
+    td.editable.name(contenteditable="true")
+    td.editable.email(contenteditable="true")
+    td.editable.type(contenteditable="true")
+    td
+      select.presentation(multiple="true")
+    
   script#judges-schedule-row-template(type="text/template")
     li 
       <%var pres = presentation.join(", "), sess = session.join(", ") %>

@@ -8,7 +8,8 @@ require.config({
         "jquery-truncate":      "../vendor/jquery.truncate.min",
         "bootstrap":            "../vendor/bootstrap/js/bootstrap",
         "XDate":                "../vendor/xdate",
-        "jquery-ui":            "../vendor/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min"
+        "jquery-ui":            "../vendor/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min",
+        "stickit":              "../vendor/backbone-stickit/backbone.stickit"
 
     },
     urlArgs: "bust=" +  (new Date()).getTime(),
@@ -20,14 +21,15 @@ require.config({
         'backbone-validation': ['Backbone'],
         'jquery-ui': ['jquery'],
         'jquery-truncate': ['jquery'],
-        'XDate':{ exports: 'XDate'}
+        'XDate':{ exports: 'XDate'},
+        'stickit': ['Backbone','jquery']
     }
 });
 
 require(['Backbone', 'underscore',
     '../models/UserList','../models/User','../models/ProposalList',
     '../models/Proposal',"../models/Judge","../models/JudgeList",'../views/EditableCell', '../views/WebPage',
-    './common','bootstrap','jquery-ui','jquery-truncate'],
+    './common','bootstrap','jquery-ui','jquery-truncate','stickit'],
 function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,EditableCell,WebPage,common){
 
     var AdminPage = WebPage.extend({
@@ -439,20 +441,45 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
     var JudgesRowView = Backbone.View.extend({
         tagName: "tr",
         initialize: function () {
-            _.bindAll(this,"render");
+            _.bindAll(this,"render","save","deleteJudge");
             this.rowTemplate = this.options.rowTemplate;
+            this.model.on("change",function(model) {console.log(model)});
+
         },
         render: function() {
-            this.$el.html(this.rowTemplate(this.model.attributes));
+            this.$el.html(this.rowTemplate());
+
+            this.$(".name").on("change",function(evt){
+                console.log(evt);
+            })
+            this.stickit();
             return this;
         },
-        events: {"click .delete-judge": "deleteJudge"},
+        events: {"click .delete-judge": "deleteJudge",
+                "blur td.editable": "save"},
+        bindings: {
+            ".name": "name",
+            ".email": {observe: "email", events: ["blur"], onSet: function(value,options){ console.log(value); console.log(options); return value;}},
+            ".presentation": { observe: "presentation",
+                selectOptions: {
+                    collection: ["Biology","Business Administration","Communications Media","Computer Information Systems","Computer Science",
+                                    "Criminal Justice","Early Childhood Education","Earth Systems Science","Economics","Elementary Education",
+                                    "English Studies","Exercise and Sports Science","Game Design","Geography","History","Human Services","Industrial Technology",
+                                    "Mathematics","Middle School Education","Nursing","Occupational/Vocational Education","Political Science",
+                                    "Psychological Science","Sociology","Special Education","Technology Education"]
+                }
+            },
+            ".type": "type"
+        },
         deleteJudge: function() { 
             var del = confirm("Do you want to delete the judge " + this.model.get("name") + "?");
             if(del){
                this.model.destroy();
            }
-       }
+       },
+       save: function (){ 
+            this.model.save();
+        }
     });
 
     var JudgeScheduleView = Backbone.View.extend({
