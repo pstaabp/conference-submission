@@ -1,0 +1,3 @@
+[submodule "public/javascripts/vendor/backbone-stickit"]
+	path = public/javascripts/vendor/backbone-stickit
+	url = git://github.com/NYTimes/backbone.stickit.git
