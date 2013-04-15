@@ -15,7 +15,11 @@ block container
       each judge in judges
         - var theSessions = judge.session.join(", ");
         - var thePresentations = judge.presentation.join(", ");
-        - var role = /(\w+)@(student\.)?fitchburgstate\.edu/.exec(judge.email)[2]?"student":"faculty";
+        - var emailResults = /(\w+)@(student\.)?fitchburgstate\.edu/.exec(judge.email);
+        - var role = "unknown";
+        - if (emailResults) { 
+          -   role = emailResults[2]?"student":"faculty";
+          - } 
         tr
           td #{judge.name}
           td #{role}

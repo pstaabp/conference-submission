@@ -448,7 +448,6 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
         },
         render: function() {
             this.$el.html(this.rowTemplate());
-
             this.$(".name").on("change",function(evt){
                 console.log(evt);
             })
@@ -459,17 +458,44 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                 "blur td.editable": "save"},
         bindings: {
             ".name": "name",
-            ".email": {observe: "email", events: ["blur"], onSet: function(value,options){ console.log(value); console.log(options); return value;}},
+            ".email": "email", 
             ".presentation": { observe: "presentation",
                 selectOptions: {
-                    collection: ["Biology","Business Administration","Communications Media","Computer Information Systems","Computer Science",
-                                    "Criminal Justice","Early Childhood Education","Earth Systems Science","Economics","Elementary Education",
-                                    "English Studies","Exercise and Sports Science","Game Design","Geography","History","Human Services","Industrial Technology",
-                                    "Mathematics","Middle School Education","Nursing","Occupational/Vocational Education","Political Science",
-                                    "Psychological Science","Sociology","Special Education","Technology Education"]
+                    collection: [{name: "Biology", value: "Biology"}, 
+                                {name:"Business Administration", value: "Business_Administration"},
+                                {name: "Communications Media", value: "Communications_Media"},
+                                {name: "Computer Information Systems", value: "Computer_Information_Systems"},
+                                {name: "Computer Science", value: "Computer_Science"},
+                                {name: "Criminal Justice", value: "Criminal_Justice"},
+                                {name: "Early Childhood Education", value: "Early_Childhood_Education"},
+                                {name: "Earth Systems Science", value: "Earth_Systems_Science"},
+                                {name: "Economics", value: "Economics"},
+                                {name: "Elementary Education", value: "Elementary_Education"},
+                                {name: "English Studies", value: "English_Studies"},
+                                {name: "Exercise and Sports Science", value: "Exercise_and_Sports_Science"},
+                                {name: "Game Design", value: "Game_Design"},
+                                {name: "Geography", value: "Geography"},
+                                {name: "History", value: "History"},
+                                {name: "Human Services", value: "Human_Services"},
+                                {name: "Industrial Technology", value: "Industrial_Technology"},
+                                {name: "Mathematics", value: "Mathematics"},
+                                {name: "Middle School Education", value: "Middle_School_Education"},
+                                {name: "Nursing", value: "Nursing"},
+                                {name: "Occupational/Vocational Education", value: "Occupational_Vocational_Education"},
+                                {name: "Political Science", value: "Political_Science"},
+                                {name: "Psychological Science", value: "Psychological_Science"},
+                                {name: "Sociology", value: "Sociology"},
+                                {name: "Special Education", value: "Special_Education"},
+                                {name: "Technology Education",value: "Technology_Education"}],
+                    labelPath: "name",
+                    valuePath: "value"
                 }
             },
-            ".type": "type"
+            ".type": {observe: "type",
+                selectOptions: {
+                    collection: ["oral","poster","either"]
+                }
+            }
         },
         deleteJudge: function() { 
             var del = confirm("Do you want to delete the judge " + this.model.get("name") + "?");
@@ -478,6 +504,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
            }
        },
        save: function (){ 
+            console.log("saving");
+            console.log(this.model.attributes);
             this.model.save();
         }
     });
