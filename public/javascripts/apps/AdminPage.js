@@ -628,7 +628,8 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                 judgeListCell.append(template(obj));
                 for(var i =0; i<sessionNames.length;i++){
                     if (_(judge.get("session")).contains(sessionNames[i])) {
-                        obj[removable]=true;
+                        obj["removable"]=true;
+                        obj["sessionName"] = sessionNames[i];
                         self.$("#"+sessionNames[i]+ " ul").append(template(obj));
                     }
                 }
@@ -646,12 +647,12 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
                     var _sessionName = $(ui.draggable).data("session"); 
                     var judge = self.parent.judges.get($(ui.draggable).data("judgeid"));
                     var _sessions = judge.get("session");
-                    _sessions.push($(event.target).data(_sessionName));
+                    _sessions.push($(event.target).attr("id"));
                     judge.set({session: _sessions});
                     judge.save();
                     var obj = {};
                     _.extend(obj,judge.attributes,{cid: judge.cid, removable: true, sessionName: _sessionName});
-                    $(event.target).children("ul").append(judgeTemplate(obj));
+                    $(event.target).children("ul").append(template(obj));
                     $(ui.draggable).removeClass("no-sessions");   
 
                 }

@@ -417,9 +417,9 @@ block templates
       <%if (removable) { %>
       <%  popoverContent += "<br><span class='btn remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
       <% if (session.length == 0) {%>
-      span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeID!="<%=cid%>",data-html="true") <%=name %>
+      span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
       <%} else {%>
-      span.judge-popover(data-content!="<%=popoverContent%>",data-judgeID!="<%=cid%>",data-html="true") <%=name %>
+      span.judge-popover(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
       <% } %>
 
   script#judges-schedule-poster-row(type="text/template")
