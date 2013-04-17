@@ -550,7 +550,7 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,Editab
 
             var sessionNames = "ABCDEFGHIJKL";
 
-            var posters = _(this.parent.getPosters()).sort(function(poster){ return poster.get("session");});
+            var posters = _(this.parent.getPosters()).sortBy(function(poster){ return poster.get("session");});
 
             for(var i=0; i<posters.length; i+=4){
                 var rowString = "<tr>";

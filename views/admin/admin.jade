@@ -423,7 +423,7 @@ block templates
       <% } %>
 
   script#judges-schedule-poster-row(type="text/template")
-      td <% print("<em>" + title + "</em>,  "  + author) %>
+      td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author) %>
       td.poster-judge(data-session!="<%=session%>")
         ul
 
