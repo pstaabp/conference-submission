@@ -1,0 +1,25 @@
+extends iframe-layout
+
+block container
+  h2 Judges
+
+  table.table.table-bordered
+    thead
+      tr
+        th Poster #
+        th Authors
+        th Title
+        th Judges
+    tbody
+      each poster in posters
+        - var judges = poster.judges.join(", ");
+        tr
+          td #{poster.session}
+          td #{poster.author}
+          td #{poster.title}
+          td #{judges}
+      
+
+
+
+  

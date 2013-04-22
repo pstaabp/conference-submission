@@ -528,6 +528,43 @@ app.get("/conference-submission/showjudges",function(req,res){
   });
 });
 
+app.get("/conference-submission/posterjudges",function(req,res){
+  Proposal.find({type: "Poster Presentation"}).sort('session').exec(function(err,_proposals){
+    if (err) { console.log(err);}
+
+    var _posters = [];
+
+
+    Judge.find({}).exec(function(err2,_judges){
+      if(err2) {console.log(err2);}
+
+      for(i=0;i<_proposals.length;i++){
+        console.log(_proposals[i].session);
+        //console.log(_proposals[i]);
+        var poster = _und.pick(_proposals[i],'session','author','title');
+        var theJudges= []; 
+        for(j=0;j<_judges.length;j++){
+          //console.log(_judges[j]);
+          //console.log(_judges[j].session);
+          //console.log(_proposals[i].session);
+          //console.log(_und.contains(_judges[i]))
+           if (_und.contains(_judges[j].session,_proposals[i].session)){
+            theJudges.push(_judges[j].name);
+           }
+        }
+        _und.extend(poster,{judges: theJudges});
+        console.log(poster);
+        _posters.push(poster);
+
+      }
+
+
+      res.render('posterjudges.jade',{posters: _posters});
+    });
+
+  });
+});
+
 
 app.get("/conference-submission/view-proposal",function(req,res){
   var session = req.query.session;
