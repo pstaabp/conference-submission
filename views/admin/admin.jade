@@ -30,7 +30,7 @@ block container
     li
       a(href="#judge-schedule",data-toggle="tab",data-view="judgeScheduleView") Judge Schedule
     li
-      a(href="#emails",data-toggle="tab",data-view="email jn View") Emails
+      a(href="#emails",data-toggle="tab",data-view="emailView") Emails
     
       
   .tab-content
@@ -116,9 +116,7 @@ block container
             tr
               td
                 ul#judge-list-poster
-              td
-              td
-              td
+              td(colspan="7")
 
     .tab-pane#emails
 
@@ -423,7 +421,7 @@ block templates
       <% } %>
 
   script#judges-schedule-poster-row(type="text/template")
-      td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author) %>
+      td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:red'>" + sponsor_name + "</span>") %>
       td.poster-judge(data-session!="<%=session%>")
         ul
 
