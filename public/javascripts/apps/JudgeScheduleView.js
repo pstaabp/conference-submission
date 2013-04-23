@@ -28,17 +28,15 @@ define(['Backbone'], function(Backbone){
         },
         showPosters: function () {
             var self = this;
-            // Need to empty all of the ul's in the table. 
-
-            this.$("ul").html("");
 
             var posterTemplate = _.template($("#judges-schedule-poster-row").html());
             var judgeTemplate = _.template($("#judges-schedule-row-template").html());
 
-            var judgeListCell = this.$("#judge-list-poster");
-            judgeListCell.children("tbody").html("");
+            
+            this.$(".posters tbody").html("<tr><td><ul id='judge-list-poster'></ul></td><td colspan='8'></td></tr>");
 
-            var judges = this.parent.judges.filter(function(judge){ return (judge.get("type")==="poster") || (judge.get("type")==="either"); });
+            var judges = this.parent.judges.filter(function(judge){ 
+                    return (judge.get("type")==="poster") || (judge.get("type")==="either"); });
 
             var sessionNames = "ABCDEFGHIJKL";
 
@@ -67,8 +65,8 @@ define(['Backbone'], function(Backbone){
                 });
             });
 
-
-            this.$("#judge-list-poster").parent().attr("rowspan",this.parent.getPosters().length+1);
+            var judgeListCell = this.$("#judge-list-poster");
+            judgeListCell.parent().attr("rowspan",parseInt(Math.floor(this.parent.getPosters().length/4)+2));
             _(judges).each(function(judge){  
                 var obj = {};
                 _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
