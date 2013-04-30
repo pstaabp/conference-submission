@@ -26,28 +26,28 @@ require.config({
     }
 });
 
-require(['Backbone', 'underscore',
+require(['Backbone', 'underscore', './globals',
     '../models/UserList','../models/User','../models/ProposalList',
     '../models/Proposal',"../models/Judge","../models/JudgeList","./UsersView",  
-    './PostersView', './ProposalsView', './JudgesView', './JudgeScheduleView', './EmailView',
+    './ProposalsView', './PresentationsView',
+    './JudgesView', './JudgeScheduleView', './EmailView',
     '../views/EditableCell', '../views/WebPage',
-    './common','bootstrap','jquery-ui','jquery-truncate','stickit'],
-function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersView, PostersView, ProposalsView,
+    './common','bootstrap','jquery-ui'],
+function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersView, ProposalsView, PresentationsView,
             JudgesView, JudgeScheduleView, EmailView, EditableCell,WebPage,common){
 
     var AdminPage = WebPage.extend({
         initialize: function () {
             this.constructor.__super__.initialize.apply(this, {el: this.el});
 
-            _.bindAll(this, 'render','usersFetched','proposalsFetched','getProposals',
-                            'getOrals','getPosters', 'actAsUser','get2DArt','get3DArt','getVideos');  // include all functions that need the this object
+            _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
             
-            this.proposals = new ProposalList();
-            this.users = new UserList();
-            this.judges = new JudgeList();
+            this.proposals = (globals.proposals)? new ProposalList(globals.proposals) : new ProposalList();
+            this.users = (globals.users)? new UserList(globals.users) : new UserList();
+            this.judges = (globals.judges) ? new JudgeList(globals.judges) : new JudgeList();
             
-            this.users.fetch({success: this.usersFetched});
+            //this.users.fetch({success: this.usersFetched});
             this.proposals.on("add",this.render);
 
             this.proposals.on("change",function(theChange){
@@ -55,6 +55,18 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersV
                 self.announce.addMessage("The " + p[0] + " changed to " + p[1]);
             });
 
+           this.views = {
+                usersView : new UsersView({parent: this, rowTemplate: "#user-row-template", el: $("#users")}),
+                proposalsView : new ProposalsView({parent: this, proposals: this.proposals, el: $("#proposals")}),
+                presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
+                judgesView : new JudgesView({parent: this, el: $("#judges")}),
+                judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
+                emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")})
+            }
+
+
+            this.render();
+ 
 
             
             $("#logout").on("click",common.logout);   
@@ -81,135 +93,13 @@ function(Backbone, _, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersV
                 this.setSortable();
             }
         },
-        setSortable: function (){
-            var self = this; 
-            $("#posters .poster-table").sortable({ 
-                axis: "y",
-                items: "tr.poster-row",
-                // handle: "tr.poster-row button",
-                update: function( event, ui ) {
-                  console.log("I was sorted!!");
-                  self.$("#posters .poster-row").each(function(i,prop){
-                    var cid = $(prop).attr("id");
-                    var updateProp = self.proposals.get(cid);
-                    var sess = "P" + ( (i<9)? "0"+(i+1): ""+(i+1));
-                    console.log(cid);
-                    if (sess !== updateProp.get("session")){
-
-                        updateProp.set("session",sess);
-                        updateProp.save();
-
-                        $(prop).find(".session .srv-value").text(sess);
-                    }
-              });
-        }});
-        },
-        usersFetched: function(collection, response, options) {
-            console.log("Users Fetched");
-            this.proposals.fetch({success: this.proposalsFetched});
-
-        },
-        judgesFetched: function(collection, response, options) {
-            console.log("Judges Fetched");
-        },
-        proposalsFetched: function(collection, response, options) {          
             
-            console.log("proposalsFetched");
-
-            this.judges.fetch({success: this.judgesFetched});
-            
-
-            this.views = {
-                usersView : new UsersView({parent: this, type: "users", headerTemplate: "#users-template"
-                                    , rowTemplate: "#user-row-template", el: $("#users")}),
-                studentsView : new UsersView({parent: this, type: "students", el: $("#students"),
-                                    headerTemplate: "#students-template", rowTemplate: "#student-row-template"}),
-                sponsorsView : new UsersView({parent: this, type: "sponsors", el: $("#sponsors"),
-                                    headerTemplate: "#sponsors-template", rowTemplate: "#sponsor-row-template"}),
-                proposalsView : new ProposalsView({parent: this, type: "allProposals", el: $("#proposals")}),
-                oralsView : new ProposalsView({parent: this, type: "orals", el: $("#oral-presentations")}),
-                postersView : new PostersView({parent: this, type: "posters", el: $("#posters")}),
-                scheduleView : new OralPresentationScheduleView({parent: this, el: $("#schedule")}),
-                art2DView : new ProposalsView({parent: this, type: "2dart", el: $("#art-2d")}),
-                art3DView : new ProposalsView({parent: this, type: "3dart", el: $("#art-3d")}),
-                videosView : new ProposalsView({parent: this, type: "videos", el: $("#video")}),
-                judgesView : new JudgesView({parent: this, el: $("#judges")}),
-                judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
-                emailView : new EmailView({parent: this, el: $("#emails")})
-            }
-
-
-            this.render();
-        },
-        // This function parses the proposal table and makes each item editable
-        getProposals: function () {
-            return this.proposals.models;
-        },
-        getPosters: function() {
-            return this.proposals.filter(function(prop){return prop.get("type")==="Poster Presentation"});
-        },
-        getOrals: function () {
-            return this.proposals.filter(function(prop){return prop.get("type")==="Oral Presentation"});
-        }, 
-        get2DArt: function(){
-            return this.proposals.filter(function(prop){return prop.get("type")==="2D Art"}); 
-        },
-        get3DArt: function(){
-            return this.proposals.filter(function(prop){return prop.get("type")==="2D Art"}); 
-        },
-        getVideos: function(){
-            return this.proposals.filter(function(prop){return prop.get("type")==="Video"}); 
-        }
-
     });
 
     
 
 
-    var OralPresentationScheduleView = Backbone.View.extend({
-        rowTemplate: _.template($("#proposal-row-template").html()),
-        initialize: function(){
-            _.bindAll(this,"render","reorder");
-            this.parent = this.options.parent;
-
-        },
-        render: function (){
-            var sessionNames = "ABCDEFGHIJKL";
-
-            this.$el.html(_.template($("#schedule-template").html(),{numSessions: 12 }));
-            
-            var re = /OP-(\d+)-(\d+)/;
-
-            _(this.parent.getOrals()).each(function(prop){
-                var matches = prop.get("session").match(re);
-                if(matches){
-                    this.$("#col" + matches[1]).append(_.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid})));
-                } else {
-                    $("#extra-ops").append(_.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid})));
-                }
-
-
-            });
-
-            $(".oral-present-col").sortable({ 
-                    connectWith: ".oral-present-col", 
-                    placeholder: "ui-state-highlight",
-                    stop: this.reorder});
-
-            this.$(".op-title").truncate();
-
-        },
-        reorder: function (){
-            var self = this; 
-            this.$("li").each(function(i,item){
-                var cid = $(item).attr("id")
-                var proposal = self.parent.proposals.find(function(prop) { return prop.cid===cid;})
-                var list = parseInt($(item).parent().attr("id").split("col")[1]); 
-                proposal.set("session","OP-"+list + "-"+$(item).index());
-                proposal.save();
-            })
-        }
-    });
+   
 
     new AdminPage({el: $("#container")});
 });

@@ -628,7 +628,25 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
     console.log("in /admin");
     console.log(_user);
     if (_user.role==="admin")
-      res.render('admin/admin.jade');
+
+      User.find({},function(err,_users){
+        if (err) {console.log(err);}
+
+        Proposal.find({},function(err2,_proposals){
+          if (err2) {console.log(err2);}
+
+          Judge.find({},function(err3,_judges){
+            if (err3) {console.log(err3);}            
+            res.render('admin/admin.jade', {users: _users, proposals: _proposals, judges: _judges});  
+          })
+
+        });
+
+
+      });
+
+
+      
     else
       res.redirect("/conference-submission/"+_user.role);
   });

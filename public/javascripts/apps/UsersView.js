@@ -3,29 +3,25 @@ define(['Backbone'], function(Backbone){
         initialize: function(){
             _.bindAll(this, "render");
             this.parent = this.options.parent;
-            this.type= this.options.type;
-            this.headerTemplate = this.options.headerTemplate;
-            this.rowTemplate = this.options.rowTemplate;
+            this.rowTemplate = _.template($("#user-row-template").html());
             this.parent.users.on("remove",this.render);
         },
         render: function(){
             var self = this
               , users;
-            switch(this.type){
-                case "users": 
+            switch($("input[type='radio'][name='usersview']:checked").val()){
+                case "all": 
                     users = this.parent.users.models;
                     break;
                 case "students":
                     users = this.parent.users.filter(function(user) {return user.get("role")==="student"});
-                    
                     break;
                 case "sponsors":
                     users = this.parent.users.filter(function(user){return user.get("role")==="faculty"});
                     break;
             }
-
-            this.$el.html(_.template($(this.headerTemplate).html(),{numUsers: users.length}));
             var userTable = this.$(".user-table tbody");
+            userTable.html("");
             _(users).each(function(_user){
                 var props;
                 switch(self.type){
@@ -39,12 +35,13 @@ define(['Backbone'], function(Backbone){
                         props = self.parent.proposals.filter(function(proposal){ return proposal.get("sponsor_email")===_user.get("email"); });
                         break;
                     }
-                userTable.append( (new UserRowView({model: _user, template: self.rowTemplate, proposals: props})).render().el);
+                userTable.append( (new UserRowView({model: _user, template: self.rowTemplate})).render().el);
             });
 
             this.$("a.showProposal").truncate()
         },
-        events: {"click a.showProposal": "showProposal"},
+        events: {"click a.showProposal": "showProposal",
+            "change input[name='usersview']": "render"},
         showProposal: function (evt){
             var proposal = this.parent.proposals.get($(evt.target).data("id"));  
             
@@ -62,15 +59,17 @@ define(['Backbone'], function(Backbone){
         initialize: function() {
             _.bindAll(this, "render");
             this.template = this.options.template;
-            this.proposals = this.options.proposals;
         },
         render: function (){
-            var templateVars = {proposals: this.proposals};
-            _.extend(templateVars,this.model.attributes);
-            this.$el.html(_.template($(this.template).html(),templateVars));
+            this.$el.html(this.template());
+            this.stickit();
             return this;
         },
         events: {"click .delete-user": "deleteUser"},
+        bindings: {".first-name": "first_name",
+                    ".last-name": "last_name",
+                    ".role": "role",
+                    ".email": "email"},
         deleteUser: function (){
             var del = confirm("Do you wish to delete the user: " + this.model.get("first_name") + " " 
                                     + this.model.get("last_name") +"?");

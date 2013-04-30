@@ -8,23 +8,9 @@ block container
     li.active
       a(href="#users",data-toggle="tab",data-view="usersView") Users
     li
-      a(href="#students",data-toggle="tab",data-view="studentsView") Students
-    li
-      a(href="#sponsors",data-toggle="tab",data-view="sponsorsView") Sponsors
-    li
       a(href="#proposals",data-toggle="tab",data-view="proposalsView") Proposals
     li
-      a(href="#oral-presentations",data-toggle="tab",data-view="oralsView") Oral 
-    li
-      a(href="#posters",data-toggle="tab",data-view="postersView") Posters
-    li
-      a(href="#schedule",data-toggle="tab",data-view="scheduleView") Schedule
-    li
-      a(href="#art-2d",data-toggle="tab",data-view="art2DView") 2D Art
-    li
-      a(href="#art-3d",data-toggle="tab",data-view="art3DView") 3D Art
-    li
-      a(href="#video",data-toggle="tab",data-view="videosView") Video
+      a(href="#presentations",data-toggle="tab",data-view="presentationsView") Presentations
     li
       a(href="#judges",data-toggle="tab",data-view="judgesView") Judges
     li
@@ -35,15 +21,58 @@ block container
       
   .tab-content
     .tab-pane.active#users
-    .tab-pane#students
-    .tab-pane#sponsors
+      label.radio.inline
+        input(type="radio",name="usersview",value="all",checked)
+        | View All Users
+      label.radio.inline
+        input(type="radio",name="usersview",value="students")
+        | View Students
+      label.radio.inline
+        input(type="radio",name="usersview",value="sponsors")
+        | View Sponsors
+      table.user-table.table.table-bordered
+        thead
+          tr
+            th
+            th First Name
+            th Last Name
+            th Role
+            th Email
+        tbody
     .tab-pane#proposals
-    .tab-pane#oral-presentations
-    .tab-pane#posters
-    .tab-pane#schedule
-    .tab-pane#art-2d
-    .tab-pane#art-3d
-    .tab-pane#video
+      div.row
+        div.span4
+          h3 
+        div.span4.pull-right.num-proposals
+      table.proposal-table.table.table-bordered
+        tbody
+    .tab-pane#presentations
+      .radio-buttons
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="orals",checked)
+          | View Oral Presentation List
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="schedule")
+          | View Oral Presentation Schedule
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="posters")
+          | View Posters
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="videos")
+          | View Videos
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="art2d")
+          | View 2D Art
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="art3d")
+          | View 3D Art
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="music")
+          | View Music
+        label.radio.inline
+          input(type="radio",name="presentationsview",value="theatre")
+          | View Theatre
+      .presentation-content
     .tab-pane#judges
     .tab-pane#judge-schedule
       label.radio.inline
@@ -135,12 +164,11 @@ block templates
         tbody
           tr
             td
-              input.accepted-checkbox(type='checkbox')
-            td.session <%=session%>
+              input.accepted(type='checkbox')
+            td.session
             td.author
-              a(href!="mailto:<%=email%>") <%=author%>
-            td.title(colspan="2") <%=title%>
-            td.type <%=type%>
+            td.title(colspan="2",contenteditable="true")
+            td.type
           tr
             td
               button.btn.delete-proposal
@@ -153,10 +181,10 @@ block templates
           tr
             td
             td
-            td.sponsor-name <%=sponsor_name%>
-            td.sponsor-email <%=sponsor_email%>
-            td.sponsor-dept <%=sponsor_dept%>
-            td.submitted-date <%=date%> at <%=time%>
+            td.sponsor-name
+            td.sponsor-email
+            td.sponsor-dept
+            td.submitted-date
           tr
             td
             td
@@ -166,47 +194,34 @@ block templates
           tr
             td
             td
-            td <% print(use_human_subjects?"Yes":"No") %>
-            td <% print(use_animal_subjects?"Yes":"No") %>
-            td(colspan="2") <% var authors = other_authors || []; print(_(authors).pluck("name").join(", ")); %>
+            td
+              input(type='checkbox').use-human-subjects
+            td
+              input(type='checkbox').use-animal-subjects
+            td.other-authors(colspan="2")
           tr
             td
             td(colspan="6").header Proposal Text
           tr
             td
-            td.proposal-content(colspan="6") <%=content%>
+            td.proposal-content(colspan="6")
           tr
             td
             td(colspan="6").header Sponsor Statement
           tr
             td
-            td(colspan="6") <%=sponsor_statement%>
+            td(colspan="6").sponsor-statment
 
-
-  script#users-template(type="text/template")
-    div.row
-      div.span4
-        h3 Users
-      div.span4.pull-right  total number of users: <%= numUsers %>
-    table.user-table.table
-      thead
-        tr
-          td
-          td First Name
-          td Last Name
-          td Role
-          td Email
-      tbody
 
   script#user-row-template(type='text/template')
     td
       .btn-group
         button.btn.delete-user
           i.icon-trash
-    td <%=first_name%>
-    td <%=last_name%>
-    td <%=role%>
-    td <%=email%>
+    td.first-name
+    td.last-name
+    td.role
+    td.email
 
   script#students-template(type="text/template")
     div.row
@@ -364,8 +379,8 @@ block templates
       .modal-footer
         a.btn(href="#",data-dismiss="modal") Close
 
-  script#poster-table-template(type="text/template")
-    table.poster-table.table
+  script#presentation-table-template(type="text/template")
+    table.table.table-bordered
       thead
         tr
           th
@@ -374,14 +389,17 @@ block templates
           th Title
       tbody
 
-  script#poster-row-template(type="text/template")
+  script#presentation-row-template(type="text/template")
     td
+      <% if(reorder) {%>
       span
         i.icon-resize-vertical
-    td <%=attributes.session%>
-    td <%=attributes.author%>
-    td 
-      a.showProposal(href="#",data-id!="<%=id%>") <%=attributes.title%>
+      <% } %>
+    td.session
+    td.author
+    td.title
+    td
+      button.showDetails.btn Show Details
 
   script#judges-table-template(type="text/template")
     table.judges-table.table
@@ -421,4 +439,12 @@ block templates
       td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:red'>" + sponsor_name + "</span>") %>
       td.poster-judge(data-session!="<%=session%>")
         ul
+  script(type="text/javascript")
+    define('config', function() {
+      return {
+        users: !{JSON.stringify(users)},
+        proposals: !{JSON.stringify(proposals)},
+        judges: !{JSON.stringify(judges)}
+      };
+    });
 

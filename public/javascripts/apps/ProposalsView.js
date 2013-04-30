@@ -3,26 +3,15 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
     var ProposalsView = Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, "render");
-            this.template = $("#proposals-template").html();
-            this.parent = this.options.parent;
-            this.type = this.options.type;
-            this.getProposals = {
-                "allProposals": this.parent.getProposals, "orals": this.parent.getOrals, 
-                "posters": this.parent.getPosters, "2dart": this.parent.get2DArt, "3dart": this.parent.get3DArt,
-                "videos": this.parent.getVideos
-            };
-
-            this.headers = {allProposals: "Proposals", orals: "Oral Presentations", posters: "Poster Presentations",
-                            "2dart": "Two-Dimensional Art", "3dart": "Three-Dimensional Art", videos: "Videos"};
-
-            this.parent.proposals.on("remove",this.render);
+            this.rowTemplate = $("#proposal-row-template").html();
+            this.proposals = this.options.proposals;
+            this.proposals.on("remove",this.render);
         },
         render: function(){
             var self = this;
-            var proposals = this.getProposals[this.type].apply();
-            this.$el.html(_.template(this.template,{propHeader: this.headers[this.type], number: proposals.length}));
-            _(proposals).each(function(proposal){
-                self.$(".proposal-table > tbody").append((new ProposalRowView({model: proposal})).render().el);
+            this.$("tbody").html("");
+            this.proposals.each(function(proposal){
+                self.$(".proposal-table > tbody").append((new ProposalRowView({model: proposal, rowTemplate: self.rowTemplate})).render().el);
             });
         }
     });
@@ -33,6 +22,7 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
         className: "proposal-row",
         initialize: function(){
             _.bindAll(this,"render","deleteProposal","changeAcceptedStatus");
+            this.rowTemplate = this.options.rowTemplate;
 
         },
         render: function() {
@@ -42,13 +32,15 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
             var subDate = (new XDate(this.model.get("submit_date"))).toLocaleDateString();
             var subTime = (new XDate(this.model.get("submit_date"))).toLocaleTimeString();
 
-            this.$el.html(_.template($("#proposal-row-template").html(),_.extend(this.model.attributes,{date: subDate, time: subTime})));
+            //this.$el.html(_.template($("#proposal-row-template").html(),_.extend(this.model.attributes,{date: subDate, time: subTime})));
+            this.$el.html(this.rowTemplate);
             this.$el.attr("id",this.model.cid);
-            this.$(".accepted-checkbox").prop("checked",this.model.get("accepted"));
-            if(this.model.get("accepted")){this.$("table").removeClass("not-accepted");}
-            _(common.proposalParams).each(function(prop){
-                self.$(prop.class).html((new EditableCell({model: self.model, property: prop.field})).render().el);    
-            })
+            //this.$(".accepted-checkbox").prop("checked",this.model.get("accepted"));
+            //if(this.model.get("accepted")){this.$("table").removeClass("not-accepted");}
+            //_(common.proposalParams).each(function(prop){
+            //    self.$(prop.class).html((new EditableCell({model: self.model, property: prop.field})).render().el);    
+            //})
+            this.stickit();
             return this;
         },
         events: {"click .delete-proposal": "deleteProposal",
@@ -56,7 +48,18 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
                  "change .edit-content": "saveContent",
                  "focusout .edit-content": "closeContent",
                  "change input[type='checkbox']": "changeAcceptedStatus"},
-
+        bindings: {".accepted": "accepted",
+                ".author": "author",
+                ".session": "session",
+                ".type": "type",
+                ".title": "title",
+                ".sponsor-name": "sponsor_name",
+                ".sponsor-email": "sponsor_email",
+                ".sponsor-dept": "sponsor_dept",
+                ".use-human-subjects": "use_human_subjects",
+                ".use-animal-subjects": "use_animal_subjects",
+                ".proposal-content": "content",
+                ".sponsor-statement": "sponsor_statement"},
         deleteProposal: function(){
             var del = confirm("Do you wish to delete the proposal " + this.model.get("title") +"?");
             if(del){
