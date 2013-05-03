@@ -192,13 +192,15 @@ block templates
             td.header Use Animal Subjects
             td.header(colspan="2") Other Authors
           tr
-            td
-            td
+            td(colspan="2")
+              button.show-feedback.btn Show Feedback
             td
               input(type='checkbox').use-human-subjects
             td
               input(type='checkbox').use-animal-subjects
             td.other-authors(colspan="2")
+          tr
+            td(colspan="7").feedback-cell
           tr
             td
             td(colspan="6").header Proposal Text
@@ -210,7 +212,7 @@ block templates
             td(colspan="6").header Sponsor Statement
           tr
             td
-            td(colspan="6").sponsor-statment
+            td(colspan="6").sponsor-statement
 
 
   script#user-row-template(type='text/template')
@@ -304,6 +306,7 @@ block templates
     h3 
       a(href!="mailto:<%=allParticipants%>") All Participants
     p <%=allParticipants%>
+
     h3
       a(href!="mailto:<%=oralPresenters%>") Oral Participants
     p <%=oralPresenters%>
@@ -400,6 +403,53 @@ block templates
     td.title
     td
       button.showDetails.btn Show Details
+  script#feedback-tabs(type="text/template")
+    div
+      button.btn.new-feedback-btn Add New Feedback
+    ul.nav.nav-tabs.feedback-tabs
+    .tab-content.feedback-tab-content
+  script#feedback-tab(type="text/template")
+    li
+      a(href!="<%=tabID%>",data-toggle="tab") Judge #<%=judgeNum%>
+  script#feedback-template(type="text/template")
+    table
+      tr
+        td Judge
+        td
+          select.judge
+      tr
+        td Visual Design
+        td
+          input.visual-design
+        td Appropriate Knowledge of Fields
+        td
+          input.knowledge
+      tr
+        td Verbal Presentation
+        td
+          input.verbal-presentation
+        td Clear Explanations
+        td
+          input.explanations
+      tr
+        td Organization And Logic
+        td
+          input.organization-and-logic
+        td Overall Impression
+        td
+          input.overall
+      tr
+        td Strength of Poster
+        td(colspan="3")
+          textarea.strength
+      tr
+        td Suggestions for Improvement
+        td(colspan="3")
+          textarea.improvement
+      tr
+        td
+          button.btn.save-feedback-button Save Feedback
+
 
   script#judges-table-template(type="text/template")
     table.judges-table.table

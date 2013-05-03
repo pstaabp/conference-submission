@@ -15,10 +15,10 @@ define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
             return proposal.get("session");
         },
         url: '/conference-submission/proposals',
-        /*parse: function (response){
+        parse: function (response){
             console.log(response);
             return response;
-        }*/
+        }
     });
 
     return ProposalList;

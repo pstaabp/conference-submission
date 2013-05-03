@@ -1,4 +1,5 @@
-define(['Backbone','./common','../views/EditableCell'], function(Backbone,common,EditableCell){
+define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','../models/Feedback', 'jquery-ui-blind','stickit'], 
+    function(Backbone,common,EditableCell,FeedbackList,Feedback){
 
     var ProposalsView = Backbone.View.extend({
         initialize: function(){
@@ -6,12 +7,16 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
             this.rowTemplate = $("#proposal-row-template").html();
             this.proposals = this.options.proposals;
             this.proposals.on("remove",this.render);
+
+            // this is used for the stickit select options below. 
+            this.judgeList = this.options.judges.map(function(judge){ return {name: judge.get("name"), id: judge.id};})            
         },
         render: function(){
             var self = this;
             this.$("tbody").html("");
             this.proposals.each(function(proposal){
-                self.$(".proposal-table > tbody").append((new ProposalRowView({model: proposal, rowTemplate: self.rowTemplate})).render().el);
+                self.$(".proposal-table > tbody").append((new ProposalRowView({model: proposal, 
+                        rowTemplate: self.rowTemplate, judgeList: self.judgeList})).render().el);
             });
         }
     });
@@ -23,6 +28,7 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
         initialize: function(){
             _.bindAll(this,"render","deleteProposal","changeAcceptedStatus");
             this.rowTemplate = this.options.rowTemplate;
+            this.judgeList = this.options.judgeList;
 
         },
         render: function() {
@@ -35,8 +41,12 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
             //this.$el.html(_.template($("#proposal-row-template").html(),_.extend(this.model.attributes,{date: subDate, time: subTime})));
             this.$el.html(this.rowTemplate);
             this.$el.attr("id",this.model.cid);
+            // include the feedback form
+            this.feedbackView = new FeedbackView({el: this.$(".feedback-cell"),collection: this.model.get("feedback"),
+                    judgeList: this.judgeList, proposal: this.model});
+            this.feedbackView.open = false; 
             //this.$(".accepted-checkbox").prop("checked",this.model.get("accepted"));
-            //if(this.model.get("accepted")){this.$("table").removeClass("not-accepted");}
+            if(this.model.get("accepted")){this.$("table").removeClass("not-accepted");}
             //_(common.proposalParams).each(function(prop){
             //    self.$(prop.class).html((new EditableCell({model: self.model, property: prop.field})).render().el);    
             //})
@@ -47,7 +57,8 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
                  "dblclick .proposal-content": "editContent",
                  "change .edit-content": "saveContent",
                  "focusout .edit-content": "closeContent",
-                 "change input[type='checkbox']": "changeAcceptedStatus"},
+                 "change input[type='checkbox']": "changeAcceptedStatus",
+                 "click .show-feedback": "showHideFeedback"},
         bindings: {".accepted": "accepted",
                 ".author": "author",
                 ".session": "session",
@@ -92,9 +103,98 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
             } else {
                 this.$("table").addClass("not-accepted");
             }
+        },
+        showHideFeedback: function(evt){
+            if(this.feedbackView.open){
+
+                this.feedbackView.$el.hide("blind",500);
+                this.$(".show-feedback").text("Show Feedback");
+                this.feedbackView.open = false;
+            } else {
+                this.feedbackView.render();
+                this.feedbackView.$el.show("blind",500);
+                this.$(".show-feedback").text("Hide Feedback");
+                this.feedbackView.open = true;
+            }
         }
 
     });
+
+    var FeedbackView = Backbone.View.extend({
+        initialize: function (){
+            _.bindAll(this,"render","newFeedback");
+            this.judgeList = this.options.judgeList;
+            this.proposal = this.options.proposal;
+        },
+        render: function() {
+            var self = this; 
+            this.$el.html($("#feedback-tabs").html());
+            this.collection.each(function(feedback,i){
+                this.$(".feedback-tabs").append(_.template($("#feedback-tab").html(),{tabID: "judge"+(i+1), judgeNum: (i+1)}));
+                this.$(".feedback-tab-content").append((new FeedbackItemView({num: (i+1), 
+                                model: feedback, judgeList: self.judgeList, proposal: self.proposal})).render().el);
+            });
+
+            this.$("ul.feedback-tabs li:eq(0)").addClass("active");
+            this.$(".feedback-tab-content .tab-pane:eq(0)").addClass("active");
+            
+        }, 
+        events: {"click .new-feedback-btn": "newFeedback"},
+        newFeedback: function (){
+            this.collection.add(new Feedback());
+            this.render();
+        }
+    });
+
+    var FeedbackItemView = Backbone.View.extend({
+        tagName: "div",
+        className: "tab-pane    ",
+        initialize: function (){
+            _.bindAll(this,"render");
+            this.judgeList = this.options.judgeList;
+            this.proposal = this.options.proposal;
+        },
+        render: function (){
+            var self = this;
+            this.$el.attr("id","judge"+this.options.num);
+            this.$el.html($("#feedback-template").html());
+            Backbone.Validation.bind(this, {
+              invalid: function(view, attr, error) {
+                console.log("invalid: " +error);
+                console.log(attr);
+                view.$el.css("background-color","pink");
+              }
+            });
+            this.stickit();
+            return this;
+        },
+        bindings: {".judge": {
+                observe: "judge_id",
+                selectOptions: { collection: "this.judgeList", labelPath: "name", valuePath: "id", 
+                    defaultOption: { label: 'Choose one...',  value: null }
+                }
+            },
+            ".visual-design": "visual_design",
+            ".knowledge": "knowledge",
+            ".verbal-presentation": "verbal_presentation",
+            ".explanations": "explanations",
+            ".organization-and-logic": "organization_and_logic",
+            ".overall": "overall",
+            ".strength": "strength_comment",
+            ".improvement": "improvement_comment"
+        },
+        events: {"click .save-feedback-button": "saveFeedback"},
+        saveFeedback: function (){
+            console.log(this.model.attributes);
+            this.proposal.save();
+        }
+    });
+
+    
+
+
+   
+
 
     return ProposalsView;
 

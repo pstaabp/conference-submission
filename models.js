@@ -16,6 +16,18 @@ function defineModels(mongoose, fn) {
   var Schema = mongoose.Schema,
       ObjectId = Schema.ObjectId;
 
+  var Feedback = new Schema({
+    judge_id: String,
+    visual_design: Number,
+    verbal_presentation: Number,
+    organization_and_logic: Number,
+    knowledge: Number,
+    explanations: Number,
+    overall: Number,
+    strength_comment: String,
+    improvement_comment: String
+  });
+
  
   var Proposal = new Schema({
     author: String,
@@ -33,7 +45,8 @@ function defineModels(mongoose, fn) {
     sponsor_statement: String,
     use_human_subjects: Boolean,
     use_animal_subjects: Boolean,
-    other_equipment: String
+    other_equipment: String,
+    feedback: [Feedback]
   });
 
   /**

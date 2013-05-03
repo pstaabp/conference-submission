@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore'], function(Backbone, _){
+define(['Backbone', 'underscore','./FeedbackList'], function(Backbone, _,FeedbackList){
     /**
      *
      * This defines a User
@@ -25,11 +25,14 @@ define(['Backbone', 'underscore'], function(Backbone, _){
             submit_date: new Date(),
             sponsor_statement: "",
             use_human_subjects: false,
-            use_animal_subjects: false           
+            use_animal_subjects: false,
+            feedback: null           
         },
         idAttribute: "_id",
-        initialize:function () {
-    
+        initialize:function (model) {
+            //console.log("in Proposal initialize");
+            this.set("feedback",new FeedbackList(model.feedback));
+            //feedback = new FeedbackList();
         }
 
     });

@@ -1,7 +1,7 @@
 define(['Backbone', 'underscore'], function(Backbone, _){
     /**
      *
-     * This defines an Author
+     * This defines an AuthorList
      * 
      * @type {*}
      */
