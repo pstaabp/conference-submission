@@ -1,4 +1,5 @@
-define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','../models/Feedback', 'jquery-ui-blind','stickit'], 
+define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','../models/Feedback', 
+    'jquery-ui-blind','stickit','bootstrap'], 
     function(Backbone,common,EditableCell,FeedbackList,Feedback){
 
     var ProposalsView = Backbone.View.extend({
@@ -148,21 +149,23 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
 
     var FeedbackItemView = Backbone.View.extend({
         tagName: "div",
-        className: "tab-pane    ",
+        className: "tab-pane",
         initialize: function (){
             _.bindAll(this,"render");
             this.judgeList = this.options.judgeList;
             this.proposal = this.options.proposal;
+            this.invBindings = _.invert(this.bindings);
         },
         render: function (){
             var self = this;
             this.$el.attr("id","judge"+this.options.num);
             this.$el.html($("#feedback-template").html());
             Backbone.Validation.bind(this, {
+                valid: function(view,attr){ self.$(self.invBindings[attr]).css("background-color","white");},
               invalid: function(view, attr, error) {
-                console.log("invalid: " +error);
-                console.log(attr);
-                view.$el.css("background-color","pink");
+                self.$(self.invBindings[attr])
+                    .popover({content: error}).popover("show")
+                    .css("background-color","pink");
               }
             });
             this.stickit();

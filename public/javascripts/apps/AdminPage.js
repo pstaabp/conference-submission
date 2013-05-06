@@ -90,7 +90,6 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
             console.log($(evt.target).data("id"));
         },
         changeView: function(evt){
-            console.log(evt);
             var viewName =$(evt.target).data("view");
             this.views[viewName].render();
             if(viewName==="postersView"){

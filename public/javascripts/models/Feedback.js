@@ -28,7 +28,8 @@ function(Backbone, _){
             knowledge: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
             explanations: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
             overall: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
-        }
+        },
+        idAttribute: "_id"
     });
 
     return Feedback;

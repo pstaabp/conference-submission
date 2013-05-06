@@ -656,14 +656,14 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
 
 // Act as user view
 
-app.get(/^\/conference-submission\/admin\/(\w+)$/,loadUser, function(req,res){
+app.get("/conference-submission/admin/:id",loadUser,function(req,res){
   User.findOne({_id: req.currentUser.id},function(err,_user) {
     // first make sure the current user is an admin;
     if (_user.role !=="admin") { res.redirect("/conference-submission/"+_user.role);}
 
-    var eff_user_id = req.params[0];
+    // The effective user id is passed in the URL.
 
-    User.findOne({_id: eff_user_id}, function(err,eff_user){
+    User.findOne({_id: req.params.id}, function(err,eff_user){
 
       console.log("The user is " + eff_user.first_name + " " + eff_user.last_name);
       if (eff_user.role === "faculty"){
