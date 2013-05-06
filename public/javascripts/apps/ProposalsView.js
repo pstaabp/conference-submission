@@ -10,7 +10,8 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             this.proposals.on("remove",this.render);
 
             // this is used for the stickit select options below. 
-            this.judgeList = this.options.judges.map(function(judge){ return {name: judge.get("name"), id: judge.id};})            
+            this.judgeList = this.options.judges.chain().sortBy(function(judge){ return judge.get("name");}).
+                map(function(judge){ return {name: judge.get("name"), id: judge.id};}).value();            
         },
         render: function(){
             var self = this;

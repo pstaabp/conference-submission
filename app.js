@@ -737,23 +737,13 @@ app.post("/conference-submission/judges",function(req,res){
 
             }
           });
+        } 
 
-       
+ 
 
+      }); */
 
-
-        } */
-
-        res.json(_judge);
-
-      });
-
-
-
-
-
-
- //   res.json(_judge);
+    res.render("users/judges-email.jade");
   });
 });
 
