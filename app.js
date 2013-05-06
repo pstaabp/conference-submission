@@ -701,7 +701,7 @@ app.post("/conference-submission/judges",function(req,res){
   judge.save(function (err, _judge) {
     if (err) {console.log(err);}
 
-
+/*
       emailTemplates(templatesDir, function(err, template) {
 
         if (err) {
@@ -711,6 +711,8 @@ app.post("/conference-submission/judges",function(req,res){
 //          var locals = {};
   //        _und.extend(locals, _judge);
            // Send a single email
+
+
           template('judge', _judge, function(err, html, text) {
             if (err) {
               console.log(err);
@@ -740,7 +742,10 @@ app.post("/conference-submission/judges",function(req,res){
 
 
 
-        }
+        } */
+
+        res.json(_judge);
+
       });
 
 
