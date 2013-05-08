@@ -17,6 +17,8 @@ block container
       a(href="#judge-schedule",data-toggle="tab",data-view="judgeScheduleView") Judge Schedule
     li
       a(href="#emails",data-toggle="tab",data-view="emailView") Emails
+    li
+      a(href="#feedback",data-toggle="tab",data-view="feedbackView") Feedback
     
       
   .tab-content
@@ -145,6 +147,16 @@ block container
             
 
     .tab-pane#emails
+    .tab-pane#feedback
+      table.table.table-bordered.all-feedback-table
+        thead
+          tr
+            th Session
+            th Author
+            th Project Title
+            th Feedback
+        tbody
+
 
 
   .proposal-modal
@@ -411,7 +423,7 @@ block templates
   script#feedback-tab(type="text/template")
     li
       a(href!="#<%=tabID%>",data-toggle="tab") Judge #<%=judgeNum%>
-  script#feedback-template(type="text/template")
+  script#feedback-edit-template(type="text/template")
     table
       tr
         td Judge
@@ -445,11 +457,16 @@ block templates
       tr
         td Suggestions for Improvement
         td(colspan="3")
-          textarea.improvement
+          textarea.improvement(tabindex="8")
       tr
         td
-          button.btn.save-feedback-button Save Feedback
+          button.btn.save-feedback-button(tabindex="9") Save Feedback
 
+  script#feedback-row-template(type="text/template")
+    td.session
+    td.title
+    td.author
+    td.feedback
 
   script#judges-table-template(type="text/template")
     table.judges-table.table
@@ -497,4 +514,49 @@ block templates
         judges: !{JSON.stringify(judges)}
       };
     });
+
+  script#feedback-template(type="text/template")
+    .modal.hide.fade
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h3 Feedback on Presentation
+      .modal-body 
+        table.table.table-bordered
+          tr
+            td(colspan="2").span8 
+              | Visual Design: Professional appearance of poster, appropriate amount of text, 
+              | legible text, appropriate use of figures, logical presentation of project
+            td.span1.visual-design
+          tr
+            td(colspan="2").span8
+              | Verbal Presentation: Description of project logical and consise, audible and clear
+              | presentation, liveliness and professional style
+            td.verbal-presentation
+          tr
+            td(colspan="2") Organization And Logic: Problem/objective clearly stated, methods and results explained.
+            td.organization-and-logic
+          tr
+            td(colspan="2") Appropriate Knowledge of Field: Demonstrated understanding of probject and boarder context
+            td.knowledge
+          tr
+            td(colspan="2") Clear Explanations/ability to answer questions
+            td.explanations
+          tr
+            td(colspan="2") 
+              | Overall Impression: Impression compared to other posters judges/additional comments useful for judging
+            td.overall
+          tr
+            td
+            td(style="text-align: right") Total Score
+            td.total-score
+          tr
+            td.span2 Strength of Poster
+            td(colspan="2").span8.strength
+          tr
+            td.span2 Suggestions for Improvement
+            td(colspan="2").span8.improvement
+          
+
+      .modal-footer
+        a.btn(href="#",data-dismiss="modal") Close
 

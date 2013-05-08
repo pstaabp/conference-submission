@@ -32,11 +32,11 @@ require(['Backbone', 'underscore', './globals',
     '../models/UserList','../models/User','../models/ProposalList',
     '../models/Proposal',"../models/Judge","../models/JudgeList","./UsersView",  
     './ProposalsView', './PresentationsView',
-    './JudgesView', './JudgeScheduleView', './EmailView',
+    './JudgesView', './JudgeScheduleView', './EmailView', './AllFeedbackView',
     '../views/EditableCell', '../views/WebPage',
     './common','bootstrap',"backbone-validation"],
 function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersView, ProposalsView, PresentationsView,
-            JudgesView, JudgeScheduleView, EmailView, EditableCell,WebPage,common){
+            JudgesView, JudgeScheduleView, EmailView, AllFeedbackView, EditableCell,WebPage,common){
 
     var AdminPage = WebPage.extend({
         initialize: function () {
@@ -64,7 +64,8 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
                 presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
                 judgesView : new JudgesView({parent: this, el: $("#judges")}),
                 judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
-                emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")})
+                emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")}),
+                feedbackView: new AllFeedbackView({proposals: this.proposals, el: $("#feedback")})
             }
 
 

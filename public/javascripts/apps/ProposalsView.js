@@ -160,7 +160,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
         render: function (){
             var self = this;
             this.$el.attr("id","judge"+this.options.num);
-            this.$el.html($("#feedback-template").html());
+            this.$el.html($("#feedback-edit-template").html());
             Backbone.Validation.bind(this, {
                 valid: function(view,attr){ self.$(self.invBindings[attr]).css("background-color","white");},
               invalid: function(view, attr, error) {
