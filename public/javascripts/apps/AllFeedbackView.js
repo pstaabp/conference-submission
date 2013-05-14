@@ -30,7 +30,9 @@ define(['Backbone','./common','../models/FeedbackList','../models/Feedback','../
     	},
 		showFeedback: function(evt){
             var feedbackID = $(evt.target).data("id");
-            var feedback = this.model.get("feedback").find(function(feed) { return feed.id===feedbackID;});
+            var feedback = this.model.get("feedback").find(function(feed) { 
+                return feed.id===feedbackID;
+            });
 
             (new FeedbackView({model: feedback, el: $(".proposal-modal")})).render();
 

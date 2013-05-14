@@ -166,6 +166,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             _.bindAll(this,"render","saveFeedback");
             this.judgeList = this.options.judgeList;
             this.proposal = this.options.proposal;
+            this.collection = this.options.collection; 
             this.invBindings = _.invert(_.extend(_.omit(this.bindings,".judge"),{".judge": "judge_id"}));
             this.model.bind("validated:invalid",function(model,errors) {
                 self.errors = errors;
@@ -204,7 +205,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
                     .popover({content: self.errors[attr]}).popover("show").addClass("error")
                 });
             } else {
-                this.$(".error").removeClass("error")
+                this.$(".error").removeClass("error");
                 this.proposal.save();
             }
         }
