@@ -132,8 +132,11 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             var self = this; 
             this.$el.html($("#feedback-tabs").html());
             this.collection.each(function(feedback,i){
-                this.$(".feedback-tabs").append(_.template($("#feedback-tab").html(),{tabID: "judge"+(i+1), judgeNum: (i+1)}));
-                this.$(".feedback-tab-content").append((new FeedbackItemView({num: (i+1), 
+
+                var linkName = ((feedback.id)? feedback.id : Math.floor(400000*Math.random()) ) + "judge" + (i+1);
+
+                this.$(".feedback-tabs").append(_.template($("#feedback-tab").html(),{tabID: linkName, judgeNum: (i+1)}));
+                this.$(".feedback-tab-content").append((new FeedbackItemView({num: (i+1), tabID: linkName,
                                 model: feedback, judgeList: self.judgeList, proposal: self.proposal})).render().el);
             });
 
@@ -141,10 +144,17 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             this.$(".feedback-tab-content .tab-pane:eq(0)").addClass("active");
             
         }, 
-        events: {"click .new-feedback-btn": "newFeedback"},
+        events: {"click .new-feedback-btn": "newFeedback",
+                 "click .feedback-tabs a": "showTab"},
         newFeedback: function (){
             this.collection.add(new Feedback());
             this.render();
+            this.$('.feedback-tabs a:last').tab('show');
+        }, 
+        // Not sure why this is needed.  This is perhaps because it is generated dynamically. 
+        showTab: function(evt){
+          evt.preventDefault();
+          $(this).tab('show');
         }
     });
 
@@ -152,30 +162,27 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
         tagName: "div",
         className: "tab-pane",
         initialize: function (){
-            _.bindAll(this,"render");
+            var self = this; 
+            _.bindAll(this,"render","saveFeedback");
             this.judgeList = this.options.judgeList;
             this.proposal = this.options.proposal;
-            this.invBindings = _.invert(this.bindings);
+            this.invBindings = _.invert(_.extend(_.omit(this.bindings,".judge"),{".judge": "judge_id"}));
+            this.model.bind("validated:invalid",function(model,errors) {
+                self.errors = errors;
+            });
         },
         render: function (){
             var self = this;
-            this.$el.attr("id","judge"+this.options.num);
+            this.$el.attr("id", this.options.tabID);
             this.$el.html($("#feedback-edit-template").html());
-            Backbone.Validation.bind(this, {
-                valid: function(view,attr){ self.$(self.invBindings[attr]).css("background-color","white");},
-              invalid: function(view, attr, error) {
-                self.$(self.invBindings[attr])
-                    .popover({content: error}).popover("show")
-                    .css("background-color","pink");
-              }
-            });
+            Backbone.Validation.bind(this);
             this.stickit();
             return this;
         },
         bindings: {".judge": {
                 observe: "judge_id",
                 selectOptions: { collection: "this.judgeList", labelPath: "name", valuePath: "id", 
-                    defaultOption: { label: 'Choose one...',  value: null }
+                    defaultOption: { label: 'Choose one...',  value: null },
                 }
             },
             ".visual-design": "visual_design",
@@ -189,8 +196,17 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
         },
         events: {"click .save-feedback-button": "saveFeedback"},
         saveFeedback: function (){
-            console.log(this.model.attributes);
-            this.proposal.save();
+            var self = this;
+            //this.model.validate();
+            if(!this.model.isValid()){
+                _(this.errors).chain().keys().each(function(attr){
+                    self.$(self.invBindings[attr])
+                    .popover({content: self.errors[attr]}).popover("show").addClass("error")
+                });
+            } else {
+                this.$(".error").removeClass("error")
+                this.proposal.save();
+            }
         }
     });
 

@@ -47,5 +47,7 @@ label:hover {cursor: pointer};
 
 .not-accepted {background-color: pink;}
 
+.error {background-color: pink;}
+
 .feedback-cell {display: none; background-color: lightgray}
 

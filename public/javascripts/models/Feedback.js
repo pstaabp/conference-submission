@@ -1,7 +1,8 @@
 define(['Backbone', 'underscore'], 
 function(Backbone, _){
 
-    var judgePts = /^[0-4](\.[0|5])?|5|5.0$/;
+    var judgePts = /^([0-4](\.[0|5])?|5|5\.0)$/;
+    var pointMessage = 'The points must be between 0.0 and 5.0 in increments of 0.5';
     /**
      *
      * This defines an Feedback from a judge
@@ -22,12 +23,13 @@ function(Backbone, _){
             improvement_comment: ""
         },
         validation: {
-            visual_design: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
-            verbal_presentation: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
-            organization_and_logic: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
-            knowledge: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
-            explanations: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
-            overall: { pattern: judgePts, msg: 'The points must be between 0.0 and 5.0 in increments of 0.5'},
+            judge_id: {required: true},
+            visual_design: { pattern: judgePts, msg: pointMessage},
+            verbal_presentation: { pattern: judgePts, msg: pointMessage},
+            organization_and_logic: { pattern: judgePts, msg: pointMessage},
+            knowledge: { pattern: judgePts, msg: pointMessage},
+            explanations: { pattern: judgePts, msg: pointMessage},
+            overall: { pattern: judgePts, msg: pointMessage},
         },
         idAttribute: "_id"
     });
