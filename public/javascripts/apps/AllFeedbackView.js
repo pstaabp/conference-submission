@@ -9,8 +9,7 @@ define(['Backbone','./common','../models/FeedbackList','../models/Feedback','../
     	render: function(){
     		var self = this;
     		this.allFeedback = this.options.proposals.filter(function(prop) { return prop.get("feedback").length >0 });
-    		var table = this.$(".all-feedback-table tbody")
-    		table.html("");
+    		var table = this.$(".all-feedback-table tbody").html("");
     		_(this.allFeedback).each(function(proposal){
     			table.append((new FeedbackRowView({model: proposal, rowTemplate: self.rowTemplate})).render().el);
     		}); 
