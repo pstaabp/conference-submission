@@ -42,7 +42,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
 
             this.$el.html(this.rowTemplate);
             this.$el.attr("id",this.model.cid);
-            
+
             // include the feedback form
             this.feedbackView = new FeedbackView({el: this.$(".feedback-cell"),judgeList: this.judgeList, proposal: this.model});
             this.feedbackView.open = false; 
@@ -108,6 +108,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
                 this.feedbackView.$el.hide("blind",500);
                 this.$(".show-feedback").text("Show Feedback");
                 this.feedbackView.open = false;
+                this.feedbackView.$el.html("");
             } else {
                 this.feedbackView.render();
                 this.feedbackView.$el.show("blind",500);
@@ -128,7 +129,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             var self = this; 
             this.$el.html($("#feedback-tabs").html());
             this.proposal.get("feedback").each(function(feed,i){
-                var linkName = ((feed.id)? feed.id : Math.floor(400000*Math.random()) ) + "judge" + (i+1);
+                var linkName = self.proposal.id  + "j" + (i+1);
                 this.$(".feedback-tabs").append(_.template($("#feedback-tab").html(),{tabID: linkName, judgeNum: (i+1)}));
                 this.$(".feedback-tab-content").append((new FeedbackItemView({num: (i+1), tabID: linkName,
                                 model: feed, judgeList: self.judgeList, proposal: self.proposal})).render().el);

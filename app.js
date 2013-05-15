@@ -140,12 +140,14 @@ function loadUser(req, res, next) {
         req.currentUser = user;
         next();
       } else {
+        console.log("[loadUser] User not defined.  ");
         res.redirect('/conference-submission/sessions/new');
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
+    console.log("[loadUser]  No session data");
     res.redirect('/conference-submission/sessions/new');
   }
 }
@@ -310,7 +312,6 @@ app.post('/conference-submission/users/password',function(req,res){
 // proposals routes
 
 app.get("/conference-submission/proposals", loadUser, function(req,res){
-  console.log("in /proposals");
   var _email = req.param("email")
   , semail = req.param("sponsor_email")
   , query = null;
@@ -344,9 +345,6 @@ app.get("/conference-submission/proposals", loadUser, function(req,res){
 
 
 app.post("/conference-submission/proposals",function(req,res){
-   console.log("in post /proposals");
-   console.log(req.body);
-
    var proposal = new Proposal(req.body);
    proposal.save(function (err, prop) {
     if (err) {console.log(err);}
