@@ -30,14 +30,9 @@ define(['Backbone', 'underscore','./FeedbackList'], function(Backbone, _,Feedbac
         },
         idAttribute: "_id",
         parse: function(response,options){
-            console.log("in Proposal.parse");
-            console.log(response)
             response.feedback = new FeedbackList(response.feedback);
-            //console.log(response);
             return response; 
         }
-
-
     });
 
     return Proposal;

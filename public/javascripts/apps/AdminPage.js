@@ -45,7 +45,7 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
             _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
             
-            this.proposals = (globals.proposals)? new ProposalList(globals.proposals) : new ProposalList();
+            this.proposals = (globals.proposals)? new ProposalList(globals.proposals,{parse: true}) : new ProposalList();
             this.users = (globals.users)? new UserList(globals.users) : new UserList();
             this.judges = (globals.judges) ? new JudgeList(globals.judges) : new JudgeList();
             
