@@ -40,20 +40,15 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             var subDate = (new XDate(this.model.get("submit_date"))).toLocaleDateString();
             var subTime = (new XDate(this.model.get("submit_date"))).toLocaleTimeString();
 
-            //this.$el.html(_.template($("#proposal-row-template").html(),_.extend(this.model.attributes,{date: subDate, time: subTime})));
             this.$el.html(this.rowTemplate);
             this.$el.attr("id",this.model.cid);
+            
             // include the feedback form
             this.feedbackView = new FeedbackView({el: this.$(".feedback-cell"),judgeList: this.judgeList, proposal: this.model});
             this.feedbackView.open = false; 
-            //this.$(".accepted-checkbox").prop("checked",this.model.get("accepted"));
+
             if(this.model.get("accepted")){this.$("table").removeClass("not-accepted");}
-            //_(common.proposalParams).each(function(prop){
-            //    self.$(prop.class).html((new EditableCell({model: self.model, property: prop.field})).render().el);    
-            //})
             this.stickit();
-            console.log(this.model.get("author"));
-            console.log(this.model.get("feedback"));
             return this;
         },
         events: {"click .delete-proposal": "deleteProposal",
@@ -131,7 +126,6 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
         },
         render: function() {
             var self = this; 
-            console.log(this.proposal.get("feedback"));
             this.$el.html($("#feedback-tabs").html());
             this.proposal.get("feedback").each(function(feed,i){
                 var linkName = ((feed.id)? feed.id : Math.floor(400000*Math.random()) ) + "judge" + (i+1);

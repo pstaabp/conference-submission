@@ -70,6 +70,7 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
 
                 //$(".tab-content").append(_.template($("#new-proposal-template").html()));
                 self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1)), parent: self}));
+                console.log(prop);
             });
         },
         events: {"click button#submit-proposal": "newProposal"},
@@ -86,6 +87,8 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
         proposalsFetched: function(collection, response, options) {          
             var self = this;
             console.log("proposalsFetched");
+            console.log(collection);
+            console.log(response);
             console.log(this.proposals);
             this.render();
         }

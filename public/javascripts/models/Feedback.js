@@ -31,7 +31,16 @@ function(Backbone, _){
             explanations: { pattern: judgePts, msg: pointMessage},
             overall: { pattern: judgePts, msg: pointMessage},
         },
-        idAttribute: "_id"
+        idAttribute: "_id",
+        /*parse: function(response,options){
+            console.log("in Feedback.parse");
+            console.log(response);
+            return response;
+        },
+        initialize: function (model) {
+            console.log("in Feedback.initialize");
+            console.log(model);
+        } */
     });
 
     return Feedback;

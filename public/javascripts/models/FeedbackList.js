@@ -7,7 +7,16 @@ define(['Backbone', 'underscore','./Feedback'], function(Backbone, _,Feedback){
      */
 
     var FeedbackList = Backbone.Collection.extend({
-        model: Feedback
+        model: Feedback,
+        /*parse: function(response,options){
+            console.log("in FeedbackList.parse");
+            console.log(response);
+            return response; 
+        },
+        initialize: function(models){
+            console.log("in FeedbackList.initialize");
+            console.log(models);
+        }*/
     });
 
     return FeedbackList;

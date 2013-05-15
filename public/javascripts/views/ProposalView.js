@@ -106,7 +106,6 @@ define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit']
         saved: function(model, response, options) {
             this.parent.announce.addMessage("The proposal was updated.");
             this.parent.announce.addMessage("If you are satisfied with your proposal, please logout.  You will receive an email with a confirmation that your proposal was received.");
-            console.log(model);
         },
         error: function(model, xhr, options){
             console.log("oops an error!")

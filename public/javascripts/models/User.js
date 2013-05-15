@@ -16,18 +16,10 @@ define(['Backbone', 'underscore'], function(Backbone, _){
         },
         url : function() {
             var base = '/conference-submission/users';
-            console.log(base + (base.charAt(base.length - 1) == '/' ? '' : '/') + this.id);
             if (this.isNew()) return base;
-            
             return base + (base.charAt(base.length - 1) == '/' ? '' : '/') + this.id;
         },
-        idAttribute: "_id",
-        initialize:function () {
-            this.on("change",function(){
-                console.log("being updated"); 
-        });
-        }
-
+        idAttribute: "_id"
     });
 
     return User;

@@ -8,17 +8,16 @@ define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
 
     var ProposalList = Backbone.Collection.extend({
         model: Proposal,
-        initialize:function () {
-    
-        },
         comparator: function (proposal){
             return proposal.get("session");
         },
         url: '/conference-submission/proposals',
-        parse: function (response){
+        parse: function (response,options){
+            console.log("in ProposalList.parse");
             console.log(response);
+            console.log(options);
             return response;
-        }
+        } 
     });
 
     return ProposalList;

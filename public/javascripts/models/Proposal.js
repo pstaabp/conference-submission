@@ -29,13 +29,14 @@ define(['Backbone', 'underscore','./FeedbackList'], function(Backbone, _,Feedbac
             feedback: null           
         },
         idAttribute: "_id",
-        initialize:function (model) {
-            this.set("feedback",new FeedbackList(model.feedback));
-        },
         parse: function(response,options){
+            console.log("in Proposal.parse");
+            console.log(response)
             response.feedback = new FeedbackList(response.feedback);
+            //console.log(response);
             return response; 
         }
+
 
     });
 

@@ -336,6 +336,7 @@ app.get("/conference-submission/proposals", loadUser, function(req,res){
       }
       
       res.json(proposals);
+      console.log(proposals);
     }); 
   });
 });
