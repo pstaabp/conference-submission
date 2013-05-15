@@ -356,8 +356,8 @@ app.post("/conference-submission/proposals",function(req,res){
 });
 
 app.put("/conference-submission/proposals/:id", loadUser, function (req,res){
-  console.log("in post /proposal/id");
-  console.log(req.body);
+  //console.log("in put /proposal/id");
+  //console.log(req.body);
 
 
   Proposal.findByIdAndUpdate(req.params.id,_und.omit(req.body, "_id"), function (err, prop) {

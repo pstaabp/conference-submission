@@ -191,8 +191,7 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
             var errors = this.model.validate();
             if(errors){
                 _(errors).chain().keys().each(function(attr){
-                    self.$(self.invBindings[attr])
-                    .popover({content: self.errors[attr]}).popover("show").addClass("error")
+                    self.$(self.invBindings[attr]).popover({content: errors[attr]}).popover("show").addClass("error");
                 });
             } else {
                 this.$(".error").removeClass("error");
