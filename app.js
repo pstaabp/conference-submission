@@ -140,12 +140,14 @@ function loadUser(req, res, next) {
         req.currentUser = user;
         next();
       } else {
+        console.log("[loadUser] User not defined.  ");
         res.redirect('/conference-submission/sessions/new');
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
+    console.log("[loadUser]  No session data");
     res.redirect('/conference-submission/sessions/new');
   }
 }
@@ -310,7 +312,6 @@ app.post('/conference-submission/users/password',function(req,res){
 // proposals routes
 
 app.get("/conference-submission/proposals", loadUser, function(req,res){
-  console.log("in /proposals");
   var _email = req.param("email")
   , semail = req.param("sponsor_email")
   , query = null;
@@ -336,6 +337,7 @@ app.get("/conference-submission/proposals", loadUser, function(req,res){
       }
       
       res.json(proposals);
+      console.log(proposals);
     }); 
   });
 });
@@ -343,9 +345,6 @@ app.get("/conference-submission/proposals", loadUser, function(req,res){
 
 
 app.post("/conference-submission/proposals",function(req,res){
-   console.log("in post /proposals");
-   console.log(req.body);
-
    var proposal = new Proposal(req.body);
    proposal.save(function (err, prop) {
     if (err) {console.log(err);}
@@ -354,14 +353,17 @@ app.post("/conference-submission/proposals",function(req,res){
 
 });
 
-app.put(/^\/conference-submission\/proposals\/(\w+)$/, loadUser, function (req,res){
-  console.log("in post /proposal/id");
-  
-  Proposal.findByIdAndUpdate(req.params[0],_und.omit(req.body, "_id"), function (err, prop) {
+app.put("/conference-submission/proposals/:id", loadUser, function (req,res){
+  //console.log("in put /proposal/id");
+  //console.log(req.body);
+
+
+  Proposal.findByIdAndUpdate(req.params.id,_und.omit(req.body, "_id"), function (err, prop) {
     if (err) {
       console.log(err);
     }
-    
+  
+    console.log(prop);  
 
     /*
     console.log("updated!!");
@@ -654,14 +656,14 @@ app.get('/conference-submission/admin',loadUser, function(req,res){
 
 // Act as user view
 
-app.get(/^\/conference-submission\/admin\/(\w+)$/,loadUser, function(req,res){
+app.get("/conference-submission/admin/:id",loadUser,function(req,res){
   User.findOne({_id: req.currentUser.id},function(err,_user) {
     // first make sure the current user is an admin;
     if (_user.role !=="admin") { res.redirect("/conference-submission/"+_user.role);}
 
-    var eff_user_id = req.params[0];
+    // The effective user id is passed in the URL.
 
-    User.findOne({_id: eff_user_id}, function(err,eff_user){
+    User.findOne({_id: req.params.id}, function(err,eff_user){
 
       console.log("The user is " + eff_user.first_name + " " + eff_user.last_name);
       if (eff_user.role === "faculty"){
@@ -699,7 +701,7 @@ app.post("/conference-submission/judges",function(req,res){
   judge.save(function (err, _judge) {
     if (err) {console.log(err);}
 
-
+/*
       emailTemplates(templatesDir, function(err, template) {
 
         if (err) {
@@ -709,6 +711,8 @@ app.post("/conference-submission/judges",function(req,res){
 //          var locals = {};
   //        _und.extend(locals, _judge);
            // Send a single email
+
+
           template('judge', _judge, function(err, html, text) {
             if (err) {
               console.log(err);
@@ -733,20 +737,13 @@ app.post("/conference-submission/judges",function(req,res){
 
             }
           });
+        } 
 
-       
+ 
 
+      }); */
 
-
-        }
-      });
-
-
-
-
-
-
- //   res.json(_judge);
+    res.render("users/judges-email.jade");
   });
 });
 

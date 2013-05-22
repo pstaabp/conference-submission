@@ -26,9 +26,6 @@ define(['Backbone'], function(Backbone){
         },
         render: function() {
             this.$el.html(this.rowTemplate());
-            this.$(".name").on("change",function(evt){
-                console.log(evt);
-            })
             this.stickit();
             return this;
         },
@@ -82,9 +79,8 @@ define(['Backbone'], function(Backbone){
            }
        },
        save: function (){ 
-            console.log("saving");
-            console.log(this.model.attributes);
             this.model.save();
+            this.judges.add(this.model);
         }
     });
     return JudgesView;

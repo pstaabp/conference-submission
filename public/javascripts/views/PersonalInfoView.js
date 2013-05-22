@@ -13,7 +13,6 @@ define(['Backbone', 'underscore'], function(Backbone, _){
     		_.bindAll(this,"render","update","saved");
             this.user = this.options.user;
             this.parent = this.options.parent;
-            console.log(this.options);
             this.editMode = (this.options.editMode)?this.options.editMode:false;
             this.fieldsToSave = {};
     		this.render();

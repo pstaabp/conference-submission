@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore'], function(Backbone, _){
+define(['Backbone', 'underscore','./FeedbackList'], function(Backbone, _,FeedbackList){
     /**
      *
      * This defines a User
@@ -25,13 +25,14 @@ define(['Backbone', 'underscore'], function(Backbone, _){
             submit_date: new Date(),
             sponsor_statement: "",
             use_human_subjects: false,
-            use_animal_subjects: false           
+            use_animal_subjects: false,
+            feedback: null           
         },
         idAttribute: "_id",
-        initialize:function () {
-    
+        parse: function(response,options){
+            response.feedback = new FeedbackList(response.feedback);
+            return response; 
         }
-
     });
 
     return Proposal;

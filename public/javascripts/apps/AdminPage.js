@@ -8,7 +8,8 @@ require.config({
         "jquery-truncate":      "../vendor/jquery.truncate.min",
         "bootstrap":            "../vendor/bootstrap/js/bootstrap",
         "XDate":                "../vendor/xdate",
-        "jquery-ui":            "../vendor/jquery-ui-1.10.1.custom/js/jquery-ui-1.10.1.custom.min",
+        "jquery-ui-effect":     "../vendor/jquery-ui/ui/jquery.ui.effect",
+        "jquery-ui-blind":      "../vendor/jquery-ui/ui/jquery.ui.effect-blind",
         "stickit":              "../vendor/backbone-stickit/backbone.stickit"
 
     },
@@ -19,7 +20,8 @@ require.config({
         'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
         'bootstrap':['jquery'],
         'backbone-validation': ['Backbone'],
-        'jquery-ui': ['jquery'],
+        'jquery-ui-effect': ['jquery'],
+        'jquery-ui-blind': ['jquery-ui-effect'],
         'jquery-truncate': ['jquery'],
         'XDate':{ exports: 'XDate'},
         'stickit': ['Backbone','jquery']
@@ -30,11 +32,11 @@ require(['Backbone', 'underscore', './globals',
     '../models/UserList','../models/User','../models/ProposalList',
     '../models/Proposal',"../models/Judge","../models/JudgeList","./UsersView",  
     './ProposalsView', './PresentationsView',
-    './JudgesView', './JudgeScheduleView', './EmailView',
+    './JudgesView', './JudgeScheduleView', './EmailView', './AllFeedbackView',
     '../views/EditableCell', '../views/WebPage',
-    './common','bootstrap','jquery-ui'],
+    './common','bootstrap',"backbone-validation"],
 function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersView, ProposalsView, PresentationsView,
-            JudgesView, JudgeScheduleView, EmailView, EditableCell,WebPage,common){
+            JudgesView, JudgeScheduleView, EmailView, AllFeedbackView, EditableCell,WebPage,common){
 
     var AdminPage = WebPage.extend({
         initialize: function () {
@@ -43,7 +45,7 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
             _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
             
-            this.proposals = (globals.proposals)? new ProposalList(globals.proposals) : new ProposalList();
+            this.proposals = (globals.proposals)? new ProposalList(globals.proposals,{parse: true}) : new ProposalList();
             this.users = (globals.users)? new UserList(globals.users) : new UserList();
             this.judges = (globals.judges) ? new JudgeList(globals.judges) : new JudgeList();
             
@@ -57,11 +59,13 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
 
            this.views = {
                 usersView : new UsersView({parent: this, rowTemplate: "#user-row-template", el: $("#users")}),
-                proposalsView : new ProposalsView({parent: this, proposals: this.proposals, el: $("#proposals")}),
+                proposalsView : new ProposalsView({parent: this, proposals: this.proposals, 
+                                    judges: this.judges, el: $("#proposals")}),
                 presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
                 judgesView : new JudgesView({parent: this, el: $("#judges")}),
                 judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
-                emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")})
+                emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")}),
+                feedbackView: new AllFeedbackView({proposals: this.proposals, el: $("#feedback")})
             }
 
 
@@ -72,7 +76,7 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
             $("#logout").on("click",common.logout);   
 
         },
-        events: {"shown a[data-toggle='tab']": "changeView"},
+        events: {"shown #admin-tabs a[data-toggle='tab']": "changeView"},
         render: function () {
             this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
 
@@ -96,10 +100,6 @@ function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeLi
             
     });
 
-    
-
-
-   
 
     new AdminPage({el: $("#container")});
 });

@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
+define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit'], function(Backbone, _,FeedbackView){
     /**
      *
      * This defines a User
@@ -13,7 +13,7 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
     		_.bindAll(this,"render","update","saved","savedStatement");
             this.parent = this.options.parent;
             this.facultyView = this.options.facultyView;
-            this.editMode = (this.options.editMode)?this.options.editMode:false;
+            this.editable = (this.options.editable)?this.options.editable:false;
 
             this.additionalAuthorsViews = [];
             _(this.model.get("other_authors")).each(function(_author){
@@ -28,54 +28,44 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
     	render: function (){
             var self = this; 
     		this.$el.html(this.template);
-            if(this.model){
-                this.$("#title").val(this.model.get("title"));
-                this.$("#pres-type").val(this.model.get("type"));
-                this.$("#semail").val(this.model.get("sponsor_email"));
-                this.$("#sponsor").val(this.model.get("sponsor_name"));
-                this.$("#sponsor-dept").val(this.model.get("sponsor_dept"));
-                this.$("#proposal-text").val(this.model.get("content"));
-                this.$("#human-subjects").prop("checked",this.model.get("use_human_subjects"));
-                this.$("#animal-subjects").prop("checked",this.model.get("use_animal_subjects"));
-                this.$("#other-equip").val(this.model.get("other_equipment"));
 
-                _(this.additionalAuthorsViews).each(function(view) {
-                    self.$(".add-author-button-row").before(view.render().el);});
-
+            if(this.editable){
+                this.$(".editable").each(function(i,v){ $(v).prop("readonly",false); });
+                this.$("submit-proposal-button").text("Save the Proposal");
                 
+            } else {
+                this.$(".editable").each(function(i,v){ $(v).prop("readonly",true); })
+                this.$("submit-proposal-button").text("Edit the Proposal");
             }
-            if(this.model && this.facultyView){
-                console.log(this.model.attributes);
-                this.$("#title").html(this.model.get("title"));
-                this.$("#pres-type").html(this.model.get("type"));
-                this.$("#other-equip").html(this.model.get("other_equipment"));
-                this.$("#proposal-text").html(this.model.get("content"));
-                this.$("#sponsor-statement").val(this.model.get("sponsor_statement"));
-                this.$("#author").html(this.model.get("author"));
-                if (this.model.get("other_authors").length >0){
-                    this.$("#author").prev().html("Project Authors");
-                    this.$("#author").append(", " + (_(this.model.get("other_authors")).pluck("name")).join(", "));
-                }
 
-            }
-            if (!this.editMode){
-                this.$("#submit-proposal-button").html("Edit Proposal");
-                this.$("input").prop("disabled",true);
-                this.$("select").prop("disabled",true);
-                this.$("#proposal-text").prop("disabled",true);
-                this.$("#add-author").prop("disabled",true);
-            }
+            this.model.get("feedback").each(function(feed,i){
+                this.$(".feedback-row").append("<td><button data-id='" + feed.id  
+                        +"' class='show-feedback-btn btn'>Feedback from Judge #" + (i+1) + "</button>");
+            })
+
+
             $("#other-equip-help").popover({html: true, content: $("#other-equip-help-text").html()});
+            this.stickit();
+
+
     	},
         events: {"click button#submit-proposal-button": "submit",
                  "change input": "update",
                  "change select": "update",
                  "change #proposal-text": "update",
                  "click button#save-statement": "saveStatement",
-                 "click button#add-author": "addAuthor"},
-        showOtherEquipHelp: function(){
-
-        },
+                 "click button#add-author": "addAuthor",
+                 "click button.show-feedback-btn": "showFeedback"},
+        bindings: { ".title": "title",
+                    ".author-name": "author",
+                    ".author-email": "email",
+                    ".sponsor-dept": { observe: "type",
+                                selectOptions:  { collection: ["Behavioral Sciences", "Biology & Chemistry",
+                                "Business Administration",
+                                "Communications Media", "Computer Science", "Economics, History & Political Science",
+                                "Education","English Studies","Exercise & Sports Science", "Geo/Physical Science",
+                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"]}}
+                            },
         update: function (evt){
             var targ = $(evt.target)
                 ,field = targ.data("field")
@@ -116,7 +106,6 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
         saved: function(model, response, options) {
             this.parent.announce.addMessage("The proposal was updated.");
             this.parent.announce.addMessage("If you are satisfied with your proposal, please logout.  You will receive an email with a confirmation that your proposal was received.");
-            console.log(model);
         },
         error: function(model, xhr, options){
             console.log("oops an error!")
@@ -135,10 +124,17 @@ define(['Backbone', 'underscore','bootstrap'], function(Backbone, _){
                 otherAuthors.push(view.getAuthor());
             });
             return otherAuthors;
+        },
+        showFeedback: function(evt){
+            var feedbackID = $(evt.target).data("id");
+            var feedback = this.model.get("feedback").find(function(feed) { return feed.id===feedbackID;});
+
+            (new FeedbackView({model: feedback, el: $(".feedback-modal")})).render();
+
         }
 
-
     });
+
 
     var AdditionalAuthorView = Backbone.View.extend({
         tagName: "tr",

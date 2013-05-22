@@ -3,11 +3,13 @@ extends layout
 block script
   script(type='text/javascript',data-main='/conference-submission/javascripts/apps/StudentPage',src='/conference-submission/javascripts/vendor/require.js')
 
+
 block templates
   include users/info.jade
   script(type='text/template',id='student-tabs-template')
     input(type='hidden',id='user-id',value=user.id)
     include tabs.jade
+    .feedback-modal
     
 
   script(type='text/template',id="proposal-view")
@@ -15,19 +17,25 @@ block templates
       span.span6 
         h4 Proposal Information
       span.span3
-        button.btn(id='submit-proposal-button') Save the Proposal
+        button.btn.submit-proposal-button Edit the Proposal
     table
+      tr.feedback-row
       tr
         td Project Title
         td(colspan="3")
-          input(id='title',data-field="title",type='text',size='40')
+          input.title.editable.span7
+      tr
+        td Primary Author
+        td.author-name
+        td Author Email
+        td.author-email
       tr.add-author-button-row
         td
           button#add-author.btn Add an Author
       tr
         td Type of Presentation
         td
-          select(id='pres-type',data-field="type")
+          select.presentation-type.editable
             option 
             option Poster Presentation
             option Oral Presentation
@@ -39,50 +47,34 @@ block templates
             option Creative Writing
         td Sponsor Email
         td
-          input(id='semail',data-field="sponsor_email",type='text',size='40')
+          input.sponsor-email.editable
       tr
         td Sponsor&apos;s Name 
         td
-          input#sponsor(data-field="sponsor_name",type='text',size='40')
+          input.sponsor-name.editable
         td Sponsor&apos;s Department
         td
-          select#sponsor-dept(data-field="sponsor_dept")
-            option 
-            option Behavioral Sciences
-            option Biology &amp; Chemistry
-            option Business Administration
-            option Communications Media
-            option Computer Science
-            option Economics, History &amp; Political Science
-            option Education
-            option English Studies 
-            option Exercise &amp; Sports Science 
-            option Geo/Physical Sciences 
-            option Humanities 
-            option Industrial Technology 
-            option Mathematics 
-            option Nursing 
-            option Other
+          select.sponsor-dept.editable
         td
       tr
         td(colspan="2")
           label
-            input#human-subjects(type='checkbox',data-field="use_human_subjects") 
+            input.human-subjects.editable(type='checkbox')
             | My Research involves Human Subjects
             
         td(colspan="2")
           label
-            input(type='checkbox',id='animal-subjects',data-field="use_animal_subjects")
+            input.animal-subjects.editable(type='checkbox')
             | My Research involves Animal Subjects
       tr
         td(colspan="2") Other Equipment needed 
           button.btn-small#other-equip-help ?
         td(colspan="2")
-          input#other-equip(type="text",data-field="other_equipment")
+          input.other-equip.editable
       tr
         td Proposal
         td(colspan=3)
-          textarea(rows=10,id='proposal-text',data-field="content")
+          textarea.proposal-text.editable(rows=10)
           
   script(type="text/template",id='add-author-template')
     td Author Name
@@ -117,3 +109,50 @@ block templates
     p 
       | To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then 
       | click "Save the Proposal".
+
+
+  script#feedback-template(type="text/template")
+    .modal.hide.fade
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h3 Feedback on Presentation
+      .modal-body 
+        table.table.table-bordered
+          tr
+            td(colspan="2").span8 
+              | Visual Design: Professional appearance of poster, appropriate amount of text, 
+              | legible text, appropriate use of figures, logical presentation of project
+            td.span1.visual-design
+          tr
+            td(colspan="2").span8
+              | Verbal Presentation: Description of project logical and consise, audible and clear
+              | presentation, liveliness and professional style
+            td.verbal-presentation
+          tr
+            td(colspan="2") Organization And Logic: Problem/objective clearly stated, methods and results explained.
+            td.organization-and-logic
+          tr
+            td(colspan="2") Appropriate Knowledge of Field: Demonstrated understanding of probject and boarder context
+            td.knowledge
+          tr
+            td(colspan="2") Clear Explanations/ability to answer questions
+            td.explanations
+          tr
+            td(colspan="2") 
+              | Overall Impression: Impression compared to other posters judges/additional comments useful for judging
+            td.overall
+          tr
+            td
+            td(style="text-align: right") Total Score
+            td.total-score
+          tr
+            td.span2 Strength of Poster
+            td(colspan="2").span8.strength
+          tr
+            td.span2 Suggestions for Improvement
+            td(colspan="2").span8.improvement
+          
+
+      .modal-footer
+        a.btn(href="#",data-dismiss="modal") Close
+

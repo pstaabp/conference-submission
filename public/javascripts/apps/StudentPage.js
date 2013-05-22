@@ -6,7 +6,8 @@ require.config({
         "underscore":           "../vendor/underscore-min",
         "jquery":               "../vendor/jquery",
         "bootstrap":            "../vendor/bootstrap/js/bootstrap",
-        "XDate":                "../vendor/xdate"
+        "XDate":                "../vendor/xdate",
+        "stickit":              "../vendor/backbone-stickit/backbone.stickit"
     },
     urlArgs: "bust=" +  (new Date()).getTime(),
     waitSeconds: 15,
@@ -16,6 +17,7 @@ require.config({
         'bootstrap':['jquery'],
         'backbone-validation': ['Backbone'],
         'XDate':{ exports: 'XDate'},
+        'stickit': ['Backbone','jquery']
     }
 });
 
@@ -63,25 +65,19 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
 
             this.proposalViews = [];
             this.proposals.each(function(prop,i){
-                $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'>Proposal #" + (i+1) + "</a></li>");
+                $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'' data-toggle='tab'>Proposal #" + (i+1) + "</a></li>");
                 $(".tab-content").append("<div class='tab-pane' id='prop"+ (i+1)+ "'></div>")
 
                 //$(".tab-content").append(_.template($("#new-proposal-template").html()));
                 self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1)), parent: self}));
+                console.log(prop);
             });
-            this.activateTabs();
         },
         events: {"click button#submit-proposal": "newProposal"},
                  
         newProposal: function() {
             $("#submit-proposal").val("Creating a New Proposal").prop("disabled",true);
             this.proposals.create({email: this.user.get("email"), author: this.user.get("first_name") + " " + this.user.get("last_name")});
-        },
-        activateTabs: function(){
-            $('#submit-main-tabs a').click(function (e) {
-                e.preventDefault();
-                $(this).tab('show');
-            });   
         },
         userFetched: function(collection, response, options) {
             this.render();
@@ -91,6 +87,8 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
         proposalsFetched: function(collection, response, options) {          
             var self = this;
             console.log("proposalsFetched");
+            console.log(collection);
+            console.log(response);
             console.log(this.proposals);
             this.render();
         }
