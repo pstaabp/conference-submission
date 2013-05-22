@@ -62,11 +62,8 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
                  "change .edit-content": "saveContent",
                  "focusout .edit-content": "closeContent",
                  "change input[type='checkbox']": "changeAcceptedStatus",
-<<<<<<< HEAD
-                 },
-=======
-                 "click .show-feedback": "showHideFeedback"},
->>>>>>> b9f256a047bcceac4e4dcd78853a3429d319ffda
+                 "click .show-feedback": "showHideFeedback"}
+                 ,
         bindings: {".accepted": "accepted",
                 ".author": "author",
                 ".session": "session",
