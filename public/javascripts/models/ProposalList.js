@@ -9,10 +9,14 @@ define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
     var ProposalList = Backbone.Collection.extend({
         model: Proposal,
         initialize:function () {
-    
+            this.sortField = "session";
         },
         comparator: function (proposal){
-            return proposal.get("session");
+            if (this.sortField==="author"){
+                return proposal.get("author").trim().split(/\s+/)[1];
+            } else {
+                return proposal.get(this.sortField);
+            }
         },
         url: '/conference-submission/proposals',
         /*parse: function (response){

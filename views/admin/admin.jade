@@ -42,7 +42,12 @@ block container
     .tab-pane#proposals
       div.row
         div.span4
-          h3 
+          label.radio.inline
+            input.sortable(type="radio",name="sort-proposal",value="session",checked)
+            | Sort By Session
+          label.radio.inline
+            input.sortable(type="radio",name="sort-proposal",value="author")
+            | Sort By Last Name
         div.span4.pull-right.num-proposals
       table.proposal-table.table.table-bordered
         tbody

@@ -2,7 +2,7 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
 
     var ProposalsView = Backbone.View.extend({
         initialize: function(){
-            _.bindAll(this, "render");
+            _.bindAll(this, "render","sortProposals");
             this.rowTemplate = $("#proposal-row-template").html();
             this.proposals = this.options.proposals;
             this.proposals.on("remove",this.render);
@@ -13,6 +13,12 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
             this.proposals.each(function(proposal){
                 self.$(".proposal-table > tbody").append((new ProposalRowView({model: proposal, rowTemplate: self.rowTemplate})).render().el);
             });
+        },
+        events: {"change input.sortable": "sortProposals"},
+        sortProposals: function(evt){
+            this.proposals.sortField = $(evt.target).val();
+            this.proposals.sort();
+            this.render();
         }
     });
 
@@ -47,7 +53,8 @@ define(['Backbone','./common','../views/EditableCell'], function(Backbone,common
                  "dblclick .proposal-content": "editContent",
                  "change .edit-content": "saveContent",
                  "focusout .edit-content": "closeContent",
-                 "change input[type='checkbox']": "changeAcceptedStatus"},
+                 "change input[type='checkbox']": "changeAcceptedStatus",
+                 },
         bindings: {".accepted": "accepted",
                 ".author": "author",
                 ".session": "session",
