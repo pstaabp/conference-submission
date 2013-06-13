@@ -67,8 +67,6 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
             this.proposals.each(function(prop,i){
                 $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'' data-toggle='tab'>Proposal #" + (i+1) + "</a></li>");
                 $(".tab-content").append("<div class='tab-pane' id='prop"+ (i+1)+ "'></div>")
-
-                //$(".tab-content").append(_.template($("#new-proposal-template").html()));
                 self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1)), parent: self}));
                 console.log(prop);
             });
@@ -86,10 +84,6 @@ function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,
         },
         proposalsFetched: function(collection, response, options) {          
             var self = this;
-            console.log("proposalsFetched");
-            console.log(collection);
-            console.log(response);
-            console.log(this.proposals);
             this.render();
         }
 

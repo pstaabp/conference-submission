@@ -1,6 +1,7 @@
 extends layout
 
 block script
+  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js")
   script(type='text/javascript',data-main='/conference-submission/javascripts/apps/FacultyPage',src='/conference-submission/javascripts/vendor/require.js')
 
 block templates
@@ -8,6 +9,7 @@ block templates
   script(type='text/template',id='faculty-tabs-template')
     input(type='hidden',id='user-id',value=user.id)
     include tabs.jade
+    .feedback-modal
 
 
   script(type='text/template',id="proposal-view")
@@ -17,25 +19,26 @@ block templates
       span.span3
         button#save-statement.btn Save the Statement
     table.table.table-bordered
+      tr.feedback-row
       tr
         td Project Title
-        td#title(colspan="3")
+        td.title(colspan="3")
       tr
         td Project Author
-        td#author(colspan="3")
+        td.author-name(colspan="3")
       tr
         td Type of Presentation
-        td#pres-type
+        td.presentation-type
       tr
         td Other Equipment needed 
-        td#other-equip(colspan="2")
+        td.other-equipment(colspan="2")
       tr
         td Proposal
-        td#proposal-text(colspan=3)
+        td.proposal-text(colspan=3)
       tr
         td Sponsor Statement
         td(colspan=3)
-          textarea#sponsor-statement(rows=10)
+          textarea.sponsor-statement(rows=10)
         
   script#add-author-template(type="text/template")
     tr.add-author-row
@@ -55,3 +58,49 @@ block templates
       | Proposals from your students are listed in separate tabs.  If the Proposal is in red, then you need to review it. To 
       | submit a statement for a proposal, click on the tab (for example Proposal #1) then type in your statement in Sponsor Statement.
       |  Click "Save the Statement" at the top of the page.  
+
+
+  script#feedback-template(type="text/template")
+    .modal.hide.fade
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h3 Feedback on Presentation
+      .modal-body 
+        table.table.table-bordered
+          tr
+            td(colspan="2").span8 
+              | Visual Design: Professional appearance of poster, appropriate amount of text, 
+              | legible text, appropriate use of figures, logical presentation of project
+            td.span1.visual-design
+          tr
+            td(colspan="2").span8
+              | Verbal Presentation: Description of project logical and consise, audible and clear
+              | presentation, liveliness and professional style
+            td.verbal-presentation
+          tr
+            td(colspan="2") Organization And Logic: Problem/objective clearly stated, methods and results explained.
+            td.organization-and-logic
+          tr
+            td(colspan="2") Appropriate Knowledge of Field: Demonstrated understanding of probject and boarder context
+            td.knowledge
+          tr
+            td(colspan="2") Clear Explanations/ability to answer questions
+            td.explanations
+          tr
+            td(colspan="2") 
+              | Overall Impression: Impression compared to other posters judges/additional comments useful for judging
+            td.overall
+          tr
+            td
+            td(style="text-align: right") Total Score
+            td.total-score
+          tr
+            td.span2 Strength of Poster
+            td(colspan="2").span8.strength
+          tr
+            td.span2 Suggestions for Improvement
+            td(colspan="2").span8.improvement
+          
+
+      .modal-footer
+        a.btn(href="#",data-dismiss="modal") Close

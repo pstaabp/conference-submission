@@ -1,7 +1,11 @@
 define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit'], function(Backbone, _,FeedbackView){
     /**
      *
-     * This defines a User
+     * This defines a ProposalView, which shows a single proposal
+     *
+     * needed parameters:  
+     *     parent:  the View that is above it.
+     *     editable: a boolean that determine if the proposal can be edited.  
      * 
      * @type {*}
      */
@@ -21,9 +25,7 @@ define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit']
             })
 
     		this.render();
-
             this.fieldsToSave = {};
-
     	},
     	render: function (){
             var self = this; 
@@ -38,8 +40,12 @@ define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit']
                 this.$("submit-proposal-button").text("Edit the Proposal");
             }
 
+           if (this.facultyView){
+                this.$(".feedback-row").html("<td></td>");
+           }
             this.model.get("feedback").each(function(feed,i){
-                this.$(".feedback-row").append("<td><button data-id='" + feed.id  
+ 
+                self.$(".feedback-row").append("<td><button data-id='" + feed.id  
                         +"' class='show-feedback-btn btn'>Feedback from Judge #" + (i+1) + "</button>");
             })
 
@@ -59,6 +65,14 @@ define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit']
         bindings: { ".title": "title",
                     ".author-name": "author",
                     ".author-email": "email",
+                    ".presentation-type": "type",
+                    ".human-subjects": "use_human_subjects",
+                    ".animal-subjects": "use_animal_subjects",
+                    ".sponsor-name": "sponsor_name",
+                    ".sponsor-email": "sponsor_email",
+                    ".proposal-text": "content",
+                    ".other-equipment": "other_equipment",
+                    ".sponsor-statement": "sponsor_statement",
                     ".sponsor-dept": { observe: "type",
                                 selectOptions:  { collection: ["Behavioral Sciences", "Biology & Chemistry",
                                 "Business Administration",

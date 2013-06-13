@@ -28,11 +28,18 @@ function defineModels(mongoose, fn) {
     improvement_comment: String
   });
 
+  var Person = new Schema({
+    first_name: String,
+    last_name: String,
+    email: String
+  })
+
  
   var Proposal = new Schema({
     author: String,
-    other_authors: Array,
     email: String,
+    author_id: String
+    other_authors: [Person],
     session: String,
     type: String,
     sponsor_email: String,
