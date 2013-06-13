@@ -542,14 +542,9 @@ app.get("/conference-submission/posterjudges",function(req,res){
 
       for(i=0;i<_proposals.length;i++){
         console.log(_proposals[i].session);
-        //console.log(_proposals[i]);
         var poster = _und.pick(_proposals[i],'session','author','title');
         var theJudges= []; 
         for(j=0;j<_judges.length;j++){
-          //console.log(_judges[j]);
-          //console.log(_judges[j].session);
-          //console.log(_proposals[i].session);
-          //console.log(_und.contains(_judges[i]))
            if (_und.contains(_judges[j].session,_proposals[i].session)){
             theJudges.push(_judges[j].name);
            }

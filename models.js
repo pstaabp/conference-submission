@@ -38,7 +38,7 @@ function defineModels(mongoose, fn) {
   var Proposal = new Schema({
     author: String,
     email: String,
-    author_id: String
+    author_id: String,
     other_authors: [Person],
     session: String,
     type: String,
