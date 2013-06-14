@@ -865,19 +865,21 @@ app.post("/conference-submission/sessions/reset", function (req,res){
     
       console.log("Attempting to send mail to " + user.email);
 
-      resetPasswordOptions.to=user.email;
+      var resetPasswordEmail = _und.clone(resetPasswordOptions);
+
+      resetPasswordEmail.to=user.email;
       var tmpPassword = parseInt(999999*Math.random());
       console.log(tmpPassword);
 
-      resetPasswordOptions.text += tmpPassword;
-      resetPasswordOptions.html += tmpPassword;
+      resetPasswordEmail.text += tmpPassword;
+      resetPasswordEmail.html += tmpPassword;
 
       User.findByIdAndUpdate(user.id , {reset_pass: true, temp_pass: tmpPassword}, 
         function (error, _user) {
           if (error){console.log(error);} 
           if (_user){
             console.log(_user);
-            smtpTransport.sendMail(resetPasswordOptions, function(err,response){
+            smtpTransport.sendMail(resetPasswordEmail, function(err,response){
               if(err){
                 console.log(err);
               }else{
