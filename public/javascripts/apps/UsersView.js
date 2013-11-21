@@ -1,10 +1,11 @@
-define(['Backbone'], function(Backbone){
+define(['Backbone','views/CollectionTableView','models/UserList'], function(Backbone,CollectionTableView,UserList){
     var UsersView = Backbone.View.extend({
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this, "render");
-            this.parent = this.options.parent;
+            this.parent = options.parent;
             this.rowTemplate = _.template($("#user-row-template").html());
             this.parent.users.on("remove",this.render);
+            this.tableSetup();
         },
         render: function(){
             var self = this
@@ -20,7 +21,7 @@ define(['Backbone'], function(Backbone){
                     users = this.parent.users.filter(function(user){return user.get("role")==="faculty"});
                     break;
             }
-            var userTable = this.$(".user-table tbody");
+/*            var userTable = this.$(".user-table tbody");
             userTable.html("");
             _(users).each(function(_user){
                 var props;
@@ -36,7 +37,16 @@ define(['Backbone'], function(Backbone){
                         break;
                     }
                 userTable.append( (new UserRowView({model: _user, template: self.rowTemplate})).render().el);
-            });
+            }); */
+
+            this.userTable = new CollectionTableView({columnInfo: this.cols, collection: new UserList(users), 
+                                paginator: {page_size: 10, button_class: "btn btn-default", row_class: "btn-group"}});
+            this.userTable.render().$el.addClass("table table-bordered table-condensed");
+            this.$('.users-table').html(this.userTable.el);
+
+            // set up some styling
+            this.userTable.$(".paginator-row td").css("text-align","center");
+            this.userTable.$(".paginator-page").addClass("btn btn-default");
 
             this.$("a.showProposal").truncate()
         },
@@ -50,27 +60,23 @@ define(['Backbone'], function(Backbone){
             $(".proposal-modal .modal").width($(window).width()*0.75);
             $(".proposal-modal .modal").css("margin-left", -1*$(".proposal-modal .modal").width()/2 + "px");
 
-        }
-
-    });
-
-    var UserRowView = Backbone.View.extend({
-        tagName: "tr",
-        initialize: function() {
-            _.bindAll(this, "render");
-            this.template = this.options.template;
         },
-        render: function (){
-            this.$el.html(this.template());
-            this.stickit();
-            return this;
+        tableSetup: function () {
+            var self = this;
+            this.cols = [{name: "Delete", key: "delete", classname: "delete-set", 
+                stickit_options: {update: function($el, val, model, options) {
+                    $el.html($("#delete-button-template").html());
+                    $el.children(".btn").on("click",function() {self.deleteUser(model);});
+                }}},
+            {name: "First Name", key: "first_name", classname: "first-name", editable: false, datatype: "string"},
+            {name: "Last Name", key: "last_name", classname: "last-name", editable: false, datatype: "string"},
+            {name: "Role", key: "role", classname: "role",stickit_options: {selectOptions: {
+                collection: [{value:"student", label: "Student"},{value: "faculty", label: "Faculty"},{value: "admin", label: "admin"}]}}},
+            {name: "Email", key: "email", classname: "email", editable: false, datatype: "string"}
+            ];
+
         },
-        events: {"click .delete-user": "deleteUser"},
-        bindings: {".first-name": "first_name",
-                    ".last-name": "last_name",
-                    ".role": "role",
-                    ".email": "email"},
-        deleteUser: function (){
+        deleteUser: function (model){
             var del = confirm("Do you wish to delete the user: " + this.model.get("first_name") + " " 
                                     + this.model.get("last_name") +"?");
             if (del){

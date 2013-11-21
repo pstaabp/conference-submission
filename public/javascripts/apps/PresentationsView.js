@@ -1,8 +1,8 @@
-define(['Backbone','stickit','jquery-truncate'], function(Backbone){
+define(['Backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
     var PresentationsView = Backbone.View.extend({
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this, "render");
-            this.parent = this.options.parent;
+            this.parent = options.parent;
             
         },
         render: function() {
@@ -49,10 +49,10 @@ define(['Backbone','stickit','jquery-truncate'], function(Backbone){
 
      var OralPresentationScheduleView = Backbone.View.extend({
         rowTemplate: _.template($("#proposal-row-template").html()),
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this,"render","reorder");
-            this.parent = this.options.parent;
-            this.proposals = this.options.proposals;
+            this.parent = options.parent;
+            this.proposals = options.proposals;
 
         },
         render: function (){
@@ -97,10 +97,10 @@ define(['Backbone','stickit','jquery-truncate'], function(Backbone){
     });
 
 var PostersView = Backbone.View.extend({
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this, "render");
             this.rowTemplate =  _.template($("#presentation-row-template").html());
-            this.proposals = this.options.proposals;
+            this.proposals = options.proposals;
             
         },
         render: function (){
@@ -142,10 +142,10 @@ var PostersView = Backbone.View.extend({
     var PresentationRowView = Backbone.View.extend({
         tagName: "tr",
         className: "presentation-row",
-        initialize: function (){
+        initialize: function (options){
             _.bindAll(this, "render","showDetails");
-            this.rowTemplate = this.options.rowTemplate;
-            this.reorder = this.options.reorder;
+            this.rowTemplate = options.rowTemplate;
+            this.reorder = options.reorder;
             this.model.on("change:session",this.render);
         },
         render: function(){
@@ -169,11 +169,11 @@ var PostersView = Backbone.View.extend({
     });
 
 	var PresentationView = Backbone.View.extend({
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this, "render");
             this.rowTemplate =  _.template($("#presentation-row-template").html());
-            this.proposals = this.options.proposals;
-            this.type = this.options.type;
+            this.proposals = options.proposals;
+            this.type = options.type;
             
         },
         render: function (){

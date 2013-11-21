@@ -1,14 +1,16 @@
-define(['Backbone','./common','../models/FeedbackList','../models/Feedback','../views/FeedbackView', 'stickit','bootstrap'], 
+define(['Backbone','apps/common','models/FeedbackList','models/Feedback','views/FeedbackView', 
+    'stickit'], 
     function(Backbone,common,FeedbackList,Feedback,FeedbackView){
 
     var AllFeedbackView = Backbone.View.extend({
-    	initialize: function(){
+    	initialize: function(options){
     		_.bindAll(this,"render");
     		this.rowTemplate = $("#feedback-row-template").html();
+            this.proposals = options.proposals;
     	},
     	render: function(){
     		var self = this;
-    		this.allFeedback = this.options.proposals.filter(function(prop) { return prop.get("feedback").length >0 });
+    		this.allFeedback = this.proposals.filter(function(prop) { return prop.get("feedback").length >0 });
     		var table = this.$(".all-feedback-table tbody").html("");
     		_(this.allFeedback).each(function(proposal){
     			table.append((new FeedbackRowView({model: proposal, rowTemplate: self.rowTemplate})).render().el);
@@ -18,9 +20,9 @@ define(['Backbone','./common','../models/FeedbackList','../models/Feedback','../
 
 	var FeedbackRowView = Backbone.View.extend({
 		tagName: "tr",
-		initialize: function(){
+		initialize: function(options){
     		_.bindAll(this,"render");
-    		this.rowTemplate = this.options.rowTemplate;
+    		this.rowTemplate = options.rowTemplate;
     	},
     	render: function(){
     		this.$el.html(this.rowTemplate);

@@ -1,34 +1,6 @@
-//require config
-require.config({
-    paths: {
-        "Backbone":             "../vendor/backbone-0.9.9",
-        "backbone-validation":  "../vendor/backbone-validation",
-        "underscore":           "../vendor/underscore-min",
-        "jquery":               "../vendor/jquery",
-        "bootstrap":            "../vendor/bootstrap/js/bootstrap",
-        "XDate":                "../vendor/xdate",
-        "stickit":              "../vendor/backbone-stickit/backbone.stickit"
-    },
-    urlArgs: "bust=" +  (new Date()).getTime(),
-    waitSeconds: 15,
-    shim: {
-        'underscore': { exports: '_' },
-        'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
-        'bootstrap':['jquery'],
-        'backbone-validation': ['Backbone'],
-        'XDate':{ exports: 'XDate'},
-        'stickit': ['Backbone','jquery']
-    }
-});
 
-require(['Backbone', 'underscore',
-    '../models/UserList','../models/User','../models/ProposalList',
-    '../views/PersonalInfoView',
-    '../views/ProposalView',
-    '../models/Proposal',
-    '../views/WebPage',
-    './common',
-    'bootstrap'],
+define(['Backbone', 'underscore','models/UserList','models/User','models/ProposalList',
+    'views/PersonalInfoView','views/ProposalView','models/Proposal','views/WebPage','common','bootstrap'],
 function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,Proposal,WebPage,common){
 
     var StudentPage = WebPage.extend({

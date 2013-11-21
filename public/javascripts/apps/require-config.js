@@ -3,18 +3,17 @@
   It should be loaded directly before the require.js is loaded in a page.  */
 
 var require = {
+    baseUrl: "/conference-submission/javascripts",
     paths: {
-        "Backbone":             "../vendor/backbone-0.9.9",
-        "backbone-validation":  "../vendor/backbone-validation",
-        "underscore":           "../vendor/underscore",
-        "jquery":               "../vendor/jquery",
-        "jquery-truncate":      "../vendor/jquery.truncate.min",
-        "bootstrap":            "../vendor/bootstrap/js/bootstrap",
-        "XDate":                "../vendor/xdate",
-        "jquery-ui-effect":     "../vendor/jquery-ui/ui/jquery.ui.effect",
-        "jquery-ui-blind":      "../vendor/jquery-ui/ui/jquery.ui.effect-blind",
-        "stickit":              "../vendor/backbone-stickit/backbone.stickit"
-
+        "Backbone":             "bower_components/backbone/backbone",
+        "backbone-validation":  "bower_components/backbone-validation/dist/backbone-validation",
+        "underscore":           "bower_components/underscore/underscore",
+        "jquery":               "bower_components/jquery/jquery",
+        "jquery-truncate":      "bower_components/jquery-truncate/jquery.truncate",
+        "bootstrap":            "bower_components/bootstrap/docs/assets/js/bootstrap",
+        "moment":               "bower_components/moment/moment",
+        "jquery-ui":            "bower_components/jquery-ui/ui/jquery-ui",
+        "stickit":              "bower_components/backbone.stickit/backbone.stickit"
     },
    // urlArgs: "bust=" +  (new Date()).getTime(),
     waitSeconds: 15,
@@ -23,10 +22,9 @@ var require = {
         'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
         'bootstrap':['jquery'],
         'backbone-validation': ['Backbone'],
-        'jquery-ui-effect': ['jquery'],
-        'jquery-ui-blind': ['jquery-ui-effect'],
+        'jquery-ui': ['jquery'],
         'jquery-truncate': ['jquery'],
-        'XDate':{ exports: 'XDate'},
+        'moment': {exports: "moment"},
         'stickit': ['Backbone','jquery']
     }
 };

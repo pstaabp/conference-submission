@@ -1,9 +1,9 @@
-define(['Backbone'], function(Backbone){
+define(['Backbone','bootstrap'], function(Backbone){
 
     var JudgeScheduleView = Backbone.View.extend({
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this,"render","showPosters","showOrals");
-            this.parent = this.options.parent;
+            this.parent = options.parent;
         },
         render: function () {
             this.$(".posters,.orals").css("display","none");
@@ -40,7 +40,8 @@ define(['Backbone'], function(Backbone){
 
             var sessionNames = "ABCDEFGHIJKL";
 
-            var posters = _(this.parent.getPosters()).sortBy(function(poster){ return poster.get("session");});
+            var posters = _(this.parent.proposals.filter(function(prop) { return prop.get("type")==="Poster Presentation";}))
+                    .sortBy(function(poster){ return poster.get("session");});
 
             for(var i=0; i<posters.length; i+=4){
                 var rowString = "<tr>";
@@ -66,7 +67,7 @@ define(['Backbone'], function(Backbone){
             });
 
             var judgeListCell = this.$("#judge-list-poster");
-            judgeListCell.parent().attr("rowspan",parseInt(Math.floor(this.parent.getPosters().length/4)+2));
+            judgeListCell.parent().attr("rowspan",parseInt(Math.floor(posters.length/4)+2));
             _(judges).each(function(judge){  
                 var obj = {};
                 _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});

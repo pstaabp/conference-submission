@@ -1,16 +1,16 @@
-define(['Backbone', 'underscore','../models/MessageList','../models/Message'], 
+define(['Backbone', 'underscore','models/MessageList','models/Message'], 
     function(Backbone, _,MessageList,Message){
     var Closeable = Backbone.View.extend({
         className: "closeablePane",
         text: "",
         display: "none",
-        initialize: function(){
+        initialize: function(options){
         	var self = this; 
             // every function that uses 'this' as the current object should be in here
         	_.bindAll(this, 'render','setHTML','close','clear','appendHTML','open','addMessage','removeMessage','showMessages'); 
-            _.extend(this,this.options);
+            _.extend(this,options);
         	this.$el.addClass("alert");
-        	_(this.options.classes).each(function (cl) {self.$el.addClass(cl);});
+        	_(options.classes).each(function (cl) {self.$el.addClass(cl);});
         	
             this.messages = new MessageList();
         	this.render();

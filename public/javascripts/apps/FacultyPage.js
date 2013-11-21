@@ -1,7 +1,7 @@
 
 require(['Backbone', 'underscore',
-    '../models/UserList','../models/User','../models/ProposalList',"../views/WebPage","../views/PersonalInfoView","../views/ProposalView","./common",
-    'bootstrap'],
+    'models/UserList','models/User','models/ProposalList',"views/WebPage","views/PersonalInfoView",
+    "views/ProposalView","apps/common",'bootstrap'],
 function(Backbone, _, UserList, User, ProposalList,WebPage,PersonalInfoView,ProposalView,common){
     var FacultyView = WebPage.extend({
         initialize: function () {

@@ -1,11 +1,11 @@
 define(['Backbone'], function(Backbone){
 
     var EmailView = Backbone.View.extend({
-        initialize: function () {
+        initialize: function (options) {
             _.bindAll(this,"render");
-            this.users = this.options.users;
-            this.proposals = this.options.proposals;
-            this.judges = this.options.judges;
+            this.users = options.users;
+            this.proposals = options.proposals;
+            this.judges = options.judges;
         },
         render: function() {
             var orals = this.proposals.where({type: "Oral Presentation"});

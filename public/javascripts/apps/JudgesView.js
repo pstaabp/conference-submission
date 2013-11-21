@@ -1,8 +1,8 @@
 define(['Backbone'], function(Backbone){
     var JudgesView = Backbone.View.extend({
-        initialize: function () {
+        initialize: function (options) {
             _.bindAll(this,"render");
-            this.parent = this.options.parent;
+            this.parent = options.parent;
             this.rowTemplate = _.template($("#judges-row-template").html());
             this.parent.judges.on("remove", this.render);
         },
@@ -18,9 +18,9 @@ define(['Backbone'], function(Backbone){
 
     var JudgesRowView = Backbone.View.extend({
         tagName: "tr",
-        initialize: function () {
+        initialize: function (options) {
             _.bindAll(this,"render","save","deleteJudge");
-            this.rowTemplate = this.options.rowTemplate;
+            this.rowTemplate = options.rowTemplate;
             this.model.on("change",function(model) {console.log(model)});
 
         },

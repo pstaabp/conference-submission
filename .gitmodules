@@ -1,6 +1,0 @@
-[submodule "public/javascripts/vendor/backbone-stickit"]
-	path = public/javascripts/vendor/backbone-stickit
-	url = git://github.com/NYTimes/backbone.stickit.git
-[submodule "public/javascripts/vendor/jquery-ui"]
-	path = public/javascripts/vendor/jquery-ui
-	url = git://github.com/jquery/jquery-ui.git

@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','bootstrap','stickit'], function(Backbone, _){
+define(['Backbone', 'underscore','stickit'], function(Backbone, _){
 var FeedbackView = Backbone.View.extend({
         initialize: function (){
             _.bindAll(this,"render");

@@ -1,16 +1,16 @@
-define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','../models/Feedback', 
-    'jquery-ui-blind','stickit','bootstrap'], 
-    function(Backbone,common,EditableCell,FeedbackList,Feedback){
+define(['Backbone','./common','models/FeedbackList','models/Feedback', 
+    'jquery-ui','stickit','bootstrap'], 
+    function(Backbone,common,FeedbackList,Feedback){
 
     var ProposalsView = Backbone.View.extend({
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this, "render","sortProposals");
             this.rowTemplate = $("#proposal-row-template").html();
-            this.proposals = this.options.proposals;
+            this.proposals = options.proposals;
             this.proposals.on("remove",this.render);
 
             // this is used for the stickit select options below. 
-            this.judgeList = this.options.judges.chain().sortBy(function(judge){ return judge.get("name");}).
+            this.judgeList = options.judges.chain().sortBy(function(judge){ return judge.get("name");}).
                 map(function(judge){ return {name: judge.get("name"), id: judge.id};}).value();            
         },
         render: function(){
@@ -33,18 +33,18 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
     var ProposalRowView = Backbone.View.extend({
         tagName: "tr",
         className: "proposal-row",
-        initialize: function(){
+        initialize: function(options){
             _.bindAll(this,"render","deleteProposal","changeAcceptedStatus");
-            this.rowTemplate = this.options.rowTemplate;
-            this.judgeList = this.options.judgeList;
+            this.rowTemplate = options.rowTemplate;
+            this.judgeList = options.judgeList;
 
         },
         render: function() {
             var self = this;
             if(!this.model) { return this; }
 
-            var subDate = (new XDate(this.model.get("submit_date"))).toLocaleDateString();
-            var subTime = (new XDate(this.model.get("submit_date"))).toLocaleTimeString();
+            var subDate = this.model.get("submit_date");
+            var subTime = this.model.get("submit_date");
 
             this.$el.html(this.rowTemplate);
             this.$el.attr("id",this.model.cid);
@@ -127,10 +127,10 @@ define(['Backbone','./common','../views/EditableCell','../models/FeedbackList','
     });
 
     var FeedbackView = Backbone.View.extend({
-        initialize: function (){
+        initialize: function (options){
             _.bindAll(this,"render","newFeedback");
-            this.judgeList = this.options.judgeList;
-            this.proposal = this.options.proposal;
+            this.judgeList = options.judgeList;
+            this.proposal = options.proposal;
         },
         render: function() {
             var self = this; 

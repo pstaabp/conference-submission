@@ -1,25 +1,4 @@
-//require config
-require.config({
-    paths: {
-        "Backbone":             "../vendor/backbone-0.9.9",
-        "backbone-validation":  "../vendor/backbone-validation",
-        "underscore":           "../vendor/underscore",
-        "jquery":               "../vendor/jquery",
-        "bootstrap":            "../vendor/bootstrap/js/bootstrap",
-        "XDate":                "../vendor/xdate",
-    },
-    urlArgs: "bust=" +  (new Date()).getTime(),
-    waitSeconds: 15,
-    shim: {
-        'underscore': { exports: '_' },
-        'Backbone': { deps: ['underscore', 'jquery'], exports: 'Backbone'},
-        'bootstrap':['jquery'],
-        'backbone-validation': ['Backbone'],
-        'XDate':{ exports: 'XDate'},
-    }
-});
-
-require(['Backbone', 'underscore','../models/UserList','../models/User',
+define(['Backbone', 'underscore','../models/UserList','../models/User',
     '../views/WebPage','./common','bootstrap'],
 function(Backbone, _,UserList, User, WebPage, common){ 
 

@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','../views/FeedbackView', 'bootstrap','stickit'], function(Backbone, _,FeedbackView){
+define(['Backbone', 'underscore','views/FeedbackView', 'stickit'], function(Backbone, _,FeedbackView){
     /**
      *
      * This defines a ProposalView, which shows a single proposal

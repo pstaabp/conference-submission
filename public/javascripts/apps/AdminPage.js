@@ -1,15 +1,15 @@
 // make sure that require-config.js is loaded before this file. 
 
 
-require(['Backbone', 'underscore', './globals',
-    '../models/UserList','../models/User','../models/ProposalList',
-    '../models/Proposal',"../models/Judge","../models/JudgeList","./UsersView",  
-    './ProposalsView', './PresentationsView',
-    './JudgesView', './JudgeScheduleView', './EmailView', './AllFeedbackView',
-    '../views/EditableCell', '../views/WebPage',
-    './common','bootstrap',"backbone-validation"],
+define(['Backbone', 'underscore', 'apps/globals',
+    'models/UserList','models/User','models/ProposalList',
+    'models/Proposal',"models/Judge","models/JudgeList","apps/UsersView",  
+    'apps/ProposalsView', 'apps/PresentationsView',
+    'apps/JudgesView', 'apps/JudgeScheduleView', 'apps/EmailView', 'apps/AllFeedbackView',
+    'views/WebPage',
+    'apps/common','bootstrap',"backbone-validation"],
 function(Backbone, _, globals, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersView, ProposalsView, PresentationsView,
-            JudgesView, JudgeScheduleView, EmailView, AllFeedbackView, EditableCell,WebPage,common){
+            JudgesView, JudgeScheduleView, EmailView, AllFeedbackView,WebPage,common){
 
     var AdminPage = WebPage.extend({
         initialize: function () {

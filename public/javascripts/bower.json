@@ -1,0 +1,22 @@
+{
+  "name": "conference-submission",
+  "version": "0.9.0",
+  "main": "public/styles/main.css",
+  "ignore": [
+    ".jshintrc",
+    "**/*.txt"
+  ],
+  "dependencies": {
+    "backbone": "* ",
+    "backbone.stickit": "*",
+    "backbone-validation": "*",
+    "jquery": "1.9.*",
+    "jquery-ui": "*",
+    "jquery-truncate": "*",
+    "requirejs": "*",
+    "underscore": "*",
+    "moment": "*",
+    "bootstrap": "2.3.*",
+    "font-awesome": "*"
+  }
+}
