@@ -4,6 +4,7 @@
  */
 
 var express = require('express')
+  , settings = require('./settings')
   , flash = require('connect-flash')
   , jade = require('jade')
   , _und = require('underscore')
@@ -17,6 +18,7 @@ var express = require('express')
   , models = require('./models')
   , templatesDir   = path.join(__dirname, 'templates')
   , emailTemplates = require('email-templates')
+  , LoginRoutes = require('./routes/loginRoutes')
   , db
   , User
   , Proposal
@@ -902,6 +904,10 @@ app.post("/conference-submission/sessions/reset", function (req,res){
   User.findOne({email: _email},emailReset );
 
 });
+
+
+var loginRoutes = new LoginRoutes(app,User,settings.settings);  // not sure why I need to do settings.settings here to pass in the settings. 
+
 
 
 

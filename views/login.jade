@@ -1,0 +1,28 @@
+extends layout
+
+block container
+  h2 Log In
+  p
+    | Use your falconkey and password to login onto to the website. 
+  form.users#login(method='post', action='/conference-submission/login')
+    table
+      tr
+        td
+          label falconkey:
+        td
+          input(name='user[falconkey]', value=user.falconkey || '')
+      tr
+        td
+          label Password:
+        td
+          input(name='user[password]', value=user.password || '', type='password')
+      tr
+        td
+        td
+        td
+          input.btn(type='submit', value='Log In')
+block templates
+  script#help-text(type='text/template')
+    p
+      | Help text!!
+
