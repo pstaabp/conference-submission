@@ -906,7 +906,7 @@ app.post("/conference-submission/sessions/reset", function (req,res){
 });
 
 
-var loginRoutes = new LoginRoutes(app,User,settings.settings);  // not sure why I need to do settings.settings here to pass in the settings. 
+var loginRoutes = new LoginRoutes(app,settings.settings);  // not sure why I need to do settings.settings here to pass in the settings. 
 
 
 

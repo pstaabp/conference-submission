@@ -4,6 +4,8 @@ block container
   h2 Log In
   p
     | Use your falconkey and password to login onto to the website. 
+  if msg  
+    .alert.alert-danger #{msg}
   form.users#login(method='post', action='/conference-submission/login')
     table
       tr
