@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
+define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
     /**
      *
      * This defines a User
@@ -18,11 +18,7 @@ define(['Backbone', 'underscore','./Proposal'], function(Backbone, _,Proposal){
                 return proposal.get(this.sortField);
             }
         },
-        url: '/conference-submission/proposals',
-        /*parse: function (response){
-            console.log(response);
-            return response;
-        }*/
+        url: '/conference-submission/proposals'
     });
 
     return ProposalList;

@@ -1,4 +1,4 @@
-define(['Backbone','apps/common','models/FeedbackList','models/Feedback','views/FeedbackView', 
+define(['backbone','apps/common','models/FeedbackList','models/Feedback','views/FeedbackView', 
     'stickit'], 
     function(Backbone,common,FeedbackList,Feedback,FeedbackView){
 

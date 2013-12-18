@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore'], function(Backbone, _){
+define(['backbone'], function(Backbone){
     /**
      *
      * This defines an AuthorList

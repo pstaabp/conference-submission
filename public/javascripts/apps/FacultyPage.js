@@ -1,5 +1,5 @@
 
-require(['Backbone', 'underscore',
+define(['backbone', 'underscore',
     'models/UserList','models/User','models/ProposalList',"views/WebPage","views/PersonalInfoView",
     "views/ProposalView","apps/common",'bootstrap'],
 function(Backbone, _, UserList, User, ProposalList,WebPage,PersonalInfoView,ProposalView,common){

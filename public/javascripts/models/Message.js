@@ -3,7 +3,7 @@
   * 
   */
 
-define(['Backbone', 'underscore','moment'], function(Backbone, _,moment){
+define(['backbone','moment'], function(Backbone, moment){
     var Message = Backbone.Model.extend({
     	defaults:  { text: "", dateCreated: moment(), expiration: 30} // in seconds},
     });

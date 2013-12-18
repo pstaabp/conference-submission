@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','views/FeedbackView', 'stickit'], function(Backbone, _,FeedbackView){
+define(['backbone', 'underscore','views/FeedbackView', 'stickit'], function(Backbone, _,FeedbackView){
     /**
      *
      * This defines a ProposalView, which shows a single proposal
@@ -150,7 +150,7 @@ define(['Backbone', 'underscore','views/FeedbackView', 'stickit'], function(Back
     });
 
 
-    var AdditionalAuthorView = Backbone.View.extend({
+    var AdditionalAuthorView = backbone.View.extend({
         tagName: "tr",
         className: "add-author-row",
         initialize: function (){

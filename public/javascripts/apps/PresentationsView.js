@@ -1,4 +1,4 @@
-define(['Backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
+define(['backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
     var PresentationsView = Backbone.View.extend({
         initialize: function(options){
             _.bindAll(this, "render");
@@ -48,7 +48,6 @@ define(['Backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
 
 
      var OralPresentationScheduleView = Backbone.View.extend({
-        rowTemplate: _.template($("#proposal-row-template").html()),
         initialize: function(options){
             _.bindAll(this,"render","reorder");
             this.parent = options.parent;
@@ -143,7 +142,7 @@ var PostersView = Backbone.View.extend({
         tagName: "tr",
         className: "presentation-row",
         initialize: function (options){
-            _.bindAll(this, "render","showDetails");
+            _.bindAll(this, "render","showHideDetails");
             this.rowTemplate = options.rowTemplate;
             this.reorder = options.reorder;
             this.model.on("change:session",this.render);
@@ -154,16 +153,18 @@ var PostersView = Backbone.View.extend({
             this.stickit();
             return this;
         },
-        events: {"click button.showDetails": "showDetails"},
+        events: {"click button.showDetails": "showHideDetails"},
         bindings: {".title": "title",
     				".author": "author",
     				".session": "session"},
-        showDetails: function (evt){
-            $(".proposal-modal").html(_.template($("#proposal-view-modal").html(),this.model.attributes));
-            $(".proposal-modal .modal").modal(); 
-            $(".proposal-modal .modal").width($(window).width()*0.75);
-            $(".proposal-modal .modal").css("margin-left", -1*$(".proposal-modal .modal").width()/2 + "px");
-
+        showHideDetails: function (evt){
+            if($(evt.target).text()==="Show Details"){
+                $(evt.target).text("Hide Details");
+                this.$el.after(new PresentationDetailView({model: this.model}).render().el);
+            } else {
+                $(evt.target).text("Show Details");
+                this.$el.next().remove();
+            }  
         }
 
     });
@@ -185,6 +186,32 @@ var PostersView = Backbone.View.extend({
             });
             return this;
         }
+    });
+
+     var PresentationDetailView = Backbone.View.extend({
+        tagName: "tr",
+        className: "presentation-detail-row",
+        render: function(){
+            var row = $("<td colspan='5'></td>");
+            row.html($("#presentation-details-template").html());
+            this.$el.html(row);
+            this.$el.data("id",this.model.id);
+            this.stickit();
+            return this;
+        },
+         bindings: {".accepted": "accepted",
+                ".author": "author",
+                ".session": "session",
+                ".type": "type",
+                ".title": "title",
+                ".sponsor-name": "sponsor_name",
+                ".sponsor-email": "sponsor_email",
+                ".sponsor-dept": "sponsor_dept",
+                ".use-human-subjects": "use_human_subjects",
+                ".use-animal-subjects": "use_animal_subjects",
+                ".proposal-content": "content",
+                ".sponsor-statement": "sponsor_statement"
+        },    
     });
 
 

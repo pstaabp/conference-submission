@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','../models/UserList','../models/User',
+define(['backbone', 'underscore','../models/UserList','../models/User',
     '../views/WebPage','./common','bootstrap'],
 function(Backbone, _,UserList, User, WebPage, common){ 
 

@@ -1,4 +1,4 @@
-[-> **Documentation for current/stable release: 0.6.3**](http://nytimes.github.com/backbone.stickit/)
+[-> **Documentation for current/stable release: 0.7.0**](http://nytimes.github.com/backbone.stickit/)
 
 **The following is documentation for the code in master/edge version...**
 
@@ -10,7 +10,7 @@ Stickit is a Backbone data binding plugin that binds Model attributes to View el
 
 ## Download + Source
 
-[download v0.6.3](http://nytimes.github.com/backbone.stickit/downloads/backbone.stickit_0.6.3.zip)
+[download v0.7.0](http://nytimes.github.com/backbone.stickit/downloads/backbone.stickit_0.7.0.zip)
 
 [download master/edge](https://raw.github.com/NYTimes/backbone.stickit/master/backbone.stickit.js)
 
@@ -60,30 +60,44 @@ Uses `view.bindings` and `view.model` to setup bindings. Optionally, you can pas
 
 Removes event bindings from all models. Optionally, a model can be passed in which will remove events for the given model and its corresponding bindings configuration only. Unbinding will be taken care of automatically in `view.remove()`, but if you want to unbind early, use this.
 
+For each model that is unbound a `stickit:unstuck` event will be triggered.
+
 ## Bindings
 
-The `view.bindings` is a hash of jQuery or Zepto selector keys with binding configuration values. Similar to the callback definitions configured in `view.events`, an actual function or a string function name may be configured. 
+The `view.bindings` is a hash of jQuery or Zepto selector keys with binding configuration values. Similar to the callback definitions configured in `view.events`, bindings callbacks can be defined as the name of a method on the view or a direct function body. `view.bindings` may also be defined as a function.
+
+Once you are familiarized with the bindings callbacks, use [this reference](#binding-callbacks-flowchart) for a better idea of when they are called.
 
 ### observe
 
-A string or array which is used to map a model attribute to a view element. If binding to `observe` is the only configuration needed, then it can be written in short form where the attribute name is the value of the whole binding configuration.
+A string, function, or array which is used to map a model attribute to a view element. If binding to `observe` is the only configuration needed, then it can be written in short form where the attribute name is the value of the whole binding configuration.
 
-Note, binding to multiple model attributes using an array configuration only applies to one-way bindings (model->view), and should be paired with an `onGet` callback.
+Notes on binding to an array of attributes: when binding from model->view, this configuration should be paired with an `onGet` callback that can unpack/format the values. When binding from view->model, then `onSet` or `getVal` should be defined and should return an array of values that stickit will set into the model. 
 
 ```javascript  
   bindings: {
     // Short form binding
     '#author': 'author',
+
     // Normal binding
     '#title': {
       observe: 'title'
-    }
+    },
+
+    // As a function
+    'body': function() {
+      return 'body';
+    },
+
     // Bind to multiple model attributes
     '#header': {
       observe: ['title', 'author'],
       onGet: function(values) {
         // onGet called after title *or* author model attributes change.
-        return values[0] + ', by ' + values[1];
+        return values[0] + '-' + values[1];
+      },
+      onSet: function(value) {
+        return value.split('-');
       }
     }
   }
@@ -172,7 +186,7 @@ A boolean value or a function that returns a boolean value which controls whethe
       updateModel: 'confirmFormat'
     }
   },
-  confirmFormat: function(val, options) {
+  confirmFormat: function(val, event, options) {
     // Only update the title attribute if the value starts with "by".
     return val.startsWith('by ');
   }
@@ -251,9 +265,25 @@ Called for each binding after it is configured in the initial call to `stickit()
   }
 ```
 
+### destroy
+
+Called for each binding after it is unstuck from the model and view. Useful for tearing down third-party plugins or events that were configured in `initialze`.
+
+```javascript  
+  bindings: {
+    '#album': {
+      observe: 'Tomorrow\'s Harvest',
+      destroy: function($el, model, options) {
+        // Tear down any events or clean up.
+      }
+    }
+  }
+```
+
 ### visible and visibleFn
 
 When true, `visible` shows or hides the view element based on the model attribute's truthiness. `visible` may also be defined with a callback which should return a truthy value.
+The `updateView` option defaults to `false` when using `visible`. You must opt-in to `updateView` in order to have both view element visibility and value changes bound to the observed attribute.
 
 If more than the standard jQuery show/hide is required, then you can manually take control by defining `visibleFn` with a callback. 
 
@@ -270,7 +300,8 @@ If more than the standard jQuery show/hide is required, then you can manually ta
   bindings: {
     '#title': {
       observe: 'title',
-      visible: function(val, options) { return val == 'Mille Plateaux'; }
+      visible: function(val, options) { return val == 'Mille Plateaux'; },
+      updateView: true
     }
   }
 ```
@@ -291,14 +322,13 @@ If more than the standard jQuery show/hide is required, then you can manually ta
 
 ## Form Element Bindings and Contenteditable
 
-By default, form and contenteditable elements will be configured with two-way bindings, syncing changes in the view elements with model attributes. Optionally, one-way bindings can be configured with `updateView` or `updateModel`. With the `eventsOverride`, you can specify a different set of events to use for reflecting changes to the model.
+By default, form and contenteditable elements will be configured with two-way bindings, syncing changes in the view elements with model attributes. Optionally, one-way bindings can be configured with `updateView` or `updateModel`. With the `events`, you can specify a different set of events to use for reflecting changes to the model.
 
 The following is a list of the supported form elements, their binding details, and the default events used for binding:  
 
  - input, textarea, and contenteditable
    - element value synced with model attribute value
-   - input[type=number] will update the model with a Number value 
-   - `keyup`, `change`, `cut`, and `paste` events are used for handling
+   - `propertychange`, `input`, `change` events are used for handling
  - input[type=checkbox]
    - `checked` property determined by the truthiness of the model attribute or if the checkbox "value" attribute is defined, then its value is used to match against the model. If a binding selector matches multiple checkboxes then it is expected that the observed model attribute will be an array of values to match against the checkbox value attributes.
    - `change` event is used for handling
@@ -329,14 +359,14 @@ Specify a list of events which will override stickit's default events for a form
 
 With the given `collection`, creates `<option>`s for the bound `<select>`, and binds their selected values to the observed model attribute. It is recommended to use `selectOptions` instead of pre-rendering select-options since Stickit will render them and can bind Objects, Arrays, and non-String values as data to the `<option>` values. The following are configuration options for binding:
 
- - `collection`: an object path of a collection relative to `window` or `view`/`this`, or a string function reference which returns a collection of objects. A collection should be either an  array of objects or Backbone.Collection.
+ - `collection`: an object path of a collection relative to `window` or `view`/`this`, or a string function reference which returns a collection of objects. A collection should be an array of objects, a Backbone.Collection or a value/label map.
  - `labelPath`: the path to the label value for select options within the collection of objects. Default value when undefined is `label`.
  - `valuePath`: the path to the values for select options within the collection of objects. When an options is selected, the value that is defined for the given option is set in the model. Leave this undefined if the whole object is the value or to use the default `value`.
  - `defaultOption`: an object with `label` and `value` keys, used to define a default option value. A common use case would be something like the following: `{label: "Choose one...", value: null}`.
 
 When bindings are initialized, Stickit will build the `<select>` element with the `<option>`s and bindings configured. `selectOptions` are not required - if left undefined, then Stickit will expect that the `<option>`s are pre-rendered and build the collection from the DOM.
 
-**Note:** if you are using Zepto and referencing object values for your select options, like in the second example, then you will need to also include the Zepto data module.
+**Note:** if you are using Zepto and referencing object values for your select options, like in the second example, then you will need to also include the Zepto data module. Also, `<select>` bindings are two-way bindings only - `updateView:false` will be ignored.
 
 The following example references a collection of stooges at `window.app.stooges` and uses the `age` attribute for labels and the `name` attribute for option values:  
 
@@ -415,6 +445,23 @@ Optgroups are supported, where the collection is formatted into an object with a
   }
 ```
 
+It is often useful to have a lookup table for converting between underlying values which are actually stored and transmitted and the human-readable labels that represent them. Such a lookup table (an object like `{ value1: label1, value2: label2 }`) can be used to populate a select directly. By default, the options will be sorted alphabetically by label; pass a `comparator`function or property name string to override this ordering (which delegates to `_.sortBy`).
+
+```javascript
+  bindings: {
+    'select#sounds': {
+      observe: 'sound',
+      selectOptions: {
+        collection: {
+          moo: 'cow',
+          baa: 'sheep',
+          oink: 'pig'
+        }
+      }
+    }
+  }
+```
+
 Finally, multiselects are supported if the select element contains the [multiple="true"] attribute. By default stickit will expect that the model attribute is an array of values, but if your model has a formatted value, you can use `onGet` and `onSet` to format attribute values (this applies to any select bindings).
 
 ```javascript
@@ -452,6 +499,21 @@ An object which is used as the set options when setting values in the model. Thi
       setOptions: {silent:true}
     }
   }
+```
+
+### stickitChange
+
+A property that is passed into the set options when stickit changes a model attribute. The value of this property is assigned to the binding configuration.
+
+```javascript
+model.on('change:observed', function(m, v, options) {
+  if (options.stickitChange) {
+    ...
+  } else {
+    ...
+  }
+});
+
 ```
 
 ## Attribute and Property Bindings
@@ -562,6 +624,12 @@ render: function() {
 }
 ```
 
+## Binding Callbacks Flowchart
+
+The following image demonstrates the order in which bindings callbacks are called after stickit is initialized, a bound model attribute changes, and a bound view element changes.
+
+![alt tag](https://raw.github.com/nytimes/backbone.stickit/gh-pages/flow.png)
+
 ## F.A.Q.
 
 ### Why Stickit?
@@ -572,13 +640,33 @@ If you are writing a custom frontend, then you're going to need to write custom 
 
 ### Dependencies
 
- Backbone 0.9, underscore.js, and jQuery or Zepto (with data module; see `selectOptions`)
+ Backbone 1.0, underscore.js, and jQuery or Zepto (with data module; see `selectOptions`)
 
 ### License
 
 MIT
 
 ## Change Log
+
+#### 0.7.0
+
+- **Breaking Change**: the `bindKey` that was passed into the Backbone `change:attr` (undocumented) options was changed to `stickitChange` which is assigned the binding options which have a unique `bindId`.
+- **Breaking Change**: the default events for input, textarea, and contenteditable form elements changed from [`keyup`, `cut`, `paste`, `change`] to [`propertychange`, `input`, `change`].
+- **Breaking Change**: removed support for `input[type="number"]`. Instead, use `onSet` to format Number values, if needed.
+- **Breaking Change**: The `updateModel` method parameters changed so the `event` is now passed as the second parameter. `updateModel(val, options)` -> `updateModel(val, event, options)`
+- Stickit will now load using the UMD pattern so it is compatible with AMD, Node.js, and CommonJS.
+- A view's `bindings` configuration can be defined as a function.
+- When observing an array, if `onSet` or `getVal` return an array of values, Stickit will match the values to their respective attributes defined in `observe` and set them in the model. If you don't desire this change, then you can override this behavior with the following change:
+- Added a `set` callback which by default calls `model#set`
+- Added the `destroy` binding callback to compliment `initialize`.
+- Trigger `stickit:unstick` for each model that is unbound in `unstickit` (or `view.remove`).
+- Added handling for `observe` in function form.
+- When binding with `visible` the `{updateView:false}` property is defaulted.
+- Stickit will no longer sanitize (convert a `null`/`undefined` model attribute value to empty string) values if `onGet` is defined.
+- Added support for the use of dot-notation in binding callbacks that are defined with a string that names a method on the view. For example - `onGet: "myObj.myCallback"`.
+- Added Backbone.Stickit.getConfiguration which exposes the method of deriving configurations from handlers.
+- Fixed a bug where "null" would show in Chrome when binding `attribute:null` to an element value.
+- Fixed a bug where optgroup `<select>` handlers were rendering multiple `collection.defaultOptions`.
 
 #### 0.6.3
 

@@ -1,4 +1,4 @@
-define(['Backbone','bootstrap'], function(Backbone){
+define(['backbone','bootstrap'], function(Backbone){
 
     var JudgeScheduleView = Backbone.View.extend({
         initialize: function(options){

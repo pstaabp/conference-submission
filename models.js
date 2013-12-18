@@ -66,7 +66,7 @@ function defineModels(mongoose, fn) {
   var User = new Schema({
     first_name: String,
     last_name: String,
-    role: String,
+    role: Array,
     major: String,
     email: { type: String, validate: [validatePresenceOf, 'an email is required'], index: { unique: true } },
     hashed_password: String,

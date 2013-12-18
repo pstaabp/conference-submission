@@ -1,6 +1,5 @@
 body {
-  padding: 0px 30px 30px 30px;
- // font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 70px 20px 0px 20px;
 }
 
 .review-needed {color: red;}
@@ -12,7 +11,7 @@ a {
 textarea { width: 100%;}
 #title {width: 100%;}
 
-label:hover {cursor: pointer};
+label:hover {cursor: pointer}
 
 
 
@@ -51,3 +50,18 @@ label:hover {cursor: pointer};
 
 .feedback-cell {display: none; background-color: lightgray}
 
+.no-bullets {list-style: none;}
+
+#short-message {padding-top: 4px; padding-bottom: 4px; margin-top: 5px; line-height: 16px; display: none;}
+
+#message-pane {
+        position: absolute; 
+        width: 600px; 
+        height:        300px; 
+        top: 50px; 
+        right: 5px;
+        z-index: 100;
+        display: none;
+        opacity: 0.92;
+        background-color: white;
+        }

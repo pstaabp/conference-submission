@@ -1,8 +1,16 @@
 extends ../layout
 
 block script
-  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js")
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/AdminPage.js',src='/conference-submission/javascripts/bower_components/requirejs/require.js')
+  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js").
+  script(type="text/javascript").
+    require.config = { "/conference-submission/javascripts/apps/AdminPage.js": {
+      users: !{JSON.stringify(users)},
+      proposals: !{JSON.stringify(proposals)},
+      judges: !{JSON.stringify(judges)}
+      }
+    };
+
+  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/AdminPage.js',src='/conference-submission/javascripts/bower_components/requirejs/require.js').
 
 block container
   ul.nav.nav-tabs#admin-tabs
@@ -24,62 +32,63 @@ block container
       
   .tab-content
     .tab-pane.active#users
-      .user-choices
-        label.radio.inline
+      .user-choices.col-md-8
+        label.radio-inline.control-label
           input(type="radio",name="usersview",value="all",checked)
           | View All Users
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="usersview",value="students")
           | View Students
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="usersview",value="sponsors")
           | View Sponsors
+        label.radio-inline.control-label
+          input(type="radio",name="usersview",value="judges")
+          | View Judges
+      .users-search.col-md-4
+        .form-horizontal
+          label.control-label Search
+            input.search-user-box(type="search")
+          button.btn.btn-default.clear-search-user Clear
+
       .users-table
     .tab-pane#proposals
-      div.row
-        div.span4
-          label.radio.inline
-            input.sortable(type="radio",name="sort-proposal",value="session",checked)
-            | Sort By Session
-          label.radio.inline
-            input.sortable(type="radio",name="sort-proposal",value="author")
-            | Sort By Last Name
-        div.span4.pull-right.num-proposals
-      table.proposal-table.table.table-bordered
-        tbody
+      .proposals-table-container
+    
+
     .tab-pane#presentations
       .radio-buttons
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="orals",checked)
           | View Oral Presentation List
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="schedule")
           | View Oral Presentation Schedule
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="posters")
           | View Posters
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="videos")
           | View Videos
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="art2d")
           | View 2D Art
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="art3d")
           | View 3D Art
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="music")
           | View Music
-        label.radio.inline
+        label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="theatre")
           | View Theatre
       .presentation-content
     .tab-pane#judges
     .tab-pane#judge-schedule
-      label.radio.inline
+      label.radio-inline.control-label
         input(type="radio",name="jsview",value="orals",checked)
         | View Oral Presentations
-      label.radio.inline
+      label.radio-inline.control-label
         input(type="radio",name="jsview",value="posters")
         | View Poster Presentations
       div.orals
@@ -161,70 +170,37 @@ block container
   .proposal-modal
     
 
-block templates
-  script#proposal-row-template(type='text/template')
-    td
-      table.table.table-bordered.not-accepted
-        thead
-          tr
-            th Acc.
-            th Sess.
-            th Main Author
-            th(colspan="2") Title
-            th Presentation Type
-        tbody
-          tr
-            td
-              input.accepted(type='checkbox')
-            td.session
-            td.author
-            td.title(colspan="2",contenteditable="true")
-            td.type
-          tr
-            td
-              button.btn.delete-proposal
-                i.icon-trash
-            td
-            td.header Sponsor Name
-            td.header Sponsor Email
-            td.header Sponsor Dept
-            td.header Date/Time Submitted
-          tr
-            td
-            td
-            td.sponsor-name
-            td.sponsor-email
-            td.sponsor-dept
-            td.submitted-date
-          tr
-            td
-            td
-            td.header Use Human Subjects
-            td.header Use Animal Subjects
-            td.header(colspan="2") Other Authors
-          tr
-            td(colspan="2")
-              button.show-feedback.btn Show Feedback
-            td
-              input(type='checkbox').use-human-subjects
-            td
-              input(type='checkbox').use-animal-subjects
-            td.other-authors(colspan="2")
-          tr
-            td(colspan="7").feedback-cell
-          tr
-            td
-            td(colspan="6").header Proposal Text
-          tr
-            td
-            td.proposal-content(colspan="6")
-          tr
-            td
-            td(colspan="6").header Sponsor Statement
-          tr
-            td
-            td(colspan="6").sponsor-statement
-
+block templates        
+  script#proposal-details-template(type='text/template')
+    table.table-bordered.table
+      tbody
+        tr
+          td
+            button.btn.btn-default.delete-proposal
+              i.fa.fa-trash-o
+          td.header Sponsor Name
+          td.sponsor-name
+          td.header Sponsor Email
+          td.sponsor-email
+          td.header Sponsor Dept
+          td.sponsor-dept
+          
+        tr
+          td.header Date/Time Submitted
+          td.submitted-date
+          td.header Use Human Subjects
+            input(type='checkbox').use-human-subjects
+          td.header Use Animal Subjects
+            input(type='checkbox').use-animal-subjects
+          td.header Other Authors
+          td.other-authors(colspan="2")
+        tr
+          td.header Proposal Text
+          td(colspan="6").proposal-content
+        tr
+          td.header Sponsor Statement
+          td.sponsor-statement(colspan="6")
+        
 
   script#user-row-template(type='text/template')
     td
@@ -363,35 +339,27 @@ block templates
     ul.dropdown-menu
       <% _(users).each(function(user){ print('<li><a class="user-info" href="/conference-submission/admin/' + user.id + '"">' + user.name + '</a></li>')}) %>
 
-  script#proposal-view-modal(type="text/template")
-    .modal.hide.fade
-      .modal-header
-        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
-        h3 <%=title%>
-      .modal-body 
-        table.table.table-bordered
-          tbody
-            tr
-              td.header Sess.
-              td.header Main Author
-              td.header Presentation Type
-            tr
-              td <%=session%>
-              td <%=author%>
-              td <%=type %>
-            tr
-              td.header Sponsor Name
-              td.header Sponsor Dept
-              td
-            tr
-              td <%=sponsor_name%>
-              td <%=sponsor_dept%>
-              td
-            tr
-              td(colspan="3")
-                <%=content %>
-      .modal-footer
-        a.btn(href="#",data-dismiss="modal") Close
+  script#presentation-details-template(type="text/template") 
+    table.table.table-bordered
+      tbody
+        tr
+          td.header Sess.
+          td.header Main Author
+          td.header Presentation Type
+        tr
+          td.session <%=session%>
+          td.author <%=author%>
+          td.type <%=type %>
+        tr
+          td.header Sponsor Name
+          td.header Sponsor Dept
+          td
+        tr
+          td.sponsor-name
+          td.sponsor-dept
+          td
+        tr
+          td(colspan="3").proposal-content
 
   script#presentation-table-template(type="text/template")
     table.table.table-bordered
@@ -401,6 +369,7 @@ block templates
           th number
           th Author
           th Title
+          th
       tbody
 
   script#presentation-row-template(type="text/template")
@@ -411,17 +380,19 @@ block templates
       <% } %>
     td.session
     td.author
-    td.title
+    td.title.col-md-8
     td
-      button.showDetails.btn Show Details
+      button.showDetails.btn.btn-default Show Details
   script#feedback-tabs(type="text/template")
     div
       button.btn.new-feedback-btn Add New Feedback
     ul.nav.nav-tabs.feedback-tabs
     .tab-content.feedback-tab-content
+
   script#feedback-tab(type="text/template")
     li
       a(href!="#<%=tabID%>",data-toggle="tab") Judge #<%=judgeNum%>
+
   script#feedback-edit-template(type="text/template")
     table
       tr
@@ -505,18 +476,17 @@ block templates
       td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:red'>" + sponsor_name + "</span>") %>
       td.poster-judge(data-session!="<%=session%>")
         ul
-  script(type="text/javascript")
-    define('config', function() {
-      return {
-        users: !{JSON.stringify(users)},
-        proposals: !{JSON.stringify(proposals)},
-        judges: !{JSON.stringify(judges)}
-      };
-    });
+
+  script#role-template(type="text/template")
+    <% _(["Admin","Sponsor","Student","Judge"]).each(function(role){print("<input data-role='"+role.toLowerCase()+"' type='checkbox'>"+role)}) %>
 
   script#delete-button-template(type="text/template")
     button.btn.btn-default
       i.fa.fa-trash-o
+
+  script#show-button-template(type="text/template")
+    button.btn.btn-default Show
+
 
   script#feedback-template(type="text/template")
     .modal.hide.fade
@@ -562,4 +532,10 @@ block templates
 
       .modal-footer
         a.btn(href="#",data-dismiss="modal") Close
+
+  script#message-pane-template(type="text/template")
+    .row
+      .pull-right
+        button.close &times;
+        ul.main-message-pane.no-bullets
 

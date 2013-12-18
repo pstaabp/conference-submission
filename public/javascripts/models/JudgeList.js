@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','./Judge'], function(Backbone, _,Judge){
+define(['backbone', 'underscore','./Judge'], function(Backbone, _,Judge){
     /**
      *
      * This defines a Judge

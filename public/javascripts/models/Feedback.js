@@ -1,5 +1,4 @@
-define(['Backbone', 'underscore'], 
-function(Backbone, _){
+define(['backbone'], function(Backbone){
 
     var judgePts = /^([0-4](\.[0|5])?|5|5\.0)$/;
     var pointMessage = 'The points must be between 0.0 and 5.0 in increments of 0.5';

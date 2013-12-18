@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','../views/WebPage','./common'],
+define(['backbone', 'underscore','../views/WebPage','./common'],
 function(Backbone, _,WebPage, common){
 
     var LoginPage = WebPage.extend({

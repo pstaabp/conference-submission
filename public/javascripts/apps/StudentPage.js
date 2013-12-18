@@ -1,5 +1,5 @@
 
-define(['Backbone', 'underscore','models/UserList','models/User','models/ProposalList',
+define(['backbone', 'underscore','models/UserList','models/User','models/ProposalList',
     'views/PersonalInfoView','views/ProposalView','models/Proposal','views/WebPage','common','bootstrap'],
 function(Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,Proposal,WebPage,common){
 

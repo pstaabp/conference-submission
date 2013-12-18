@@ -1,4 +1,4 @@
-define(['Backbone', 'underscore','./User'], function(Backbone, _,User){
+define(['backbone','models/User'], function(Backbone, User){
     /**
      *
      * This defines a User
@@ -8,19 +8,7 @@ define(['Backbone', 'underscore','./User'], function(Backbone, _,User){
 
     var UserList = Backbone.Collection.extend({
         model: User,
-        initialize:function () {
-            _.bindAll(this,"addUser");
-            this.on("add",this.addUser);
-        },
-        url: '/conference-submission/users',
-        addUser: function (user){
-
-        }, /*
-        parse: function (response){
-            console.log(response);
-            return response;
-        } */
-
+        url: '/conference-submission/users'
 
     });
 

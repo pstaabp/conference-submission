@@ -16,7 +16,7 @@
     "requirejs": "*",
     "underscore": "*",
     "moment": "*",
-    "bootstrap": "2.3.*",
+    "bootstrap": "3.*",
     "font-awesome": "*"
   }
 }

@@ -22,8 +22,7 @@
  */
 
 
-define(['Backbone', 'underscore','stickit'], function(Backbone, _){
-
+define(['backbone', 'underscore','stickit'], function(Backbone, _){
 	var CollectionTableView = Backbone.View.extend({
 		tagName: "table",
 		className: "collection-table",
@@ -170,7 +169,7 @@ define(['Backbone', 'underscore','stickit'], function(Backbone, _){
 					}
 				}
 			});
-	},
+		},
 		getRowCount: function () {
 			return (this.showFiltered)? this.filteredCollection.length : this.collection.length;
 		},
@@ -251,11 +250,14 @@ define(['Backbone', 'underscore','stickit'], function(Backbone, _){
 					self.$el.append($("<td>").addClass(classname).attr("contenteditable",col.editable));
 				} else {
 					if (col.stickit_options && col.stickit_options.selectOptions){
-						var select = $("<select>").addClass("input-small").addClass(classname);
+						var select = $(col.multiple?"<select multiple='true'>":"<select>").addClass("input-small").addClass(classname);
 						self.$el.append($("<td>").append(select));
 					} else {
 						self.$el.append($("<td>").addClass(classname));
 					}
+				}
+				if(col.additionalClass){
+					self.$el.find("." + col.classname).addClass(col.additionalClass);
 				}
 			});
 			if(this.model){
@@ -271,6 +273,7 @@ define(['Backbone', 'underscore','stickit'], function(Backbone, _){
 					this.render();
 				}
 				this.model=_model;
+				
 				this.stickit();
 			}
 		},

@@ -7,5 +7,8 @@ db.users.find().forEach(function(user) {
 	if(typeof(user.role)!=="object"){
 		db.users.update({email: user.email},{$set: {role: [user.role]}});
 	}
+	// remove the password and salt
+	db.users.update({email: user.email},{$unset: {hashed_password:"",salt:"", reset_pass: "", temp_pass: ""}})
+
 
 });

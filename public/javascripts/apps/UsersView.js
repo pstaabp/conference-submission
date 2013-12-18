@@ -1,10 +1,10 @@
-define(['Backbone','views/CollectionTableView','models/UserList'], function(Backbone,CollectionTableView,UserList){
+define(['backbone','views/CollectionTableView','models/UserList'], function(Backbone,CollectionTableView,UserList){
     var UsersView = Backbone.View.extend({
         initialize: function(options){
             _.bindAll(this, "render");
-            this.parent = options.parent;
+            this.users = options.users;
             this.rowTemplate = _.template($("#user-row-template").html());
-            this.parent.users.on("remove",this.render);
+            this.users.on("remove",this.render);
             this.tableSetup();
         },
         render: function(){
@@ -12,35 +12,25 @@ define(['Backbone','views/CollectionTableView','models/UserList'], function(Back
               , users;
             switch($("input[type='radio'][name='usersview']:checked").val()){
                 case "all": 
-                    users = this.parent.users.models;
+                    users = this.users.toArray();
                     break;
                 case "students":
-                    users = this.parent.users.filter(function(user) {return user.get("role")==="student"});
+                    users = this.users.filter(function(user) {return _.contains(user.get("role"),"student")});
                     break;
                 case "sponsors":
-                    users = this.parent.users.filter(function(user){return user.get("role")==="faculty"});
+                    users = this.users.filter(function(user){return _.contains(user.get("role"),"sponsor")});
                     break;
-            }
-/*            var userTable = this.$(".user-table tbody");
-            userTable.html("");
-            _(users).each(function(_user){
-                var props;
-                switch(self.type){
-                    case "users":
-                        props = []
-                        break;
-                    case "students":
-                        props = self.parent.proposals.filter(function(proposal){ return proposal.get("email")===_user.get("email"); });
-                        break;
-                    case "sponsors":
-                        props = self.parent.proposals.filter(function(proposal){ return proposal.get("sponsor_email")===_user.get("email"); });
-                        break;
-                    }
-                userTable.append( (new UserRowView({model: _user, template: self.rowTemplate})).render().el);
-            }); */
+                case "judges":
+                    users = this.users.filter(function(user){return _.contains(user.get("role"),"judge")});
+                    break;
 
-            this.userTable = new CollectionTableView({columnInfo: this.cols, collection: new UserList(users), 
-                                paginator: {page_size: 10, button_class: "btn btn-default", row_class: "btn-group"}});
+            }
+            var _users = new UserList(users);
+            _users.on("change",function(user){
+                user.save();
+            });
+            this.userTable = new CollectionTableView({columnInfo: this.cols, collection: _users, 
+                                paginator: {page_size: 15, button_class: "btn btn-default", row_class: "btn-group"}});
             this.userTable.render().$el.addClass("table table-bordered table-condensed");
             this.$('.users-table').html(this.userTable.el);
 
@@ -50,8 +40,10 @@ define(['Backbone','views/CollectionTableView','models/UserList'], function(Back
 
             this.$("a.showProposal").truncate()
         },
-        events: {"click a.showProposal": "showProposal",
-            "change input[name='usersview']": "render"},
+        events: {"keyup .search-user-box": "search",
+            "click a.showProposal": "showProposal",
+            "change input[name='usersview']": "render",
+            "click .clear-search-user": "clearSearch"},
         showProposal: function (evt){
             var proposal = this.parent.proposals.get($(evt.target).data("id"));  
             
@@ -63,15 +55,28 @@ define(['Backbone','views/CollectionTableView','models/UserList'], function(Back
         },
         tableSetup: function () {
             var self = this;
+            var roleTemplate = _.template($("#role-template").html());
             this.cols = [{name: "Delete", key: "delete", classname: "delete-set", 
                 stickit_options: {update: function($el, val, model, options) {
                     $el.html($("#delete-button-template").html());
                     $el.children(".btn").on("click",function() {self.deleteUser(model);});
                 }}},
-            {name: "First Name", key: "first_name", classname: "first-name", editable: false, datatype: "string"},
-            {name: "Last Name", key: "last_name", classname: "last-name", editable: false, datatype: "string"},
-            {name: "Role", key: "role", classname: "role",stickit_options: {selectOptions: {
-                collection: [{value:"student", label: "Student"},{value: "faculty", label: "Faculty"},{value: "admin", label: "admin"}]}}},
+            {name: "First Name", key: "first_name", classname: "first-name", editable: true, datatype: "string"},
+            {name: "Last Name", key: "last_name", classname: "last-name", editable: true, datatype: "string"},
+            {name: "Role", key: "role", classname: "role", stickit_options: {
+                update: function($el, val, model, options){
+                    $el.html(roleTemplate({role: model.get("role")}));
+                    _(model.get("role")).each(function(role){$el.find("[data-role='"+role+"']").prop("checked",true)}); // check all the given roles.  
+                    $el.find("input[type='checkbox']").off("change").on("change",function(evt){
+                        if($(evt.target).prop("checked")){
+                            model.set("role",_.union(model.get("role"),[$(evt.target).data("role")]));
+                        } else {
+                            model.set("role",_.without(model.get("role"),$(evt.target).data("role")));
+                        }
+                    });
+                }}},
+                //selectOptions: {
+                //collection: [{value:"student", label: "Student"},{value: "faculty", label: "Faculty"},{value: "admin", label: "admin"}]}}},
             {name: "Email", key: "email", classname: "email", editable: false, datatype: "string"}
             ];
 
@@ -82,6 +87,15 @@ define(['Backbone','views/CollectionTableView','models/UserList'], function(Back
             if (del){
                 this.model.destroy();
             }
+        },
+        search: function(evt){
+            this.userTable.filter($(evt.target).val());
+            this.userTable.render();
+        },
+        clearSearch: function(evt){
+            this.$(".search-user-box").val("");
+            this.userTable.filter("");
+            this.userTable.render();
         }
 
     });

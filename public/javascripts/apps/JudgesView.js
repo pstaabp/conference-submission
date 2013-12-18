@@ -1,4 +1,4 @@
-define(['Backbone'], function(Backbone){
+define(['backbone'], function(Backbone){
     var JudgesView = Backbone.View.extend({
         initialize: function (options) {
             _.bindAll(this,"render");

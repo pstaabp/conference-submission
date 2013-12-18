@@ -1,22 +1,6 @@
-define(['Backbone'], function(Backbone){
+define(['backbone','stickit'], function(Backbone){
     
     var common = {
-    	logout: function (evt) {
-		    evt.preventDefault();
-		    if (confirm('Are you sure you want to log out?')) {
-		      var element = $(this),
-		          form = $('<form></form>');
-		      form.attr({method: 'POST',action: '/conference-submission/sessions'})
-        		  .hide()
-        		  .append('<input type="hidden" />')
-        		  .find('input')
-        		  .attr({'name': '_method','value': 'delete'})
-        		  .end()
-        		  .appendTo('body')
-                  .submit();
-    		}
-    		return false;
-        },
         getParameterByName: function(name)
         {
           name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -33,6 +17,11 @@ define(['Backbone'], function(Backbone){
           {class: ".sponsor-dept", field: "sponsor_dept"}, {class: ".type", field: "type"}]
 
     }
+
+  Backbone.Stickit.addHandler({
+    selector: "td[contenteditable='true']",
+    events: ['blur']
+  });
 
     return common;
 

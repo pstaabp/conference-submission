@@ -1,11 +1,4 @@
-define(['Backbone', 'underscore','./FeedbackList'], function(Backbone, _,FeedbackList){
-    /**
-     *
-     * This defines a User
-     * 
-     * @type {*}
-     */
-
+define(['backbone', 'models/FeedbackList'], function(Backbone, FeedbackList){
     var Proposal = Backbone.Model.extend({
         defaults: {
             author: "",  // change this to main_author:  Author   then get rid of email field below. 
