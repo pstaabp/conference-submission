@@ -20,21 +20,26 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 
 		// lookup the User in the DB
 
-		User.findOne({falconkey: req.body.user.falconkey},function(err,_user){
+		client.bind(req.body.user.falconkey,req.body.user.password, function(err,_res){
+			if(_res){ 
 
-			if(_user){
-				req.session.user_id = _user.id;
+				User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
 
-				// save a cookie
-				var loginToken = new LoginToken({ email: _user.email });
-        		loginToken.save(function() {
-          			res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
-          			routeUser(res,_user);
-		        }); 
+					if(_user){
+						req.session.user_id = _user.id;
+
+						// save a cookie
+						var loginToken = new LoginToken({ email: _user.email });
+        				loginToken.save(function() {
+          					res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
+          					routeUser(res,_user);
+		        		}); 
 				
-			} else { //the user isn't in the database yet
-				res.json({"msg": "The user isn't in the database"});
-			}
+					} else { //the user isn't in the database yet
+						res.json({"msg": "The user isn't in the database"});
+					}
+				}
+			});
 		});
 	});
 
