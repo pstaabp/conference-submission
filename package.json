@@ -1,0 +1,36 @@
+{
+  "name": "conference-submission",
+  "version": "0.9.0",
+  "description": "Fitchburg State University Undergraduate Conference Submission Website",
+  "main": "app.js",
+  "dependencies": {
+    "connect-flash": "*",
+    "connect": "*",
+    "cookie-sessions": "*",
+    "nodemailer": "*",
+    "express": "*",
+    "supervisor": "*",
+    "connect-timeout": "*",
+    "connect-mongodb": "*",
+    "style": "*",
+    "email-templates": "*",
+    "underscore": "*",
+    "jade": "*",
+    "mongoose": "*",
+    "ldapjs": "0.6.*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://pstaabp@github.com/pstaabp/conference-submission.git"
+  },
+  "author": "Peter Staab",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/pstaabp/conference-submission/issues"
+  },
+  "homepage": "https://github.com/pstaabp/conference-submission"
+}
