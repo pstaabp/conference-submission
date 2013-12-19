@@ -7,22 +7,15 @@ block container
   if msg  
     .alert.alert-danger #{msg}
   form.users#login(method='post', action='/conference-submission/login')
-    table
-      tr
-        td
-          label falconkey:
-        td
-          input(name='user[falconkey]', value=user.falconkey || '')
-      tr
-        td
-          label Password:
-        td
-          input(name='user[password]', value=user.password || '', type='password')
-      tr
-        td
-        td
-        td
-          input.btn.btn-default(type='submit', value='Log In')
+    .form-group
+      label Falconkey
+        input.form-control(type='text',name='user[falconkey]', value=user.falconkey || '')
+    .form-group
+      label Password
+        input.form-control(type='password',name='user[password]')
+    .form-group
+      button.btn.btn-default(type='submit') Log In
+
 block templates
   script#help-text(type='text/template')
     p
