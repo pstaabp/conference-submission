@@ -1,7 +1,15 @@
 extends layout
 
 block script
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/StudentPage',src='/conference-submission/javascripts/vendor/require.js')
+  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js").
+  script(type="text/javascript").
+    require.config = { "/conference-submission/javascripts/apps/StudentPage.js": {
+      user: !{JSON.stringify(user)},
+      proposals: !{JSON.stringify(proposals)}
+      }
+    };
+
+  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/StudentPage.js',src='/conference-submission/javascripts/bower_components/requirejs/require.js').
 
 
 block templates
@@ -10,71 +18,75 @@ block templates
     input(type='hidden',id='user-id',value=user.id)
     include tabs.jade
     .feedback-modal
+
+  script(type="text/template")
     
 
   script(type='text/template',id="proposal-view")
-    div.row
-      span.span6 
-        h4 Proposal Information
-      span.span3
-        button.btn.submit-proposal-button Edit the Proposal
-    table
-      tr.feedback-row
-      tr
-        td Project Title
-        td(colspan="3")
-          input.title.editable.span7
-      tr
-        td Primary Author
-        td.author-name
-        td Author Email
-        td.author-email
-      tr.add-author-button-row
-        td
-          button#add-author.btn Add an Author
-      tr
-        td Type of Presentation
-        td
-          select.presentation-type.editable
-            option 
-            option Poster Presentation
-            option Oral Presentation
-            option Music
-            option Art (2D)
-            option Art (3D)
-            option Theatre
-            option Video
-            option Creative Writing
-        td Sponsor Email
-        td
-          input.sponsor-email.editable
-      tr
-        td Sponsor&apos;s Name 
-        td
-          input.sponsor-name.editable
-        td Sponsor&apos;s Department
-        td
-          select.sponsor-dept.editable
-        td
-      tr
-        td(colspan="2")
-          label
-            input.human-subjects.editable(type='checkbox')
-            | My Research involves Human Subjects
-            
-        td(colspan="2")
-          label
-            input.animal-subjects.editable(type='checkbox')
-            | My Research involves Animal Subjects
-      tr
-        td(colspan="2") Other Equipment needed 
-          button.btn-small#other-equip-help ?
-        td(colspan="2")
-          input.other-equip.editable
-      tr
-        td Proposal
-        td(colspan=3)
-          textarea.proposal-text.editable(rows=10)
+    .panel-group#proposal-accordian
+      .panel.panel-default
+        .panel-heading
+          h4.panel-title
+            a(data-toggle='collapse',data-parent='proposal-accordian',href='#proposal-collapse') Proposal
+        #proposal-collapse.panel-collapse.collapse
+          .panel-body
+            table.table.table-bordered
+              tr.feedback-row
+              tr
+                td Project Title
+                td(colspan="3")
+                  input.title.editable.span7
+              tr
+                td Primary Author
+                td.author-name
+                td Author Email
+                td.author-email
+              tr.add-author-button-row
+                td
+                  button#add-author.btn.btn-default Add an Author
+              tr
+                td Type of Presentation
+                td
+                  select.presentation-type.editable
+                    option 
+                    option Poster Presentation
+                    option Oral Presentation
+                    option Music
+                    option Art (2D)
+                    option Art (3D)
+                    option Theatre
+                    option Video
+                    option Creative Writing
+                td Sponsor Email
+                td
+                  input.sponsor-email.editable
+              tr
+                td Sponsor&apos;s Name 
+                td
+                  input.sponsor-name.editable
+                td Sponsor&apos;s Department
+                td
+                  select.sponsor-dept.editable
+                td
+              tr
+                td(colspan="2")
+                  label
+                    input.human-subjects.editable(type='checkbox')
+                    | My Research involves Human Subjects
+                    
+                td(colspan="2")
+                  label
+                    input.animal-subjects.editable(type='checkbox')
+                    | My Research involves Animal Subjects
+              tr
+                td(colspan="2") Other Equipment needed 
+                  button.btn-small#other-equip-help ?
+                td(colspan="2")
+                  input.other-equip.editable
+              tr
+                td Proposal
+                td(colspan=3)
+                  textarea.proposal-text.editable(rows=10)
           
   script(type="text/template",id='add-author-template')
     td Author Name
@@ -84,7 +96,7 @@ block templates
     td
       input.email(data-field='author-email',value!="<%=email%>")
     td
-      button.delete-author.btn Delete Author
+      button.delete-author.btn.btn-default Delete Author
  
   script(type='text/template',id='new-proposal-template')
     .tab-pane
@@ -154,5 +166,5 @@ block templates
           
 
       .modal-footer
-        a.btn(href="#",data-dismiss="modal") Close
+        a.btn.btn-default(href="#",data-dismiss="modal") Close
 

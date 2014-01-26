@@ -1,4 +1,4 @@
-define(['backbone', 'underscore','views/FeedbackView', 'stickit'], function(Backbone, _,FeedbackView){
+define(['backbone', 'underscore','views/FeedbackView', 'stickit','bootstrap'], function(Backbone, _,FeedbackView){
     /**
      *
      * This defines a ProposalView, which shows a single proposal
@@ -12,12 +12,11 @@ define(['backbone', 'underscore','views/FeedbackView', 'stickit'], function(Back
 
     var ProposalView = Backbone.View.extend({
     	template: _.template($("#proposal-view").html()),
-    	initialize: function () {
+    	initialize: function (options) {
             var self = this;
     		_.bindAll(this,"render","update","saved","savedStatement");
-            this.parent = this.options.parent;
-            this.facultyView = this.options.facultyView;
-            this.editable = (this.options.editable)?this.options.editable:false;
+            this.facultyView = options.facultyView;
+            this.editable = options.editable || false; 
 
             this.additionalAuthorsViews = [];
             _(this.model.get("other_authors")).each(function(_author){
@@ -150,7 +149,7 @@ define(['backbone', 'underscore','views/FeedbackView', 'stickit'], function(Back
     });
 
 
-    var AdditionalAuthorView = backbone.View.extend({
+    var AdditionalAuthorView = Backbone.View.extend({
         tagName: "tr",
         className: "add-author-row",
         initialize: function (){

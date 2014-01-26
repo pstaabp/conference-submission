@@ -1,64 +1,27 @@
 script(type='text/template',id='user-view')
-  table
-    tbody
-      tr
-        td
-          label First Name:
-        td
-          input#first-name(data-field="first_name")
-      tr
-        td
-          label Last Name:
-        td
-          input#last-name(data-field='last_name')
-      if user.role == 'student'
-        tr
-          td Major:
-          td
-            select#major(data-field="major")
-              option Select Major
-              option Biology
-              option Business Administration
-              option Communications Media
-              option Computer Information Systems
-              option Computer Science
-              option Criminal Justice
-              option Early Childhood Education
-              option Earth Systems Science
-              option Economics
-              option Elementary Education
-              option English Studies
-              option Exercise and Sports Science
-              option Game Design
-              option Geography
-              option History
-              option Human Services
-              option Industrial Technology
-              option Interdisciplinary Studies
-              option Mathematics
-              option Middle School Education
-              option Nursing
-              option Occupational/Vocational Education
-              option Political Science
-              option Psychological Science
-              option Sociology
-              option Special Education
-              option Technology Education (Grades 5-12)
-
-      tr
-        td
-          label Email:
-        td
-          input#email(value=user.email,disabled=true)
-      tr.save-info-row
-        td
-        td
-          button.btn#save-info Save Info
-      tr.submit-proposal-row
-        td
-        td
-          button.btn#submit-proposal Create a New Proposal
-          
+  .row
+    .col-md-4
+      table.table.table-bordered
+        tbody
+          tr
+            td First Name: 
+            td.first-name
+          tr
+            td Last Name:
+            td.last-name
+              input#last-name(data-field='last_name')
+          tr.student-major
+            td Major:
+            td
+              select.major(disabled='disabled')
+          tr
+            td Email: 
+            td.email
+          tr.submit-proposal-row
+            td
+            td
+              button.btn.btn-default#submit-proposal Create a New Proposal
+              
         
 
    

@@ -14,8 +14,36 @@ define(['backbone','stickit'], function(Backbone){
         },
         proposalParams : [{class: ".session", field: "session"},{class:".title",field: "title"},
           {class: ".sponsor-name", field: "sponsor_name"}, {class: ".sponsor-email", field: "sponsor_email"},
-          {class: ".sponsor-dept", field: "sponsor_dept"}, {class: ".type", field: "type"}]
-
+          {class: ".sponsor-dept", field: "sponsor_dept"}, {class: ".type", field: "type"}],
+        majors: [
+         {label: "Biology", value: "Biology"},
+         {label: "Business Administration", value: "Business Administration"},
+         {label: "Communications Media", value: "Communications Media"},
+         {label: "Computer Information Systems", value: "Computer Information Systems"},
+         {label: "Computer Science", value: "Computer Science"},
+         {label: "Criminal Justice", value: "Criminal Justice"},
+         {label: "Early Childhood Education", value: "Early Childhood Education"},
+         {label: "Earth Systems Science", value: "Earth Systems Science"},
+         {label: "Economics", value: "Economics"},
+         {label: "Elementary Education", value: "Elementary Education"},
+         {label: "English Studies", value: "English Studies"},
+         {label: "Exercise and Sports Science", value: "Exercise and Sports Science"},
+         {label: "Game Design", value: "Game Design"},
+         {label: "Geography", value: "Geography"},
+         {label: "History", value: "History"},
+         {label: "Human Services", value: "Human Services"},
+         {label: "Industrial Technology", value: "Industrial Technology"},
+         {label: "Interdisciplinary Studies", value: "Interdisciplinary Studies"},
+         {label: "Mathematics", value: "Mathematics"},
+         {label: "Middle School Education", value: "Middle School Education"},
+         {label: "Nursing", value: "Nursing"},
+         {label: "Occupational/Vocational Education", value: "Occupational/Vocational Education"},
+         {label: "Political Science", value: "Political Science"},
+         {label: "Psychological Science", value: "Psychological Science"},
+         {label: "Sociology", value: "Sociology"},
+         {label: "Special Education", value: "Special Education"},
+         {label: "Technology Education (Grades 5-12)", value: "Technology Education (Grades 5-12)"},
+         ]
     }
 
   Backbone.Stickit.addHandler({

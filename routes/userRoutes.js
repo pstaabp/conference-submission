@@ -31,14 +31,29 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	  	console.log("in put /users/user");
 	  	User.findByIdAndUpdate(req.params.user_id,_.omit(req.body,"_id"), function (err, user) {
 	    
-	    console.log("updated!!");
-	    if(err) {
-	    	res.json({msg: "An error occurred"});
-	    }
+		    console.log("updated!!");
+		    if(err) {
+		    	res.json({msg: "An error occurred"});
+		    }
 
-    	res.json(user.getPublicFields());
+	    	res.json(user.getPublicFields());
+	  	});
+
+
+	});
+
+
+	app.get('/conference-submission/student',loadUser, function(req,res){
+		Proposal.find({email: req.currentUser.email}, function(err,_proposals){
+		    	res.render('student.jade',{user: req.currentUser, proposals: _proposals});			
+		})
+
   	});
 
-});
+  	app.get('/conference-submission/users/:user_id',loadUser, function(req,res){
+  		User.findById(req.param("user_id"),function(err,user){
+  			res.json(user);
+  		});
+  	});
 
 }

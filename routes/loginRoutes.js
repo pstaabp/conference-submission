@@ -13,17 +13,11 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	});
 
 	app.post('/conference-submission/login',function(req,res){
-		console.log(req.body);
-		//console.log(ldap_settings);
-		//console.log({falconkey: req.body.user.falconkey, password: req.body.user.password});
+		//check the password of the user
+//		client.bind("fscad\\"+req.body.user.falconkey,req.body.user.password, function(err,_res){
+//			if(_res){ 
 
-		//res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
-
-		// lookup the User in the DB
-
-		client.bind("fscad\\"+req.body.user.falconkey,req.body.user.password, function(err,_res){
-			if(_res){ 
-
+				// lookup the User in the DB
 				User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
 
 				if(_user){
@@ -37,17 +31,35 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 		        		}); 
 				
 					} else { //the user isn't in the database yet
-						client.search("",{filter: "(&(sAMAccountName="+req.body.user.falconkey+"))",scope: "sub"},function(_err2,_res2){
-							_res2.on('searchEntry', function(entry) {
-								res.json({first_name: entry.object.givenName, last_name: entry.object.sn,email:entry.object.mail , other: entry.object.description});
-});
-						});
+//						client.search("",{filter: "(&(sAMAccountName="+req.body.user.falconkey+"))",scope: "sub"},function(_err2,_res2){
+//							_res2.on('searchEntry', function(entry) {
+//								res.json({first_name: entry.object.givenName, last_name: entry.object.sn,email:entry.object.mail , other: entry.object.description});
+//});					
+							new User({email: req.body.user.falconkey+"@student.fitchburgstate.edu",
+									first_name: "first",
+									last_name: "last",
+									falconkey: req.body.user.falconkey}).save(function(err, _user) {
+								if (err){
+								    console.log(err);
+								} else { 
+								    console.log("saved!!");
+								    // save a cookie
+								    req.session.user_id = _user.id;
+									var loginToken = new LoginToken({ email: _user.email });
+			         				loginToken.save(function() {
+			           					res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
+									   	req.flash('other', 'test');
+									    res.redirect("/conference-submission/welcome");
+					         		});
+
+								}
+					  	});
 					}
 				});
-			} else { // the password was incorrect
-				res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
-			}
-		});
+			// } else { // the password was incorrect
+			// 	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
+			// }
+		//});
 	});
 
 	app.post('/conference-submission/logout',loadUser,function(req,res){
@@ -57,5 +69,19 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 		    req.session.destroy(function() {});
 		}
 		res.redirect('/conference-submission/login');
+	});
+
+
+	// The following is a route for student or faculty that is at the website for the first time. 
+
+	app.get('/conference-submission/welcome',loadUser, function(req,res){
+		console.log(req.flash("other"));
+		console.log(req.currentUser);
+		if(req.currentUser.email.match(/@student.fitchburgstate.edu/)){
+			
+			res.render('welcome-student.jade',req.currentUser);
+		} else {
+			res.render('welcome-faculty.jade',req.currentUser);
+		}
 	});
 }

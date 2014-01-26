@@ -20,6 +20,7 @@ var express = require('express')
   , emailTemplates = require('email-templates')
   , LoginRoutes = require('./routes/loginRoutes')
   , UserRoutes = require('./routes/userRoutes')
+  , ProposalRoutes = require('./routes/proposalRoutes')
   , db
   , User
   , Proposal
@@ -30,8 +31,8 @@ var express = require('express')
 var app = express();
 
 app.configure('development', function() {
-  mongoose.set('debug',false);
-  app.set('db-uri', 'mongodb://localhost:27017/conf-development');
+  mongoose.set('debug',true);
+  app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
 }); 
@@ -132,10 +133,9 @@ console.log("Connecting to mongodb, port 27017");
 
 mongoose.connection.on('error', function(err){console.log("err: " + err)});
 
-var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);  // not sure why I need to do settings.settings here to pass in the settings. 
+var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);
 var userRoutes = new UserRoutes(app,loadUser,User,Proposal,Judge);
-
-
+var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
 if (!module.parent) {
   app.listen(app.set("port"));

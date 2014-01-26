@@ -8,8 +8,9 @@ define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
 
     var ProposalList = Backbone.Collection.extend({
         model: Proposal,
-        initialize:function () {
+        initialize:function (options) {
             this.sortField = "session";
+            this.user_id = options ? options.user_id : null;
         },
         comparator: function (proposal){
             if (this.sortField==="author"){
@@ -18,7 +19,14 @@ define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
                 return proposal.get(this.sortField);
             }
         },
-        url: '/conference-submission/proposals'
+        parse: function(response,options){
+            var proposals = [];
+            _(response).each(function(model){
+                proposals.push(Proposal.prototype.parse(model));
+            });
+            return proposals;
+        },
+        url: '/conference-submission/users/' + this.user_id + '/proposals'
     });
 
     return ProposalList;
