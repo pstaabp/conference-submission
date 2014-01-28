@@ -74,12 +74,13 @@ function routeUser(res,user){
 
   console.log("in routeUser");
   console.log(user);
-  res.redirect("/conference-submission/" + user.role[0]);
+  res.redirect("/conference-submission/" + (typeof(user.role[0])==="undefined"? "welcome": user.role[0]));
 }
 
 function loadUser(req, res, next) {
 
   console.log("in loadUser");
+  console.log(req.session);
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {

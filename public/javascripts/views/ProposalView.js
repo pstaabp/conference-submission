@@ -11,55 +11,18 @@ define(['backbone', 'underscore','views/FeedbackView', 'stickit','bootstrap'], f
      */
 
     var ProposalView = Backbone.View.extend({
-    	template: _.template($("#proposal-view").html()),
     	initialize: function (options) {
             var self = this;
-    		_.bindAll(this,"render","update","saved","savedStatement");
-            this.facultyView = options.facultyView;
-            this.editable = options.editable || false; 
-
-            this.additionalAuthorsViews = [];
-            _(this.model.get("other_authors")).each(function(_author){
-                self.additionalAuthorsViews.push(new AdditionalAuthorView({author: _author, parent: self}));
-            })
-
-    		this.render();
-            this.fieldsToSave = {};
     	},
     	render: function (){
             var self = this; 
-    		this.$el.html(this.template);
-
-            if(this.editable){
-                this.$(".editable").each(function(i,v){ $(v).prop("readonly",false); });
-                this.$("submit-proposal-button").text("Save the Proposal");
-                
-            } else {
-                this.$(".editable").each(function(i,v){ $(v).prop("readonly",true); })
-                this.$("submit-proposal-button").text("Edit the Proposal");
-            }
-
-           if (this.facultyView){
-                this.$(".feedback-row").html("<td></td>");
-           }
-            this.model.get("feedback").each(function(feed,i){
- 
-                self.$(".feedback-row").append("<td><button data-id='" + feed.id  
-                        +"' class='show-feedback-btn btn'>Feedback from Judge #" + (i+1) + "</button>");
-            })
-
-
-            $("#other-equip-help").popover({html: true, content: $("#other-equip-help-text").html()});
+    		this.$el.html($("#proposal-view").html());
+            $("#other-equip-help").popover({html: true, placement: "left",content: $("#other-equip-help-text").html()});
             this.stickit();
-
-
+            return this;
     	},
-        events: {"click button#submit-proposal-button": "submit",
-                 "change input": "update",
-                 "change select": "update",
-                 "change #proposal-text": "update",
-                 "click button#save-statement": "saveStatement",
-                 "click button#add-author": "addAuthor",
+        events: {"click button.submit-proposal-button": "submit",
+                 "click button.add-author-button": "addAuthor",
                  "click button.show-feedback-btn": "showFeedback"},
         bindings: { ".title": "title",
                     ".author-name": "author",
@@ -79,28 +42,9 @@ define(['backbone', 'underscore','views/FeedbackView', 'stickit','bootstrap'], f
                                 "Education","English Studies","Exercise & Sports Science", "Geo/Physical Science",
                                 "Humanities","Industrial Technology","Mathematics","Nursing","Other"]}}
                             },
-        update: function (evt){
-            var targ = $(evt.target)
-                ,field = targ.data("field")
-                ,value = (targ.attr("type")==="checkbox")?targ.prop("checked"):targ.val()
-                ,obj = {};
-
-            obj[field] = value;
-            _(this.fieldsToSave).extend(obj);
-        },
-        submit: function ()
-        {
-            if (this.editMode){
-                this.editMode = false;
-                _.extend(this.fieldsToSave,{other_authors: this.getOtherAuthors()});
-                this.model.save(this.fieldsToSave,{success: this.saved, error: this.error});    
-                this.fieldsToSave = {};
-                this.render();
-            } else {
-                this.editMode = true;
-                this.render();
-                return;
-            } 
+        submit: function (){
+            console.log("submitting proposal");
+            this.model.save({success: this.saved, error: this.error});    
         },
         addAuthor: function (){
             this.additionalAuthorsViews.push(new AdditionalAuthorView({parent: this}));

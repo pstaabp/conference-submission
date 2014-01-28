@@ -19,8 +19,11 @@ define(['backbone', 'models/FeedbackList'], function(Backbone, FeedbackList){
             sponsor_statement: "",
             use_human_subjects: false,
             use_animal_subjects: false,
-            feedback: null           
+            feedback: new FeedbackList()           
         },
+        //initialize: function(){
+        //    this.feedback = new FeedbackList();
+        //},
         idAttribute: "_id",
         parse: function(response,options){
             response.feedback = new FeedbackList(response.feedback);

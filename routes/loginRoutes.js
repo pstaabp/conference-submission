@@ -35,24 +35,23 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 //							_res2.on('searchEntry', function(entry) {
 //								res.json({first_name: entry.object.givenName, last_name: entry.object.sn,email:entry.object.mail , other: entry.object.description});
 //});					
-							new User({email: req.body.user.falconkey+"@student.fitchburgstate.edu",
-									first_name: "first",
-									last_name: "last",
-									falconkey: req.body.user.falconkey}).save(function(err, _user) {
-								if (err){
-								    console.log(err);
-								} else { 
-								    console.log("saved!!");
-								    // save a cookie
-								    req.session.user_id = _user.id;
-									var loginToken = new LoginToken({ email: _user.email });
-			         				loginToken.save(function() {
-			           					res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
-									   	req.flash('other', 'test');
-									    res.redirect("/conference-submission/welcome");
-					         		});
+						var userType = "student", first_name= "first", last_name= "last", _role = ["student"];
+						new User({email: req.body.user.falconkey+"@" + ((userType==="student")?"student.":"") + "fitchburgstate.edu",
+							first_name: first_name, last_name: last_name,falconkey: req.body.user.falconkey, role: _role}).save(function(err, _user) {
+							if (err){
+			    				console.log(err);
+							} else { 
+							    console.log("saved!!");
+							    // save a cookie
+							    req.session.user_id = _user.id;
+								var loginToken = new LoginToken({ email: _user.email });
+				 				loginToken.save(function() {
+				   					res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
+								   	req.flash('other', 'test');
+								    res.redirect("/conference-submission/welcome");
+				         		});
 
-								}
+							}
 					  	});
 					}
 				});
@@ -77,11 +76,16 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	app.get('/conference-submission/welcome',loadUser, function(req,res){
 		console.log(req.flash("other"));
 		console.log(req.currentUser);
-		if(req.currentUser.email.match(/@student.fitchburgstate.edu/)){
-			
-			res.render('welcome-student.jade',req.currentUser);
-		} else {
-			res.render('welcome-faculty.jade',req.currentUser);
-		}
+		res.render('welcome.jade',{user: req.currentUser});
 	});
+
+	// The following is used to help finalize the role of the faculty/staff member.
+
+	app.post('/conference-submission/user',loadUser,function(req,res){
+		// update the User in the DB
+		User.update({falconkey: req.currentUser.falconkey},{role: _.keys(req.body)},function(_req,_res){
+			res.json(req.currentUser);	
+		});
+		
+	})
 }

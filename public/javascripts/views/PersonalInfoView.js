@@ -1,4 +1,4 @@
-define(['backbone', 'underscore','apps/common'], function(Backbone, _, common){
+define(['backbone', 'underscore','apps/common','models/Proposal'], function(Backbone, _, common,Proposal){
     /**
      *
      * This defines a User
@@ -9,8 +9,7 @@ define(['backbone', 'underscore','apps/common'], function(Backbone, _, common){
     var PersonalInfoView = Backbone.View.extend({
     	initialize: function (options) {
             this.model = options.user;
-            console.log(common);
-            this.fieldsToSave = {};
+            this.proposals = options.proposals;
     		this.render();
     	},
     	render: function (){
@@ -22,9 +21,13 @@ define(['backbone', 'underscore','apps/common'], function(Backbone, _, common){
             this.stickit();
 
     	},
+        createProposal: function() {
+            this.proposals.add(new Proposal({author: this.model.get("first_name"), email: this.model.get("email")}));
+        },
         events: {"click #save-info": "submit",
                  "change input": "update",
-                 "change select": "update"},
+                 "change select": "update",
+                 "click button#submit-proposal": "createProposal"},
         bindings: {".first-name": "first_name",
                 ".last-name": "last_name",
                 ".email": "email",

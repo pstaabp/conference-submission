@@ -11,10 +11,13 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
             
             this.user = module && module.config() ? new User(module.config().user): new User();
             this.proposals = module && module.config() ? new ProposalList(ProposalList.prototype.parse(module.config().proposals))
-                                    : new ProposalList();
+                     : new ProposalList();
+            this.proposals.user_id = this.user.get("falconkey");
             this.proposals.on("add",function (){
                 self.render(); 
                 $("#submit-main-tabs a:last").tab("show");
+            }).on("sync",function(_proposal){
+                self.messagePane.addMessage({short: "Proposal Saved.", type: "success"});
             });
             this.render();
         },
@@ -24,7 +27,7 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
             var self = this;
             this.$el.append(_.template($("#student-tabs-template").html()));
             if (this.user) {
-                new PersonalInfoView({el: $("#personal"), user: this.user, editMode: false});
+                new PersonalInfoView({el: $("#personal"), user: this.user, proposals: this.proposals, editMode: false});
                 if (this.user.get("role")!=="student"){
                     $("#submit-proposal-row").addClass("hidden");
                 }
@@ -33,7 +36,7 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
             this.proposals.each(function(prop,i){
                 $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'' data-toggle='tab'>Proposal #" + (i+1) + "</a></li>");
                 $(".tab-content").append("<div class='tab-pane' id='prop"+ (i+1)+ "'></div>")
-                self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1))}));
+                self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1))}).render());
             });
         },
         events: {"click button#submit-proposal": "newProposal"},

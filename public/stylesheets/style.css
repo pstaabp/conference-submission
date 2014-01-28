@@ -14,9 +14,13 @@ textarea { width: 100%;}
 label:hover {cursor: pointer}
 
 
-
+.strong {font-weight: bold;}
 
 .proposal {list-style: none}
+
+/* change the size of the popover */
+
+.popover {width: 400px;}
 
 .srv-value {width: 100%; height: 2ex; display: block;}
 

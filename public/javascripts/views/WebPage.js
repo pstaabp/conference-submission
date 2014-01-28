@@ -1,4 +1,4 @@
-define(['backbone','views/MessageListView', 'jquery-truncate'], 
+define(['backbone','views/MessageListView', 'jquery-truncate','jquery-ui'], 
 function(Backbone,MessageListView){
 var WebPage = Backbone.View.extend({
 
@@ -62,28 +62,6 @@ var WebPage = Backbone.View.extend({
 
 });
 
-/*var LoginView = ModalView.extend({
-    initialize: function (options) {
-        _.bindAll(this,"login");
-        var tempOptions = _.extend(options || {} , {template: $("#login-template").html(), 
-                        templateOptions: {message: config.msgTemplate({type: "relogin"})},
-                        buttons: {text: "Login", click: this.login}});
-        this.constructor.__super__.initialize.apply(this,[tempOptions]);
-    },
-    render: function () {
-        this.constructor.__super__.render.apply(this); 
-        return this;
-    },
-    login: function (options) {
-        console.log("logging in");
-        var loginData = {user: this.$(".login-name").val(), password: this.$(".login-password").val()};
-        $.ajax({url: config.urlPrefix + "courses/" + config.courseSettings.course_id + "/login",
-                data: loginData,
-                type: "POST",
-                success: this.loginOptions.success});
-    }
-
-}); */
 
 var HelpView = Backbone.View.extend({
     className: "ww-help hidden alert alert-info",
