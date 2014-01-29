@@ -8,7 +8,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 		});
 	});
 
-	app.post("/conference-submission/users/:user_id/proposals/",loadUser,function(req,res){
+	app.post("/conference-submission/users/:user_id/proposals",loadUser,function(req,res){
 		var proposal = new Proposal(req.body);
 		proposal.save(function (err, prop) {
     		if (err) {console.log(err);}

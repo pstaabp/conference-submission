@@ -42,18 +42,46 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
 	});
 
+	/**
+	 *  This method checks for a user based on the email address.  
+	 * 
+	 *  It will lookup the user via ldap and if successful return 
+	 *  first name, last name, and email address.  If unsuccessful, it will return {}
+	 *
+	 */
 
-	app.get('/conference-submission/student',loadUser, function(req,res){
-		Proposal.find({email: req.currentUser.email}, function(err,_proposals){
-		    	res.render('student.jade',{user: req.currentUser, proposals: _proposals});			
-		})
+	app.post("/conference-submission/users/check",loadUser,function(req,res){
+		res.json(_.extend(req.body,{first_name: "Jane", last_name: "Student"}));
+	});
 
-  	});
 
+	
   	app.get('/conference-submission/users/:user_id',loadUser, function(req,res){
   		User.findById(req.param("user_id"),function(err,user){
   			res.json(user);
   		});
   	});
+
+
+	// The main page for student views
+
+	app.get('/conference-submission/student',loadUser, function(req,res){
+		Proposal.find({email: req.currentUser.email}, function(err,_proposals){
+		   	res.render('student.jade',{user: req.currentUser, proposals: _proposals});			
+		});
+  	});
+
+  	// The main page for sponsors
+
+  	app.get('/conference-submission/sponsor',loadUser,function(req,res){
+  		console.log("in /conference-submission/sponsor");
+  		console.log(req.currentUser);
+  		Proposal.find({sponsor_email: req.currentUser.email},function(err,_proposals){
+  			console.log(_proposals);
+  			res.render('sponsor.jade',{user: req.currentUser, proposals: _proposals});
+  		});
+  	});
+
+
 
 }

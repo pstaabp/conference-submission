@@ -8,7 +8,8 @@ define(['backbone'], function(Backbone){
 
     var Author = Backbone.Model.extend({
         defaults: {
-            name: "",
+            first_name: "",
+            last_name: "",
             email: "",
         },
         idAttribute: "_id",

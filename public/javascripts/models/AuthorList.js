@@ -1,4 +1,4 @@
-define(['backbone'], function(Backbone){
+define(['backbone','models/Author'], function(Backbone,Author){
     /**
      *
      * This defines an AuthorList

@@ -18,6 +18,8 @@ label:hover {cursor: pointer}
 
 .proposal {list-style: none}
 
+.other-author-info {display: none;}
+
 /* change the size of the popover */
 
 .popover {width: 400px;}

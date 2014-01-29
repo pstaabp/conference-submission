@@ -43,7 +43,12 @@ define(['backbone','stickit'], function(Backbone){
          {label: "Sociology", value: "Sociology"},
          {label: "Special Education", value: "Special Education"},
          {label: "Technology Education (Grades 5-12)", value: "Technology Education (Grades 5-12)"},
-         ]
+         ],
+         departments: ["Behavioral Sciences", "Biology & Chemistry",
+                                "Business Administration",
+                                "Communications Media", "Computer Science", "Economics, History & Political Science",
+                                "Education","English Studies","Exercise & Sports Science", "Geo/Physical Science",
+                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"]
     }
 
   Backbone.Stickit.addHandler({

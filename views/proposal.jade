@@ -1,0 +1,87 @@
+script(type='text/template',id="proposal-view")
+  .panel-group#proposal-accordian
+    .panel.panel-default
+      .panel-heading
+        h4.panel-title
+          a(data-toggle='collapse',data-parent='proposal-accordian',href='#proposal-collapse') Proposal
+      #proposal-collapse.panel-collapse.collapse.in
+        .panel-body
+          table.table.table-bordered
+            tr.feedback-row
+            tr
+              td.form-horizontal
+                .form-group
+                  label.col-md-3.control-label Project Title
+                  span.col-md-9 
+                    input.title.form-control
+              td.form-horizontal
+                .form-group
+                  label.col-md-3.control-label Primary Author
+                  span.col-md-9 
+                    input.author-name.form-control(disabled)
+            tr
+              td.form-horizontal
+                .form-group
+                  label.col-md-3.control-label Author Email
+                  span.col-md-9 
+                    input.author-email.form-control(disabled)
+              td
+                .form-horizontal
+                  .form-group
+                    label.col-md-3.control-label Other Authors
+                    span.col-md-7 
+                      input.other-authors.form-control(disabled)
+                    span.col-md-2
+                      button.btn.btn-default.add-author-button(type="button") Update Authors
+                .other-author-info
+            tr
+              td.form-horizontal
+                .form-group
+                  label.col-md-4.control-label Presentation Type
+                  span.col-md-6 
+                    select.presentation-type.form-control
+                      option 
+                      option Poster Presentation
+                      option Oral Presentation
+                      option Music
+                      option Art (2D)
+                      option Art (3D)
+                      option Theatre
+                      option Video
+                      option Creative Writing    
+              td.form-horizontal
+                .form-group
+                  label.col-md-3.control-label Other Equipment Needed
+                  span.col-md-1
+                    button.btn.btn-default.btn-sm#other-equip-help ?  
+                  span.col-md-8
+                    input.other-equip.form-control
+            tr
+              td.form-horizontal
+                .form-group
+                  label.col-md-3.control-label Sponsor Email
+                  span.col-md-9 
+                    input.sponsor-email.form-control
+              td.form-horizontal
+                .form-group
+                  span.col-md-6
+                    label.control-label
+                      input.human-subjects(type='checkbox')
+                      | My Research involves Human Subjects        
+                  span.col-md-6
+                    label.control-label
+                      input.animal-subjects(type='checkbox')
+                      | My Research involves Animal Subjects
+            tr
+              td(colspan=2)
+                .form-group
+                  label.control-label Proposal Text
+                  textarea.proposal-text.form-control(rows=10)
+            tr.sponsor-row.hidden
+              td(colspan=2)
+                .form-group
+                  label.control-label Sponsor Statement
+                  textarea.sponsor-statement.form-control(rows=10)
+            tr
+              td(colspan=3)
+                button.btn.btn-default.submit-proposal-button Submit Proposal

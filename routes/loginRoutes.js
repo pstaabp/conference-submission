@@ -35,7 +35,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 //							_res2.on('searchEntry', function(entry) {
 //								res.json({first_name: entry.object.givenName, last_name: entry.object.sn,email:entry.object.mail , other: entry.object.description});
 //});					
-						var userType = "student", first_name= "first", last_name= "last", _role = ["student"];
+						var userType = "sponsor", first_name= "first", last_name= "last", _role = ["sponsor"];
 						new User({email: req.body.user.falconkey+"@" + ((userType==="student")?"student.":"") + "fitchburgstate.edu",
 							first_name: first_name, last_name: last_name,falconkey: req.body.user.falconkey, role: _role}).save(function(err, _user) {
 							if (err){

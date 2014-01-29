@@ -1,128 +1,147 @@
-define(['backbone', 'underscore','views/FeedbackView', 'stickit','bootstrap'], function(Backbone, _,FeedbackView){
+define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Author','models/AuthorList', 'stickit','bootstrap','backbone-validation'], 
+    function(Backbone, _,FeedbackView,common,Author,AuthorList){
     /**
      *
      * This defines a ProposalView, which shows a single proposal
-     *
-     * needed parameters:  
-     *     parent:  the View that is above it.
-     *     editable: a boolean that determine if the proposal can be edited.  
-     * 
-     * @type {*}
      */
 
     var ProposalView = Backbone.View.extend({
     	initialize: function (options) {
-            var self = this;
+            _.bindAll(this,"render","updateAuthors","authorChange");
+            //this.model.on("change:other_authors",this.render);
+            this.model.get("other_authors").on({add: this.authorChange, remove: this.authorChange});
+            this.facultyView = options.facultyView || false;
     	},
     	render: function (){
             var self = this; 
+            Backbone.Validation.bind(this, {
+                invalid: function(view, attr, error) {
+                    $(_(view.bindings).invert()[attr]).closest(".form-group").addClass("has-error")
+                        .popover({title: "Error", content: error, placement: "auto top"}).popover("show");
+                },
+                valid: function(view, attr, error) {
+                    $(_(view.bindings).invert()[attr]).closest(".form-group").removeClass("has-error").popover("hide");
+                }
+            });
+
     		this.$el.html($("#proposal-view").html());
+            if(this.facultyView){
+                this.$("input,.presentation-type,.proposal-text,.add-author-button").each(function(i,v){ $(v).prop("disabled",true)});
+                this.$(".sponsor-row").removeClass("hidden");
+                this.$(".submit-proposal-button").text("Submit Sponsor Statement");
+            }
+            new AdditionalAuthorsView({el: this.$(".other-author-info"),model: this.model}).render();
             $("#other-equip-help").popover({html: true, placement: "left",content: $("#other-equip-help-text").html()});
             this.stickit();
             return this;
     	},
         events: {"click button.submit-proposal-button": "submit",
-                 "click button.add-author-button": "addAuthor",
-                 "click button.show-feedback-btn": "showFeedback"},
+                 "click button.add-author-button": "updateAuthors",
+                 "click button.show-feedback-btn": "showFeedback",
+                 "blur .sponsor-email": "checkSponsorEmail",
+                 "hidden.bs.modal #additional-author-modal": "addAuthor"},
         bindings: { ".title": "title",
                     ".author-name": "author",
                     ".author-email": "email",
                     ".presentation-type": "type",
                     ".human-subjects": "use_human_subjects",
                     ".animal-subjects": "use_animal_subjects",
+                    ".other-authors": { observe: "other_authors", update: function($el, val, model, options) { 
+                        $el.val(model.get("other_authors").map(function(auth) { return auth.get("first_name") + " " + auth.get("last_name");}).join(", ")); 
+                    }},
                     ".sponsor-name": "sponsor_name",
                     ".sponsor-email": "sponsor_email",
                     ".proposal-text": "content",
                     ".other-equipment": "other_equipment",
                     ".sponsor-statement": "sponsor_statement",
-                    ".sponsor-dept": { observe: "type",
-                                selectOptions:  { collection: ["Behavioral Sciences", "Biology & Chemistry",
-                                "Business Administration",
-                                "Communications Media", "Computer Science", "Economics, History & Political Science",
-                                "Education","English Studies","Exercise & Sports Science", "Geo/Physical Science",
-                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"]}}
-                            },
+                    ".sponsor-dept": { observe: "type", selectOptions:  { collection: common.departments}}
+                },
+        authorChange: function(model){
+            this.model.trigger("change:other_authors",this.model);
+            console.log(this.model);
+        },
         submit: function (){
-            console.log("submitting proposal");
-            this.model.save({success: this.saved, error: this.error});    
+            this.model.save();    
+        },
+        updateAuthors: function() {
+            this.$(".other-author-info").width(this.$(".other-author-info").parent().width()-100).toggle("blind",500);
         },
         addAuthor: function (){
-            this.additionalAuthorsViews.push(new AdditionalAuthorView({parent: this}));
-            this.render();
+            this.model.save({success: function () {
+                this.model.trigger("change:other_authors",this.model);    
+            }});
         },
-        removeAuthor: function (_cid){
-            this.additionalAuthorsViews = _(this.additionalAuthorsViews).reject(function(view) { return view.cid===_cid;});
-            this.render();
+        checkSponsorEmail: function (){
+            console.log("in checkSponsorEmail");
+            $.ajax({url: "/conference-submission/users/check",
+                    type: "POST",
+                    data: {email: this.model.get("sponsor_email")},
+                    processData: true,
+                    success: this.verifySponsorEmail});
         },
-        saveStatement: function ()
-        {
-            this.model.set("sponsor_statement", this.$("#sponsor-statement").val());
-            this.model.save({sponsor_statement: this.model.get("sponsor_statement")}, {success: this.savedStatement } )
-        },
-        
-        saved: function(model, response, options) {
-            this.parent.announce.addMessage("The proposal was updated.");
-            this.parent.announce.addMessage("If you are satisfied with your proposal, please logout.  You will receive an email with a confirmation that your proposal was received.");
-        },
-        error: function(model, xhr, options){
-            console.log("oops an error!")
-            console.log(model);
-            console.log(xhr);
-            console.log(options);
-        }, 
-        savedStatement: function (model, response,options){
-            this.parent.announce.addMessage("The sponsor statement was saved.");
-            $("li.active a").removeClass("review-needed");
-            
-        },
-        getOtherAuthors: function(){
-            var otherAuthors =[];
-            _(this.additionalAuthorsViews).each(function(view){
-                otherAuthors.push(view.getAuthor());
-            });
-            return otherAuthors;
-        },
-        showFeedback: function(evt){
-            var feedbackID = $(evt.target).data("id");
-            var feedback = this.model.get("feedback").find(function(feed) { return feed.id===feedbackID;});
-
-            (new FeedbackView({model: feedback, el: $(".feedback-modal")})).render();
-
+        verifySponsorEmail: function (data) {
+            console.log(data);
         }
-
     });
 
 
-    var AdditionalAuthorView = Backbone.View.extend({
-        tagName: "tr",
-        className: "add-author-row",
+    var AdditionalAuthorsView = Backbone.View.extend({
         initialize: function (){
-            _.bindAll(this,"render","getAuthor","deleteAuthor");
-            _.extend(this,this.options);
-            if (!this.author){
-                this.author = {name: "", email: ""};
-            }
+            _.bindAll(this,"render","updateAuthorList");
+            this.model.get("other_authors").on({add: this.render, remove: this.render});
+
         },
         render: function(){
-            this.$el.html(_.template($("#add-author-template").html(),this.author));
-            this.$("button").prop("disabled",!this.parent.editMode);
-            this.delegateEvents();  // this seems to be needed because the button is originally disabled. 
-
+            var self = this;
+            this.$el.html($("#add-author-template").html());
+            var ul = this.$(".author-list");
+            this.model.get("other_authors").each(function(author){
+                ul.append(new AuthorRowView({model: author, authors: self.model.get("other_authors")}).render().el);
+            });
+            this.addAuthor = new Author();
+            this.stickit(this.addAuthor,this.bindings);
             return this;
         },
-        events: {"click button": "deleteAuthor",
-                "change input": "saveField"},
-        deleteAuthor: function (){
-            this.parent.removeAuthor(this.cid);
+        bindings: {"input#add-author-field": "email"},
+        events: {"click button#add-author-btn": "addAuthor",
+                 "click update-author-button": "saveAuthors"
+                },
+        addAuthor: function (){
+            $.ajax({url: "/conference-submission/users/check",
+                    type: "POST",
+                    data: {email: this.addAuthor.get("email")},
+                    processData: true,
+                    success: this.updateAuthorList});
         },
-        saveField: function(evt){
-            this.author[$(evt.target).data("field").split("-")[1]] = $(evt.target).val();
-        },
-        getAuthor: function (){         
-            return this.author;
+        updateAuthorList: function (data) {
+            if(_.isEqual(data,{})){ // the email address didn't exist
+                // show an error
+            } else {
+                this.model.get("other_authors").add(new Author(data));
+            }
         }
-
     });
+
+    var AuthorRowView = Backbone.View.extend({
+        tagName: "li",
+        initialize: function (options){
+            this.authors = options.authors;
+            _.bindAll(this,"deleteAuthor");
+        },
+        render: function () {
+            this.$el.html($("#add-author-row-template").html());
+            this.stickit();
+            return this;
+        },
+        events: {"click button": "deleteAuthor"},
+        deleteAuthor: function(){
+            this.authors.remove(this.model);
+        },
+        bindings: {".name": {observe: ['first_name', 'last_name'],
+              onGet: function(values) {
+                return values[0] + ' ' + values[1];
+            }}}
+    })
 
     return ProposalView;
 

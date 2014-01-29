@@ -22,7 +22,7 @@ define(['backbone', 'underscore','apps/common','models/Proposal'], function(Back
 
     	},
         createProposal: function() {
-            this.proposals.add(new Proposal({author: this.model.get("first_name"), email: this.model.get("email")}));
+            this.proposals.add(new Proposal({author: this.model.get("first_name") + " " + this.model.get("last_name"), email: this.model.get("email")}));
         },
         events: {"click #save-info": "submit",
                  "change input": "update",
