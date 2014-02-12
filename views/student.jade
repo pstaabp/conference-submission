@@ -30,8 +30,12 @@ block templates
       
     ul.author-list
 
-    input#add-author-field(type="text")
-    button#add-author-btn.btn.btn-default Add Author
+    .form-horizontal
+      .form-group
+        label.control-label.col-md-3 Author Email
+        .col-md-5
+          input.form-control.add-author-field(type="text")
+        button.add-author-btn.btn.btn-default Add Author
 
   script(type="text/template",id="add-author-row-template")
     span.name
@@ -61,6 +65,11 @@ block templates
       | To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then 
       | click "Save the Proposal".
 
+  script#help-template(type="text/template")
+    div.row
+     .help-text.col-md-11
+     .pull-right.col-md-1
+       button.btn.btn-default.btn-sm.close-help-button &times;
 
   script#feedback-template(type="text/template")
     .modal.hide.fade

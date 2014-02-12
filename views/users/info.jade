@@ -1,26 +1,38 @@
 script(type='text/template',id='user-view')
   .row
-    .col-md-4
-      table.table.table-bordered
-        tbody
-          tr
-            td First Name: 
-            td.first-name
-          tr
-            td Last Name:
-            td.last-name
-              input#last-name(data-field='last_name')
-          tr.student-major
-            td Major:
-            td
-              select.major(disabled='disabled')
-          tr
-            td Email: 
-            td.email
-          tr.submit-proposal-row
-            td
-            td
-              button.btn.btn-default#submit-proposal Create a New Proposal
+    table.table.table-bordered
+      tbody
+        tr
+          td
+            .form-horizontal
+              .form-group
+                label.control-label.col-md-2 First Name:
+                .col-md-8
+                  p.form-control-static.first-name
+        tr
+          td
+            .form-horizontal
+              .form-group
+                label.control-label.col-md-2 Last Name:
+                .col-md-8
+                  p.form-control-static.last-name
+        tr
+          td
+            .form-horizontal
+              .form-group
+                label.control-label.col-md-2 Major:
+                .col-md-4
+                  select.major.form-control
+        tr
+          td
+            .form-horizontal
+              .form-group
+                label.control-label.col-md-2 Email:
+                .col-md-8
+                  p.form-control-static.email
+        tr.submit-proposal-row
+          td
+            button.btn.btn-default#submit-proposal Create a New Proposal
               
         
 

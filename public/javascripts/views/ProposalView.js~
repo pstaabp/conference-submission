@@ -7,7 +7,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
 
     var ProposalView = Backbone.View.extend({
     	initialize: function (options) {
-            _.bindAll(this,"render","updateAuthors","authorChange","verifySponsorEmail");
+            _.bindAll(this,"render","updateAuthors","authorChange");
             //this.model.on("change:other_authors",this.render);
             this.model.get("other_authors").on({add: this.authorChange, remove: this.authorChange});
             this.facultyView = options.facultyView || false;
@@ -24,7 +24,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
                 }
             });
 
-    	    this.$el.html($("#proposal-view").html());
+    		this.$el.html($("#proposal-view").html());
             if(this.facultyView){
                 this.$("input,.presentation-type,.proposal-text,.add-author-button").each(function(i,v){ $(v).prop("disabled",true)});
                 this.$(".sponsor-row").removeClass("hidden");
@@ -80,13 +80,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
                     success: this.verifySponsorEmail});
         },
         verifySponsorEmail: function (data) {
-            if(_(data).isEqual({})){
-		this.$(".sponsor-email").closest(".form-group").addClass("has-error");
-		this.$(".sponsor-email").popover({placement: "top",content: "Email address was not found."}).popover("show");
-	    } else {
-		this.$(".sponsor-email").closest(".form-group").removeClass("has-error");
-		this.$(".sponsor-email").popover("hide");
-	    }
+            console.log(data);
         }
     });
 
@@ -108,8 +102,8 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
             this.stickit(this.addAuthor,this.bindings);
             return this;
         },
-        bindings: {"input.add-author-field": "email"},
-        events: {"click button.add-author-btn": "addAuthor",
+        bindings: {"input#add-author-field": "email"},
+        events: {"click button#add-author-btn": "addAuthor",
                  "click update-author-button": "saveAuthors"
                 },
         addAuthor: function (){
@@ -121,10 +115,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
         },
         updateAuthorList: function (data) {
             if(_.isEqual(data,{})){ // the email address didn't exist
-                console.log("email address didn't work");
-		$("input.add-author-field").closest(".form-group").addClass("has-error");
-		$("input.add-author-field").popover({content: "The email address does not exist"}).popover("show")
-		
+                // show an error
             } else {
                 this.model.get("other_authors").add(new Author(data));
             }
