@@ -106,7 +106,10 @@ var PostersView = Backbone.View.extend({
             var self = this;
             this.$el.html($("#presentation-table-template").html());
             var posterTable = this.$("table tbody");
-            _(this.proposals).each(function(proposal){
+            _(this.proposals).each(function(proposal,i){
+                if(proposal.get("session")===""){
+                    proposal.set({session: "P"+ (i<9?"0"+ (i+1): (i+1))});
+                }
             	var row = new PresentationRowView({model: proposal, rowTemplate: self.rowTemplate, reorder: true}).render();
             	row.$el.addClass("poster-row");
                 posterTable.append(row.el);

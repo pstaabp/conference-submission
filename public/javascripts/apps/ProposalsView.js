@@ -70,6 +70,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 ".session": "session",
                 ".type": "type",
                 ".title": "title",
+                ".submitted-date": "submit_date",
                 ".sponsor-name": "sponsor_name",
                 ".sponsor-email": "sponsor_email",
                 ".sponsor-dept": "sponsor_dept",

@@ -60,28 +60,28 @@ block container
       .radio-buttons
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="orals",checked)
-          | View Oral Presentation List
+          | Oral Presentation List
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="schedule")
-          | View Oral Presentation Schedule
+          | Oral Presentation Schedule
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="posters")
-          | View Posters
+          | Posters
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="videos")
-          | View Videos
+          | Videos
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="art2d")
-          | View 2D Art
+          | 2D Art
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="art3d")
-          | View 3D Art
+          | 3D Art
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="music")
-          | View Music
+          | Music
         label.radio-inline.control-label
           input(type="radio",name="presentationsview",value="theatre")
-          | View Theatre
+          | Theatre
       .presentation-content
     .tab-pane#judges
     .tab-pane#judge-schedule
@@ -187,7 +187,7 @@ block templates
           
         tr
           td.header Date/Time Submitted
-          td.submitted-date
+          td.submitted-date.show-date-time
           td.header Use Human Subjects
             input(type='checkbox').use-human-subjects
           td.header Use Animal Subjects

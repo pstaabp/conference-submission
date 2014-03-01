@@ -25,6 +25,15 @@ html
         ul.nav.navbar-nav.navbar-right
           li
             p.navbar-text Welcome #{user.first_name}
+          li.dropdown
+            if user && user.role && user.role.length>1
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Change role
+                b.caret
+              ul.dropdown-menu
+                each val in user.role
+                  - var link = "/conference-submission/" + val
+                  li
+                    a(href=link)= val
           li
             button.btn.btn-default.navbar-btn#logout Log Out
             button.btn.btn-default.navbar-btn#help-link Help

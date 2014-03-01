@@ -15,7 +15,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
 		        Judge.find({},function(err3,_judges){
 		            if (err3) {console.log(err3);}            
-		            res.render('admin/admin.jade', {users: _users, proposals: _proposals, judges: _judges});  
+		            res.render('admin/admin.jade', {user: _user,users: _users, proposals: _proposals, judges: _judges});  
   			});
 		    });
 		});

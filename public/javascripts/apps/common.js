@@ -1,4 +1,4 @@
-define(['backbone','stickit'], function(Backbone){
+define(['backbone','stickit','moment'], function(Backbone){
     
     var common = {
         getParameterByName: function(name)
@@ -51,10 +51,10 @@ define(['backbone','stickit'], function(Backbone){
                                 "Humanities","Industrial Technology","Mathematics","Nursing","Other"]
     }
 
-  Backbone.Stickit.addHandler({
-    selector: "td[contenteditable='true']",
-    events: ['blur']
-  });
+  Backbone.Stickit.addHandler([{selector: "td[contenteditable='true']",events: ['blur']}
+    , {selector: ".show-date-time",onGet: function(val){
+        return moment(val).format("MM/DD/YYYY [at] hh:mmA");
+    }}]);
 
     return common;
 
