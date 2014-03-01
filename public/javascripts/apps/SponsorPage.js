@@ -11,7 +11,7 @@ function(module,Backbone, _, UserList, User, ProposalList,WebPage,PersonalInfoVi
             this.user = module && module.config() ? new User(module.config().user): new User();
             this.proposals = module && module.config() ? new ProposalList(ProposalList.prototype.parse(module.config().proposals))
                      : new ProposalList();
-
+	    this.proposals.on({change: function(model) { model.save();}});
             this.render();
 
         },

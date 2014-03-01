@@ -1,13 +1,7 @@
 var _ = require("underscore");
-var ldap = require('ldapjs');
-var ldap_settings = require('../ldap');
 
 module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	
-    var client = ldap.createClient({
-	url: ldap_settings.settings.ldap_url
-    });
-
     app.get('/conference-submission/admin',loadUser, function(req,res){
 	console.log("in /admin");
 	User.findOne({_id: req.currentUser.id},function(err,_user){
@@ -42,42 +36,6 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	    res.json(user.getPublicFields());
 	});
     });
-
-	/**
-	 *  This method checks for a user based on the email address.  
-	 * 
-	 *  It will lookup the user via ldap and if successful return 
-	 *  first name, last name, and email address.  If unsuccessful, it will return {}
-	 *
-	 */
-
-    app.post("/conference-submission/users/check",function(req,response){
-	console.log(req.param("email"));
-	client.bind(ldap_settings.settings.ldap_user,ldap_settings.settings.ldap_password, function(err,res){
-            if(res){
-	   	client.search("",{filter: "(&(mail="+req.param("email")+"))",scope: "sub"},function(_err,_res){
-		    var searchResult = {};					
-
-	      	    _res.on('end', function(result) {
-			console.log(result.status);
-			response.json(searchResult);				
-  	      	    });
-	      	    _res.on('error', function(err) {
-    			console.error('error: ' + err.message);
-  	      	    });
-	      	    _res.on('searchEntry', function(entry) {
-			searchResult = {first_name: entry.object.givenName, 
-					last_name:entry.object.sn,email:entry.object.mail, 
-					other: entry.object.description};
-           	    });
-		});
-		if(err){
-		    console.log("error in client.bind: " + err);
-		}
-	    }
-	});
-    });
-
 
 	
   	app.get('/conference-submission/users/:user_id',loadUser, function(req,res){

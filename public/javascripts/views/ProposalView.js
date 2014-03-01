@@ -73,11 +73,14 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
         },
         checkSponsorEmail: function (){
             console.log("in checkSponsorEmail");
-            $.ajax({url: "/conference-submission/users/check",
-                    type: "POST",
-                    data: {email: this.model.get("sponsor_email")},
-                    processData: true,
-                    success: this.verifySponsorEmail});
+	    var FSUemailRE = /^(\w+)@fitchburgstate.edu$/;
+	    var match = FSUemailRE.exec(this.model.get("sponsor_email"));
+	    if(match){
+		$.ajax({url: "/conference-submission/users/"+match[1]+"/check",
+                    type: "GET", success: this.verifySponsorEmail});
+	    } else {
+		this.verifySponsorEmail({});
+	    }
         },
         verifySponsorEmail: function (data) {
             if(_(data).isEqual({})){
@@ -108,22 +111,19 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
             this.stickit(this.addAuthor,this.bindings);
             return this;
         },
-        bindings: {"input.add-author-field": "email"},
+        bindings: {"input.add-author-field": "falconkey"},
         events: {"click button.add-author-btn": "addAuthor",
                  "click update-author-button": "saveAuthors"
                 },
         addAuthor: function (){
-            $.ajax({url: "/conference-submission/users/check",
-                    type: "POST",
-                    data: {email: this.addAuthor.get("email")},
-                    processData: true,
-                    success: this.updateAuthorList});
+            $.ajax({url: "/conference-submission/users/"+this.addAuthor.get("falconkey")+"/check",
+                    type: "GET", success: this.updateAuthorList});
         },
         updateAuthorList: function (data) {
             if(_.isEqual(data,{})){ // the email address didn't exist
-                console.log("email address didn't work");
+                console.log("The falconkey does not exist");
 		$("input.add-author-field").closest(".form-group").addClass("has-error");
-		$("input.add-author-field").popover({content: "The email address does not exist"}).popover("show")
+		$("input.add-author-field").popover({content: "The falconkey does not exist"}).popover("show")
 		
             } else {
                 this.model.get("other_authors").add(new Author(data));

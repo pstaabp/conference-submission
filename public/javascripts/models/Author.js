@@ -11,6 +11,7 @@ define(['backbone'], function(Backbone){
             first_name: "",
             last_name: "",
             email: "",
+	    falconkey: ""
         },
         idAttribute: "_id",
     });

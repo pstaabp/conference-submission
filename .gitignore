@@ -1,4 +1,7 @@
 ldap.js
+public/javascripts/bower_components/*
 public/javascripts/bower_components/
 logs/
 node_modules/
+testldap.js
+*~

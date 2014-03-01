@@ -7,11 +7,11 @@
     "**/*.txt"
   ],
   "dependencies": {
-    "backbone": "* ",
-    "backbone.stickit": "*",
+    "backbone": "1.1 ",
+    "backbone.stickit": "0.7.0",
     "backbone-validation": "*",
     "jquery": "1.9.*",
-    "jquery-ui": "*",
+    "jquery-ui": "1.10",
     "jquery-truncate": "*",
     "requirejs": "*",
     "underscore": "*",
