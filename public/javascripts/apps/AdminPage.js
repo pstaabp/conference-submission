@@ -25,7 +25,8 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
 
             this.proposals.on("change",function(theChange){
                 var p = (_(theChange.changed).pairs())[0];
-                self.announce.addMessage("The " + p[0] + " changed to " + p[1]);
+                self.messagePane.addMessage({short:"The " + p[0] + " changed to " + p[1], type: "success", text: "The " + p[0] + " changed to "
+                    + p[1]});
             });
 
            this.views = {
