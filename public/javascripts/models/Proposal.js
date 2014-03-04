@@ -17,7 +17,6 @@ define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbon
             sponsor_statement: "",
             use_human_subjects: false,
             use_animal_subjects: false,
-	    email_sent: false,
             feedback: new FeedbackList()           
         },
         validation: {

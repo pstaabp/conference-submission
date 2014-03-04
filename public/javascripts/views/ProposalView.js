@@ -90,6 +90,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
 		this.$(".sponsor-email").closest(".form-group").removeClass("has-error");
 		this.$(".sponsor-email").popover("hide");
 	    }
+	    this.model.set({sponsor_name: data.first_name + " " + data.last_name, sponsor_dept: data.other});
         }
     });
 

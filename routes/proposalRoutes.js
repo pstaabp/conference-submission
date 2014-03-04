@@ -77,18 +77,31 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
     app.post("/conference-submission/users/:user_id/proposals",loadUser,function(req,res){
 	var proposal = new Proposal(req.body);
-	var emailsSent = {};
+	var emailsSent = {student: false, sponsor: false};
 
 	proposal.save(function (err, prop) {
-    	    if (err) {console.log(err);}
-    	    	/*sendEmail({user:,proposal: prop, email: _user.email},function(err,msg)
-		    if(err){
-			console.log(err);
-		    }
-		    if(msg){
-			res.json(msg);
-		    }
-		});*/
+    	    if (err) 
+		console.log(err);
+    	    /*sendEmail({user: {},proposal: prop, email: prop.email},function(err,msg){
+		if(err)
+		    console.log(err);
+		if(msg){
+		    emailsSent.student = true;
+		    console.log(msg);
+		    if(_(emailsSent).isEqual({student: true, sponsor: true}))
+			res.json({emailsSent: true});
+		}
+	    });
+    	    sendEmail({user: {},proposal: prop, email: prop.sponsor_email},function(err,msg){
+		if(err)
+		    console.log(err);
+		if(msg){
+		    emailsSent.sponsor = true;
+		    console.log(msg);
+		    if(_(emailsSent).isEqual({student: true, sponsor: true}))
+			res.json({emailsSent: true});
+		} 
+	    });*/
   	});
     });
 

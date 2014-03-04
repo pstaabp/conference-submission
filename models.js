@@ -52,7 +52,6 @@ function defineModels(mongoose, fn) {
     sponsor_statement: String,
     use_human_subjects: Boolean,
     use_animal_subjects: Boolean,
-    email_sent: Boolean,
     other_equipment: String,
     feedback: [Feedback]
   });
