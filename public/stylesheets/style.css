@@ -71,3 +71,5 @@ label:hover {cursor: pointer}
         opacity: 0.92;
         background-color: white;
         }
+
+tbody .checkbox {margin: 0px 15px 0px 15px;}

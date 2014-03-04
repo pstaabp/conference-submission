@@ -11,6 +11,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
             //this.model.on("change:other_authors",this.render);
             this.model.get("other_authors").on({add: this.authorChange, remove: this.authorChange});
             this.facultyView = options.facultyView || false;
+            this.model.on({"change:use_human_subjects change:use_animal_subjects": this.toggleCheckbox});
     	},
     	render: function (){
             var self = this; 
@@ -33,19 +34,41 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
             new AdditionalAuthorsView({el: this.$(".other-author-info"),model: this.model}).render();
             $("#other-equip-help").popover({html: true, placement: "left",content: $("#other-equip-help-text").html()});
             this.stickit();
+            this.$(".submit-proposal-button").button();
+            this.model.on({sync: function(){
+                    self.$(".submit-proposal-button").button("saved").attr("disabled","disabled");
+                }, 
+                change: function () {
+                    self.$(".submit-proposal-button").button("reset").attr("disabled",false);
+                }
+            })
             return this;
     	},
         events: {"click button.submit-proposal-button": "submit",
                  "click button.add-author-button": "updateAuthors",
                  "click button.show-feedback-btn": "showFeedback",
                  "blur .sponsor-email": "checkSponsorEmail",
-                 "hidden.bs.modal #additional-author-modal": "addAuthor"},
+                 "hidden.bs.modal #additional-author-modal": "addAuthor",
+                 //"change input[type='checkbox']": "toggleCheckbox"},
+             },
         bindings: { ".title": "title",
                     ".author-name": "author",
                     ".author-email": "email",
                     ".presentation-type": "type",
-                    ".human-subjects": "use_human_subjects",
-                    ".animal-subjects": "use_animal_subjects",
+                    ".human-subjects": {observe: "use_human_subjects", update: function($el, val, model, options) { 
+                        $el.prop("checked",val);
+                        if(val){
+                            this.$(".human-subjects-number").closest(".form-group").removeClass("hidden")
+                        }
+                    }},
+                    ".animal-subjects": {observe: "use_animal_subjects", update: function($el, val, model, options) { 
+                        $el.prop("checked",val);
+                        if(val){
+                            this.$(".animal-subjects-number").closest(".form-group").removeClass("hidden")
+                        }
+                    }},
+                    ".human-subjects-number": "human_subjects_number",
+                    ".animal-subjects-number": "animal_subjects_number",
                     ".other-authors": { observe: "other_authors", update: function($el, val, model, options) { 
                         $el.val(model.get("other_authors").map(function(auth) { return auth.get("first_name") + " " + auth.get("last_name");}).join(", ")); 
                     }},
@@ -55,12 +78,21 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
                     ".other-equipment": "other_equipment",
                     ".sponsor-statement": "sponsor_statement",
                     ".sponsor-dept": { observe: "type", selectOptions:  { collection: common.departments}}
-                },
+        },
+        toggleCheckbox: function(model){
+            var type = _(model.changed).keys()[0].match(/_(\w+)_/)[1]
+            if(_(model.changed).values()[0]){ 
+                $("."+type+"-subjects-number").closest(".form-group").removeClass("hidden");
+            } else {
+                $("."+type+"-subjects-number").closest(".form-group").addClass("hidden");
+            }
+        },
         authorChange: function(model){
             this.model.trigger("change:other_authors",this.model);
             console.log(this.model);
         },
         submit: function (){
+            this.$(".submit-proposal-button").button("saving")
             this.model.save();    
         },
         updateAuthors: function() {

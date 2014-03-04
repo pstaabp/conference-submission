@@ -7,16 +7,16 @@
     "**/*.txt"
   ],
   "dependencies": {
-    "backbone": "1.1 ",
+    "backbone": "1.1.2",
     "backbone.stickit": "0.7.0",
     "backbone-validation": "*",
     "jquery": "1.9.*",
-    "jquery-ui": "1.10",
+    "jquery-ui": "1.10.*",
     "jquery-truncate": "*",
     "requirejs": "*",
     "underscore": "*",
     "moment": "*",
-    "bootstrap": "3.*",
+    "bootstrap": "3.1.1",
     "font-awesome": "*"
   }
 }

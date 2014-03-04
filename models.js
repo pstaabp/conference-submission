@@ -51,7 +51,9 @@ function defineModels(mongoose, fn) {
     content: String,
     sponsor_statement: String,
     use_human_subjects: Boolean,
+    human_subjects_number: String,
     use_animal_subjects: Boolean,
+    animal_subjects_number: String,
     other_equipment: String,
     feedback: [Feedback]
   });

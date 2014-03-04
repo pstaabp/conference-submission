@@ -62,16 +62,31 @@ script(type='text/template',id="proposal-view")
                   label.col-md-3.control-label Sponsor Email
                   span.col-md-9 
                     input.sponsor-email.form-control
-              td.form-horizontal
-                .form-group
-                  span.col-md-6
-                    label.control-label
-                      input.human-subjects(type='checkbox')
-                      | My Research involves Human Subjects        
-                  span.col-md-6
-                    label.control-label
-                      input.animal-subjects(type='checkbox')
-                      | My Research involves Animal Subjects
+              td
+                table
+                  tbody
+                    tr
+                      td
+                        .checkbox
+                          label.control-label
+                            input.human-subjects(type='checkbox')
+                            | My Research involves Human Subjects        
+                      td
+                        .checkbox
+                          label.control-label
+                            input.animal-subjects(type='checkbox')
+                            | My Research involves Animal Subjects
+                    tr
+                      td.form-horizontal
+                        .form-group.hidden
+                          label.col-md-4.control-label Number: 
+                          .col-md-8
+                            input.human-subjects-number(type="text")
+                      td.form-horizontal
+                        .form-group.hidden
+                          label.col-md-4.control-label Number: 
+                          .col-md-8
+                            input.animal-subjects-number(type="text")
             tr
               td(colspan=2)
                 .form-group
@@ -84,4 +99,4 @@ script(type='text/template',id="proposal-view")
                   textarea.sponsor-statement.form-control(rows=10)
             tr
               td(colspan=3)
-                button.btn.btn-default.submit-proposal-button Submit Proposal
+                button.btn.btn-default.submit-proposal-button(data-saving-text="Proposal Saving",data-saved-text="Proposal Saved") Submit Proposal
