@@ -75,6 +75,27 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 	});
     });
 
+    app.del('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
+  		User.findById(req.session.user_id, function(err, admin_user) {
+
+  			console.log(admin_user);
+
+	    	if(! _(admin_user.role).contains("admin")){ 
+	      		res.json({deleted: false, message: "You do not have crendentials to do this."});
+	      		return;
+	    	}
+
+	    	Proposal.findByIdAndRemove(req.param("proposal_id"), function (err, _prop) {
+	      		if (err) {
+	        		console.log(err);
+      			} else {
+        			res.json({deleted: true, proposal: _prop});
+      			}
+    		});
+  		});
+
+    });
+
     app.post("/conference-submission/users/:user_id/proposals",loadUser,function(req,res){
 	var proposal = new Proposal(req.body);
 	var emailsSent = {student: false, sponsor: false};

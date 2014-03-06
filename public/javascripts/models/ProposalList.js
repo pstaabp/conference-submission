@@ -27,7 +27,12 @@ define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
             return proposals;
         },
         url: function(){
-            return '/conference-submission/users/' + this.user_id + '/proposals';
+            if(this.user_id){
+                return '/conference-submission/users/' + this.user_id + '/proposals';    
+            } else {
+                return '/conference-submission/proposals';
+            }
+            
         }
     });
 
