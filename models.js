@@ -71,7 +71,9 @@ function defineModels(mongoose, fn) {
     role: Array,
     major: String,
     email: { type: String, validate: [validatePresenceOf, 'an email is required'], index: { unique: true } },
-    falconkey: String
+    falconkey: String,
+    grad_year: String,
+    presented_before: Boolean
   });
 
   User.virtual('id')

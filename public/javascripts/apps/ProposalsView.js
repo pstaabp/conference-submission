@@ -9,6 +9,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.rowTemplate = $("#proposal-template").html();
             this.proposals = options.proposals;
             this.proposals.on("remove",this.render);
+            this.users = options.users;
 
             // this is used for the stickit select options below. 
             this.judgeList = options.judges.chain().sortBy(function(judge){ return judge.get("name");}).
@@ -27,10 +28,14 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         showHideProposal: function ($el,model,target) {
             if(target.text()==="Show"){
                 target.text("Hide");
-                $el.parent().after(new ProposalDetailView({model: model}).render().el);
+                $el.parent().siblings(".proposal-detail-row").each(function(i,v){
+                    $(v).prev().children(".show-proposal").children("button").text("Show");
+                    $(v).remove();
+                })
+                $el.parent().after(new ProposalDetailView({proposal: model, users: this.users}).render().el);
             } else {
                 target.text("Show");
-                this.$("#"+model.id).remove();
+                $el.parent().siblings(".proposal-detail-row").remove();
             }   
             
         },
@@ -44,9 +49,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                         self.showHideProposal($el,model,$(evt.target));
                     });
                 }}},
+            {name: "Accepted", key: "accepted", classname: "accepted", editable: true, datatype: "boolean"},
             {name: "Session", key: "session", classname: "session", editable: false, datatype: "string"},
             {name: "Main Author", key: "author", classname: "author", editable: false, datatype: "string"},
-            {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-8", editable: true, datatype: "string"},
+            {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
             {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"}
             ];
         }
@@ -54,14 +60,17 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
 
     var ProposalDetailView = Backbone.View.extend({
         tagName: "tr",
-        classname: "proposal-detail-row",
-        id: function(){
-            return this.model.id;
+        className: "proposal-detail-row",
+        initialize: function (options){
+            var ExtendedProposal = Backbone.Model.extend({})
+                , attrs = {};
+            _(attrs).extend(options.proposal.attributes);
+            _(attrs).extend(options.users.findWhere({email: options.proposal.get("email")}).pick("grad_year","presented_before"));
+            this.model = new ExtendedProposal(attrs);
+
         },
         render: function(){
-            var row = $("<td colspan='5'></td>");
-            row.html($("#proposal-details-template").html());
-            this.$el.html(row);
+            this.$el.html($("#proposal-details-template").html());
             this.stickit();
             return this;
         },
@@ -77,108 +86,14 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 ".use-human-subjects": "use_human_subjects",
                 ".use-animal-subjects": "use_animal_subjects",
                 ".proposal-content": "content",
-                ".sponsor-statement": "sponsor_statement"
+                ".sponsor-statement": "sponsor_statement",
+                ".human-subjects-number": "human_subjects_number",
+                ".animal-subjects-number": "animal_subjects_number",
+                ".grad-year": "grad_year",
+                ".presented-before": "presented_before"
         },    
     });
 
-
-
-
-    var ProposalRowView = Backbone.View.extend({
-        tagName: "tr",
-        className: "proposal-row",
-        initialize: function(options){
-            _.bindAll(this,"render","deleteProposal","changeAcceptedStatus");
-            this.rowTemplate = options.rowTemplate;
-            this.judgeList = options.judgeList;
-
-        },
-        render: function() {
-            var self = this;
-            if(!this.model) { return this; }
-
-            var subDate = this.model.get("submit_date");
-            var subTime = this.model.get("submit_date");
-
-            this.$el.html(this.rowTemplate);
-            this.$el.attr("id",this.model.cid);
-
-            // include the feedback form
-            this.feedbackView = new FeedbackView({el: this.$(".feedback-cell"),judgeList: this.judgeList, proposal: this.model});
-            this.feedbackView.open = false; 
-
-            if(this.model.get("accepted")){this.$("table").removeClass("not-accepted");}
-            this.stickit();
-            return this;
-        },
-        events: {"click .delete-proposal": "deleteProposal",
-                 "dblclick .proposal-content": "editContent",
-                 "change .edit-content": "saveContent",
-                 "focusout .edit-content": "closeContent",
-                 "change input[type='checkbox']": "changeAcceptedStatus",
-                 "click .show-feedback": "showHideFeedback"}
-                 ,
-        bindings: {".accepted": "accepted",
-                ".author": "author",
-                ".session": "session",
-                ".type": "type",
-                ".title": "title",
-                ".sponsor-name": "sponsor_name",
-                ".sponsor-email": "sponsor_email",
-                ".sponsor-dept": "sponsor_dept",
-                ".use-human-subjects": "use_human_subjects",
-                ".use-animal-subjects": "use_animal_subjects",
-                ".proposal-content": "content",
-                ".sponsor-statement": "sponsor_statement"},
-        deleteProposal: function(){
-            var del = confirm("Do you wish to delete the proposal " + this.model.get("title") +"?");
-            if(del){
-                this.model.destroy();
-            }
-        },
-        editContent: function(){
-            var self = this;
-            var content = this.$(".proposal-content").text();
-            this.$(".proposal-content").html("<textarea rows='10' class='edit-content'>" + content + "</textarea>");
-            this.$(".edit-content").focus();
-            this.delegateEvents();
-        },
-        saveContent: function(){
-            var newContent = this.$(".edit-content").val();
-            this.model.set({content: newContent});
-            this.model.save();
-        
-        },
-        closeContent: function(){
-            var content = this.$(".edit-content").val();
-            this.$(".proposal-content").html(content);
-        },
-
-        changeAcceptedStatus: function(evt){
-            this.model.set({accepted: $(evt.target).prop("checked")});
-            this.model.save();
-            if($(evt.target).prop("checked")){
-                this.$("table").removeClass("not-accepted");
-            } else {
-                this.$("table").addClass("not-accepted");
-            }
-        },
-        showHideFeedback: function(evt){
-            if(this.feedbackView.open){
-
-                this.feedbackView.$el.hide("blind",500);
-                this.$(".show-feedback").text("Show Feedback");
-                this.feedbackView.open = false;
-                this.feedbackView.$el.html("");
-            } else {
-                this.feedbackView.render();
-                this.feedbackView.$el.show("blind",500);
-                this.$(".show-feedback").text("Hide Feedback");
-                this.feedbackView.open = true;
-            }
-        }
-
-    });
 
     var FeedbackView = Backbone.View.extend({
         initialize: function (options){

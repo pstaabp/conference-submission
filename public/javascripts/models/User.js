@@ -12,12 +12,16 @@ define(['backbone'], function(Backbone){
             first_name: "",
             email: "",
             role: "student",
-            major: ""
+            major: "",
+            grad_year: "",
+            presented_before: false,
+        },
+        validation: {
+                grad_year: { pattern: /^201\d$/, required: true}, 
+                major: { required: true}
         },
         url : function() {
-            var base = '/conference-submission/users';
-            if (this.isNew()) return base;
-            return base + (base.charAt(base.length - 1) == '/' ? '' : '/') + this.id;
+            return '/conference-submission/users/' + this.get("_id");
         },
         idAttribute: "_id"
     });

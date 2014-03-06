@@ -13,6 +13,7 @@ define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbon
             title: "",
             accepted: false,
             content: "",
+            other_equipment: "",
             submit_date: new Date(),
             sponsor_statement: "",
             use_human_subjects: false,

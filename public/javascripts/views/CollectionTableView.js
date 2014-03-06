@@ -245,15 +245,19 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 		render: function () {
 			var self = this;
 			_(this.columnInfo).each(function (col){
-				var classname = _.isArray(col.classname) ? col.classname.join(" ") : col.classname;
-				if(col.use_contenteditable){
-					self.$el.append($("<td>").addClass(classname).attr("contenteditable",col.editable));
+				var classname = _.isArray(col.classname) ? col.classname.join(" ") : col.classname
+					, cell = $("<td>");
+				if(col.datatype==="boolean"){
+					cell.append($("<input type='checkbox'>").addClass(classname));
+					self.$el.append(cell);
+				} else if(col.use_contenteditable){
+					self.$el.append(cell.addClass(classname).attr("contenteditable",col.editable));
 				} else {
 					if (col.stickit_options && col.stickit_options.selectOptions){
 						var select = $(col.multiple?"<select multiple='true'>":"<select>").addClass("input-small").addClass(classname);
-						self.$el.append($("<td>").append(select));
+						self.$el.append(cell.append(select));
 					} else {
-						self.$el.append($("<td>").addClass(classname));
+						self.$el.append(cell.addClass(classname));
 					}
 				}
 				if(col.additionalClass){

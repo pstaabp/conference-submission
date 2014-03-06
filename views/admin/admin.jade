@@ -172,35 +172,49 @@ block container
 
 block templates        
   script#proposal-details-template(type='text/template')
-    table.table-bordered.table
-      tbody
-        tr
-          td
-            button.btn.btn-default.delete-proposal
-              i.fa.fa-trash-o
-          td.header Sponsor Name
-          td.sponsor-name
-          td.header Sponsor Email
-          td.sponsor-email
-          td.header Sponsor Dept
-          td.sponsor-dept
+    td(colspan="6")
+      table.table-bordered.table
+        tbody
+          tr
+            td
+              button.btn.btn-default.btn-sm.delete-proposal
+                i.fa.fa-trash-o
+            td.header Sponsor Name
+            td.header Sponsor Email
+            td.header Sponsor Dept
+            td.header Use Human Subjects
+              input(type='checkbox',disabled='disabled').use-human-subjects
+            td.header Use Animal Subjects
+              input(type='checkbox',disabled='disabled').use-animal-subjects
+          tr
+            td
+            td.sponsor-name
+            td.sponsor-email
+            td.sponsor-dept
+            td.human-subjects-number
+            td.animal-subjects-number
+            
+          tr
+            td
+            td.header Date/Time Submitted
+            td.header Year of Graduation
+            td.header Presented Before
+            td.header(colspan="2") Other Authors
+          tr
+            td
+            td.submitted-date.show-date-time
+            td.grad-year
+            td.presented-before
+            td.other-authors(colspan="2")
+          tr
+            td
+            td.header Proposal Text
+            td(colspan="4").proposal-content
+          tr
+            td
+            td.header Sponsor Statement
+            td.sponsor-statement(colspan="4")
           
-        tr
-          td.header Date/Time Submitted
-          td.submitted-date.show-date-time
-          td.header Use Human Subjects
-            input(type='checkbox').use-human-subjects
-          td.header Use Animal Subjects
-            input(type='checkbox').use-animal-subjects
-          td.header Other Authors
-          td.other-authors(colspan="2")
-        tr
-          td.header Proposal Text
-          td(colspan="6").proposal-content
-        tr
-          td.header Sponsor Statement
-          td.sponsor-statement(colspan="6")
-        
 
   script#user-row-template(type='text/template')
     td

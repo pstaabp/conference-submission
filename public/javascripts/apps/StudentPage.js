@@ -42,9 +42,5 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
         events: {"click button#submit-proposal": "newProposal"},
     });
 
-    var ProposalAndFeedbackView = Backbone.View.extend({
-
-    });
-
     new StudentPage({el: $("#container")});
 })

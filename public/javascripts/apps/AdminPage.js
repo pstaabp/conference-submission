@@ -1,6 +1,4 @@
 // make sure that require-config.js is loaded before this file. 
-
-
 define(['module','jquery','backbone', 'underscore','apps/common',
     'models/UserList','models/User','models/ProposalList',
     'models/Proposal',"models/Judge","models/JudgeList","apps/UsersView",  
@@ -31,7 +29,7 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
 
            this.views = {
                usersView : new UsersView({users: this.users, rowTemplate: "#user-row-template", el: $("#users")}),
-               proposalsView : new ProposalsView({parent: this, proposals: this.proposals, 
+               proposalsView : new ProposalsView({users: this.users,proposals: this.proposals, 
                                    judges: this.judges, el: $("#proposals")}),
                presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
                 judgesView : new JudgesView({parent: this, el: $("#judges")}),

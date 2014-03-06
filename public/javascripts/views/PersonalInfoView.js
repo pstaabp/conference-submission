@@ -1,4 +1,4 @@
-define(['backbone', 'underscore','apps/common','models/Proposal'], function(Backbone, _, common,Proposal){
+define(['backbone', 'underscore','apps/common','models/Proposal','bootstrap'], function(Backbone, _, common,Proposal){
     /**
      *
      * This defines a User
@@ -8,29 +8,40 @@ define(['backbone', 'underscore','apps/common','models/Proposal'], function(Back
 
     var PersonalInfoView = Backbone.View.extend({
     	initialize: function (options) {
+            var self = this;
             this.model = options.user;
             this.proposals = options.proposals;
-    	    this.render();
-	    this.model.on("change",function(_model){
-		_model.save();
-	    });
+
+            this.invBindings = _(_.object(_(this.bindings).keys().map(function(key) {
+                    return [key, _.isObject(self.bindings[key])? self.bindings[key].observe : self.bindings[key]];}))).invert();
+
+            Backbone.Validation.bind(this, {
+                valid: function(view, attr) {
+                    $(self.invBindings[attr]).popover({}).popover("hide").closest(".form-group").removeClass("has-error");
+                },
+                invalid: function(view, attr, error) {
+                    $(self.invBindings[attr]).popover({content: error}).popover("show")
+                        .closest(".form-group").addClass("has-error");                 
+                        
+                }
+            });
+            this.render();
     	},
     	render: function (){
     		this.$el.html($("#user-view").html());
-            
             if(! _(this.model.get("role")).contains("student")){
-                $(".student-major").remove();
+                $(".student-major,.presented-before,.grad-year").remove();
             }
             this.stickit();
 
     	},
         createProposal: function() {
-	    // check to make sure that a major is selected. 
-	    if(this.model.get("major")){
-		this.proposals.add(new Proposal({author: this.model.get("first_name") + " " + this.model.get("last_name"), email: this.model.get("email")}));
-	    } else {
-		this.$(".major").closest(".form-group").addClass("has-error");
-	    }
+            var self = this; 
+            this.model.save(this.model.attributes, {success: function () {
+                self.proposals.add(new Proposal({author: self.model.get("first_name")+ " " + self.model.get("last_name"),
+                    email: self.model.get("email")}));
+            }});
+
         },
         events: {"click #save-info": "submit",
                  "change input": "update",
@@ -39,6 +50,8 @@ define(['backbone', 'underscore','apps/common','models/Proposal'], function(Back
         bindings: {".first-name": "first_name",
                 ".last-name": "last_name",
                 ".email": "email",
+                ".grad-year": {observe: "grad_year", events: ["blur"]}, 
+                ".presented-before": "presented_before",
                 ".major": {observe: "major", selectOptions: {collection: function() {
                     return common.majors;
                 }, defaultOption: {label: "Select Major...", value: null}}

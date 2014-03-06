@@ -9,7 +9,7 @@ define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
     var ProposalList = Backbone.Collection.extend({
         model: Proposal,
         initialize:function (options) {
-            this.sortField = "session";
+            this.sortField = "submit_date";
             this.user_id = options ? options.user_id : null;
         },
         comparator: function (proposal){
