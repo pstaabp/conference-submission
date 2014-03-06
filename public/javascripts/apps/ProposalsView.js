@@ -62,8 +62,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         tagName: "tr",
         className: "proposal-detail-row",
         initialize: function (options){
+            _(this).bindAll("deleteProposal");
             var ExtendedProposal = Backbone.Model.extend({})
                 , attrs = {};
+            this.proposal = options.proposal;
             _(attrs).extend(options.proposal.attributes);
             _(attrs).extend(options.users.findWhere({email: options.proposal.get("email")}).pick("grad_year","presented_before"));
             this.model = new ExtendedProposal(attrs);
@@ -91,7 +93,15 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 ".animal-subjects-number": "animal_subjects_number",
                 ".grad-year": "grad_year",
                 ".presented-before": "presented_before"
-        },    
+        },
+        events: {"click .delete-proposal": "deleteProposal"},
+        deleteProposal: function (){
+            var del = confirm("Do you want to delete the proposal entitled: " + this.model.get("title"));
+            if(del){
+                this.proposal.destroy();
+                this.$el.remove();
+            }
+        }    
     });
 
 
