@@ -34,7 +34,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 			    from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
 			    subject: "Submission Received for FSU Conference", // Subject line
 			    to: _options.email,
-			    //cc: "ugrad-conf@fitchburgstate.edu",
+			    cc: "ugrad-conf@fitchburgstate.edu," + (_options.cc || ""),
 			    html: html,
 			    // generateTextFromHTML: true,
 			    text: text
@@ -98,32 +98,21 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
     app.post("/conference-submission/users/:user_id/proposals",loadUser,function(req,res){
 	var proposal = new Proposal(req.body);
-	var emailsSent = {student: false, sponsor: false};
 
 	proposal.save(function (err, prop) {
-    	    if (err) 
+    	    if (err){ 
 		console.log(err);
-    	    /*sendEmail({user: {},proposal: prop, email: prop.email},function(err,msg){
-		if(err)
-		    console.log(err);
-		if(msg){
-		    emailsSent.student = true;
-		    console.log(msg);
-		    if(_(emailsSent).isEqual({student: true, sponsor: true}))
+		return;
+	    }
+	    if(prop)
+    		sendEmail({user:req.currentUser ,proposal: prop, email: prop.email, cc: prop.sponsor_email},function(err,msg){
+		    if(err)
+			console.log(err);
+		    if(msg)
 			res.json({emailsSent: true});
-		}
-	    });
-    	    sendEmail({user: {},proposal: prop, email: prop.sponsor_email},function(err,msg){
-		if(err)
-		    console.log(err);
-		if(msg){
-		    emailsSent.sponsor = true;
-		    console.log(msg);
-		    if(_(emailsSent).isEqual({student: true, sponsor: true}))
-			res.json({emailsSent: true});
-		} 
-	    });*/
-  	});
+		});
+	   
+    	});
     });
 
     app.put("/conference-submission/users/:user_id/proposals/:proposal_id",loadUser,function(req,res){
