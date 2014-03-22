@@ -59,7 +59,11 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 }}},
             {name: "Accepted", key: "accepted", classname: "accepted", editable: true, datatype: "boolean"},
             {name: "Session", key: "session", classname: "session", editable: false, datatype: "string"},
-            {name: "Main Author", key: "author", classname: "author", editable: false, datatype: "string"},
+            {name: "Main Author", key: "author", classname: "author", editable: false, datatype: "string",
+                sort_function: function(author){
+                    var names = author.split(" ");
+                    return names[names.length-1].toLowerCase();
+                }},
             {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
             {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"}
             ];
