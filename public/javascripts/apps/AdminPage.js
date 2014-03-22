@@ -21,10 +21,9 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
             this.judges = (module.config()) ? new JudgeList(module.config().judges) : new JudgeList();
             this.proposals.on("add",this.render);
 
-            this.proposals.on("change",function(theChange){
-                var p = (_(theChange.changed).pairs())[0];
-                self.messagePane.addMessage({short:"The " + p[0] + " changed to " + p[1], type: "success", text: "The " + p[0] + " changed to "
-                    + p[1]});
+            this.proposals.on("sync",function(_prop){
+                self.messagePane.addMessage({short:"The proposal for " + _prop.get("author") + 
+					     " was saved.", type: "success"});
             });
 
            this.views = {

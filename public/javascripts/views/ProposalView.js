@@ -76,7 +76,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
                     ".sponsor-email": "sponsor_email",
                     ".proposal-text": "content",
                     ".other-equipment": "other_equipment",
-                    ".sponsor-statement": "sponsor_statement",
+                    ".sponsor-statement": {observe: "sponsor_statement", events: ["blur"]},
                     ".sponsor-dept": { observe: "type", selectOptions:  { collection: common.departments}}
         },
         toggleCheckbox: function(model){
@@ -115,6 +115,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
 	    }
         },
         verifySponsorEmail: function (data) {
+	    this.model.set({sponsor_email: this.model.get("sponsor_email").toLowerCase()});
             if(_(data).isEqual({})){
 		this.$(".sponsor-email").closest(".form-group").addClass("has-error");
 		this.$(".sponsor-email").popover({placement: "top",content: "Email address was not found."}).popover("show");
@@ -149,8 +150,13 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
                  "click update-author-button": "saveAuthors"
                 },
         addAuthor: function (){
-            $.ajax({url: "/conference-submission/users/"+this.addAuthor.get("falconkey")+"/check",
-                    type: "GET", success: this.updateAuthorList});
+	    var emailRE = /^(\w+)@student.fitchburgstate.edu$/;
+	    var match = emailRE.exec(this.addAuthor.get("falconkey"))
+	    var falconkey = match ? match[1]: this.addAuthor.get("falconkey");
+	    if(falconkey != "") {
+		$.ajax({url: "/conference-submission/users/"+falconkey+"/check",
+			type: "GET", success: this.updateAuthorList});
+	    }
         },
         updateAuthorList: function (data) {
             if(_.isEqual(data,{})){ // the email address didn't exist
@@ -159,7 +165,9 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
 		$("input.add-author-field").popover({content: "The falconkey does not exist"}).popover("show")
 		
             } else {
-                this.model.get("other_authors").add(new Author(data));
+		if(! this.model.get("other_authors").findWhere({email: data.email})){
+                    this.model.get("other_authors").add(new Author(data));
+		}
             }
         }
     });

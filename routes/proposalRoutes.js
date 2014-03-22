@@ -22,10 +22,10 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 		locals = {first_name: _options.user.first_name, last_name: _options.user.last_name};
 		_.extend(locals,_options.proposal);
 
-		console.log(locals);
+		locals.o_authors = _(locals.other_authors).map(function(a) {return a.first_name + " " + a.last_name;}).join(", ");
 		// ## Send a single email
+		console.log(locals);
 
-		// Send a single email
 		template('submitted', locals, function(err, html, text) {
 		    if (err) {
 			console.log(err);
@@ -104,21 +104,35 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 		console.log(err);
 		return;
 	    }
-	    if(prop)
-    		sendEmail({user:req.currentUser ,proposal: prop, email: prop.email, cc: prop.sponsor_email},function(err,msg){
+	    if(prop){
+		var emails = _(prop.other_authors).pluck("email");
+		emails.push(prop.sponsor_email);
+		console.log(emails);
+
+    		sendEmail({user:req.currentUser ,proposal: prop, email: prop.email, cc: emails.join(", ")},function(err,msg){
 		    if(err)
 			console.log(err);
 		    if(msg)
 			res.json({emailsSent: true});
 		});
+	    }
 	   
     	});
     });
 
-    app.put("/conference-submission/users/:user_id/proposals/:proposal_id",loadUser,function(req,res){
-	
+    app.put("/conference-submission/proposals/:proposal_id",loadUser,function(req,res){
 	Proposal.findByIdAndUpdate(req.params.proposal_id,_.omit(req.body, "_id"), function (err, prop) {
     	    if (err) {console.log(err);}
+	    
+    	    res.json(prop);
+	});
+    });
+
+
+    app.put("/conference-submission/users/:user_id/proposals/:proposal_id",loadUser,function(req,res){
+	Proposal.findByIdAndUpdate(req.params.proposal_id,_.omit(req.body, "_id"), function (err, prop) {
+    	    if (err) {console.log(err);}
+	    
     	    res.json(prop);
 	});
     });

@@ -30,12 +30,19 @@ var express = require('express')
 
 var app = express();
 
-app.configure('development', function() {
+/*app.configure('development', function() {
   mongoose.set('debug',true);
   app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
 }); 
+*/
+app.configure('production', function() {
+  mongoose.set('debug',true);
+  app.set('db-uri', 'mongodb://localhost:27017/conf2014');
+  app.use(express.errorHandler({ dumpExceptions: true }));
+  app.locals.pretty = true;
+})
 
 
 app.configure(function(){
@@ -71,23 +78,16 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 
 
 function routeUser(res,user){
-
-  console.log("in routeUser");
-  console.log(user);
   res.redirect("/conference-submission/" + (typeof(user.role[0])==="undefined"? "welcome": user.role[0]));
 }
 
 function loadUser(req, res, next) {
-
-  console.log("in loadUser");
-  console.log(req.session);
   if (req.session.user_id) {
     User.findById(req.session.user_id, function(err, user) {
       if (user) {
         req.currentUser = user;
         next();
       } else {
-        console.log("[loadUser] User not defined.  ");
         res.redirect('/conference-submission/login',{user: {}, msg: ""});
       }
     });

@@ -9,6 +9,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.rowTemplate = $("#proposal-template").html();
             this.proposals = options.proposals;
             this.proposals.on("remove",this.render);
+	    this.proposals.on("change:sponsor_statement change:sponsor_name change:sponsor_dept",function(model){
+		model.save();
+		console.log("saving proposal");
+	    });
             this.users = options.users;
 
             // this is used for the stickit select options below. 
@@ -62,6 +66,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         tagName: "tr",
         className: "proposal-detail-row",
         initialize: function (options){
+	    var self = this;
             _(this).bindAll("deleteProposal");
             var ExtendedProposal = Backbone.Model.extend({})
                 , attrs = {};
@@ -69,6 +74,16 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             _(attrs).extend(options.proposal.attributes);
             _(attrs).extend(options.users.findWhere({email: options.proposal.get("email")}).pick("grad_year","presented_before"));
             this.model = new ExtendedProposal(attrs);
+	    this.model.on("change:sponsor_statement",function(model){
+		self.proposal.set("sponsor_statement",model.get("sponsor_statement"));
+	    });
+	    this.model.on("change:sponsor_name",function(model){
+		self.proposal.set("sponsor_name",model.get("sponsor_name"));
+	    });
+
+	    this.model.on("change:sponsor_dept",function(model){
+		self.proposal.set("sponsor_dept",model.get("sponsor_dept"));
+	    });
 
         },
         render: function(){

@@ -29,7 +29,12 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
     }
 			
     function LDAPcheckPassword(user,pass,callback){
-	
+
+	if(pass==="") {
+	    return callback({error: "You must provide a password!"});
+	}
+
+	console.log("checking password");
 	assert.equal(typeof (user), 'string');
 	assert.equal(typeof (pass), 'string');
 	assert.equal(typeof (callback), 'function');
@@ -37,13 +42,13 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	var client = ldap.createClient({
 	    url: ldap_settings.settings.ldap_url
 	});
+	console.log({user: user, password: pass});
 	
 	client.bind(user,pass,function(err){
+	    console.log("inside client.bind");
+	    console.log(err);
 	    if(err)
 	    {
-		console.log("in LDAPCheckPassword");
-		console.log({user: user, password: pass});
-		console.log(err);
 		return callback(err);
 	    }
 	    client.unbind(function(err) {
@@ -70,7 +75,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 		var searchResult = {};					
 
 	      	_res.on('end', function(result) {
-		    console.log(result.status);
 		    client.unbind(function(err){
 			assert.ifError(err);
 		    });
@@ -80,7 +84,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
     		    console.error('error: ' + err.message);
   	      	});
 	      	_res.on('searchEntry', function(entry) {
-		    console.log(entry);
 		    searchResult = {first_name: entry.object.givenName, 
 				    last_name:entry.object.sn,email:entry.object.mail, 
 				    other: entry.object.description};
@@ -91,7 +94,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	
 
     app.post('/conference-submission/login',function(req,res){
-	console.log(req.body);
 
 	function saveCookieAndRoute(user){
 	    req.session.user_id = user.id;	
@@ -106,6 +108,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 
 	LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
 	    console.log("in callback");
+	    console.log(res2);
 	    if(err2){ // the password was incorrect
 	 	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
 	    } else { // password was correct

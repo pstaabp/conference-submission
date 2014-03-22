@@ -188,9 +188,9 @@ block templates
               input(type='checkbox',disabled='disabled').use-animal-subjects
           tr
             td
-            td.sponsor-name
+            td(contenteditable='true').sponsor-name
             td.sponsor-email
-            td.sponsor-dept
+            td(contenteditable='true').sponsor-dept
             td.human-subjects-number
             td.animal-subjects-number
             
@@ -213,7 +213,7 @@ block templates
           tr
             td
             td.header Sponsor Statement
-            td.sponsor-statement(colspan="4")
+            td(contenteditable='true').sponsor-statement(colspan="4")
           
 
   script#user-row-template(type='text/template')
