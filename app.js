@@ -35,13 +35,15 @@ var app = express();
   app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
-}); 
-*/
+  app.locals.moment = require('moment');
+}); */
+
 app.configure('production', function() {
   mongoose.set('debug',true);
   app.set('db-uri', 'mongodb://localhost:27017/conf2014');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
+  app.locals.moment = require('moment');
 })
 
 

@@ -27,7 +27,11 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                                 paginator: {page_size: 15, button_class: "btn btn-default", row_class: "btn-group"}});
             this.proposalsTable.render().$el.addClass("table table-bordered table-condensed");
             this.$('.proposals-table-container').html(this.proposalsTable.el);
-
+            this.$('.num-proposals').text("There are " + this.proposals.size() + " proposals shown.");
+        },
+        events: {
+            "keyup .search-proposals": "search",
+            "click .clear-search-proposal": "clearSearch"
         },
         showHideProposal: function ($el,model,target) {
             if(target.text()==="Show"){
@@ -59,7 +63,21 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
             {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"}
             ];
+        },
+        search: function(evt){
+            this.proposalsTable.filter($(evt.target).val());
+            this.proposalsTable.render();
+            this.$('.num-proposals').text("There are " + this.proposalsTable.filteredCollection.length
+                + " of " + this.proposals.size() 
+                + " proposals shown.");
+        },
+        clearSearch: function(evt){
+            this.$(".search-proposals").val("");
+            this.proposalsTable.filter("");
+            this.proposalsTable.render();
+            this.$('.num-proposals').text("There are " + this.proposals.size() + " proposals shown.");
         }
+
     });
 
     var ProposalDetailView = Backbone.View.extend({

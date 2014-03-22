@@ -53,6 +53,15 @@ block container
 
       .users-table
     .tab-pane#proposals
+      .row
+        .col-md-4
+          .form-horizontal
+            label.control-label Search
+              input.search-proposals(type="search")
+            button.btn.btn-default.clear-search-proposals Clear
+        .col-md-4.pull-right
+          p.num-proposals
+            
       .proposals-table-container
     
 
