@@ -1,13 +1,7 @@
 extends iframe-layout
 
 block container
-
-  - var authors;
-  - if(proposal) {
-  -    authors = proposal.author;
-  -    proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
-  - }
-
+  - var authors = [proposal.author].concat( _(proposal.other_authors).map(function(a) { return a.first_name + " " + a.last_name}));
 
   h3 #{proposal.title}
   h4 Authors: #{authors}
@@ -17,6 +11,6 @@ block container
 
   div 
     if proposal.type == "Oral Presentation"
-      a(href="/conference-submission/schedule") Return to the FSU Conference Oral Presentation Schedule
+      a(href="/conference-submission/orals") Return to the FSU Conference Oral Presentations
     else
       a(href="/conference-submission/posters") Return to the FSU Conference Poster Presentations

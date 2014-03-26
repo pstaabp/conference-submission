@@ -13,14 +13,13 @@ block container
         th Room
     tbody
       each proposal in proposals
-        - var authors = proposal.author;
-        - proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+        - var authors = [proposal.author].concat( _(proposal.other_authors).map(function(a) { return a.first_name + " " + a.last_name}));
         tr
           td #{proposal.time}
           //td #{proposal.session}
           td #{authors}
           td 
-            a(href!="/conference-submission/view-proposal?session=#{proposal.session}") #{proposal.title}
+            a(href!="/conference-submission/proposals/#{proposal._id}") #{proposal.title}
           td #{proposal.room}
 
 

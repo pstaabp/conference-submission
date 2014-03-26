@@ -24,7 +24,8 @@ html
             p.navbar-text#short-message
         ul.nav.navbar-nav.navbar-right
           li
-            p.navbar-text Welcome #{user.first_name}
+            if user
+              p.navbar-text Welcome #{user.first_name}
           li.dropdown
             if user && user.role && user.role.length>1
               a.dropdown-toggle(href="#",data-toggle="dropdown") Change role

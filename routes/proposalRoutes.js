@@ -70,8 +70,16 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
 
     app.get('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
-	Proposal.findById(req.param("proposal_id"),function(err,proposal){
-	    res.json(proposal);
+	Proposal.findById(req.param("proposal_id"),function(err,_proposal){
+		console.log(req.is("html"));
+		console.log(req.is());
+		if(req.is("application/json")){
+			res.json(_proposal);
+		} else {
+			res.render('show-proposal.jade',{proposal: _proposal})
+		    
+		}
+
 	});
     });
 
@@ -136,5 +144,18 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     	    res.json(prop);
 	});
     });
+
+    app.get("/conference-submission/posters",function(req,res){
+    	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
+    		res.render('posters.jade',{proposals: _proposals});
+    	});
+    });
+
+    app.get("/conference-submission/orals",function(req,res){
+    	Proposal.find({type: "Oral Presentation"},function(err,_proposals){
+    		res.render('orals.jade',{proposals: _proposals});
+    	});
+    });
+
 
 }
