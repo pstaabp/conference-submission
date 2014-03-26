@@ -69,7 +69,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     });
 
 
-    app.get('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
+    app.get('/conference-submission/proposals/:proposal_id',function(req,res){
 	Proposal.findById(req.param("proposal_id"),function(err,_proposal){
 		console.log(req.is("html"));
 		console.log(req.is());
