@@ -1,4 +1,4 @@
-extends iframe-layout
+extends layout
 
 block container
   - var authors = [proposal.author].concat( _(proposal.other_authors).map(function(a) { return a.first_name + " " + a.last_name}));
