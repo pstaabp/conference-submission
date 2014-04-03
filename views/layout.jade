@@ -24,15 +24,16 @@ html
             if user
               p.navbar-text Welcome #{user.first_name}
           li.dropdown
-            a.dropdown-toggle(href="#",data-toggle="dropdown") Role
-              b.caret
-            ul.dropdown-menu
-              each val in user.role
-                - var link = "/conference-submission/" + val
+            if user 
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Role
+                b.caret
+              ul.dropdown-menu
+                each val in user.role
+                  - var link = "/conference-submission/" + val
+                  li
+                    a(href=link)= val
                 li
-                  a(href=link)= val
-              li
-                a(href='/conference-submission/add-role') Add Role
+                  a(href='/conference-submission/add-role') Add Role
           li
             if user
               button.btn.btn-default.navbar-btn#logout Log Out
