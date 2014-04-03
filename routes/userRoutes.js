@@ -64,6 +64,12 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		});
   	});
 
+  	  	// Add a role
+
+  	app.get('/conference-submission/add-role',loadUser,function(req,res){
+		res.render('welcome.jade',{user: req.currentUser});  		
+  	});
+
 
     
 }

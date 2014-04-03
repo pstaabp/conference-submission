@@ -310,7 +310,7 @@ block templates
     table#oral-present-table.table.table-bordered
       tbody
         <% sessionNames = "ABCDEFGHIJKL" %>
-        <% for(i=0;i<2;i++) {print("<tr>"); for(j=0;j<6;j++) {print("<td class='header'>Session " + sessionNames.charAt(6*i+j) + "</td>");} print("</tr>");print("<tr>"); for(j=0;j<6;j++) {print("<td class='oral-present-col' id='col" + (6*i+j) +"'></td>");} print("</tr>");}%>
+        <% for(i=0;i<2;i++) {print("<tr>"); for(j=0;j<6;j++) {print("<td class='header'>Session " + sessionNames.charAt(6*i+j) + "</td>");} print("</tr>");print("<tr>"); for(j=0;j<6;j++) {print("<td><ul class='oral-present-col' id='col" + (6*i+j) +"'></ul></td>");} print("</tr>");}%>
 
   script#emails-template(type="text/template")
     h3 
@@ -352,7 +352,7 @@ block templates
 
 
   script#oral-presentation-template(type="text/template")
-    li.oral-present(id!='<%=cid%>')
+    li.oral-present(id!='<%=cid%>',data-original-session!='<%=session%>')
       .op-title <%=title%>
       .op-author <%=author%>   
 

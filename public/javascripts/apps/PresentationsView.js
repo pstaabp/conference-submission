@@ -1,4 +1,4 @@
-define(['backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
+define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'], function(Backbone,ProposalList){
     var PresentationsView = Backbone.View.extend({
         initialize: function(options){
             _.bindAll(this, "render");
@@ -51,8 +51,9 @@ define(['backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
         initialize: function(options){
             _.bindAll(this,"render","reorder");
             this.parent = options.parent;
-            this.proposals = options.proposals;
-
+            this.proposals = new ProposalList(options.proposals);
+            this.proposals.sortField = 'session';
+            this.proposals.sort();
         },
         render: function (){
         	var self = this;
@@ -62,11 +63,11 @@ define(['backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
             
             var re = /OP-(\d+)-(\d+)/;
 
-            _(this.proposals).each(function(prop){
+            this.proposals.each(function(prop){
                 var matches = prop.get("session").match(re);
                 var propHTML = _.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid}));
                 if(matches){
-                    self.$("#col" + matches[1]).append(propHTML);
+                    self.$("ul#col" + matches[1]).append(propHTML);
                 } else {
                     self.$("#extra-ops").append(propHTML);
                 }
@@ -77,21 +78,29 @@ define(['backbone','stickit','jquery-truncate','jquery-ui'], function(Backbone){
             this.$(".oral-present-col").sortable({ 
                     connectWith: ".oral-present-col", 
                     placeholder: "ui-state-highlight",
-                    stop: this.reorder});
+                    update: this.reorder});
 
             //this.$(".op-title").truncate();
             return this;
 
         },
-        reorder: function (){
+        reorder: function (evt,ui){
+            var destinationSession = $(ui.item).parent().attr('id').split("col")[1];
+            var exec = /OP-(\d+)-(\d+)/.exec($(ui.item).data("original-session"));
+            var originalSession = exec? exec[1]: null ;
             var self = this; 
-            this.$("li").each(function(i,item){
+            $("#col"+ destinationSession + " li,#col" + originalSession + " li").each(function(i,item){
                 var cid = $(item).attr("id")
-                var proposal = _(self.proposals).find(function(prop) { return prop.cid===cid;})
+                var proposal = self.proposals.find(function(prop) { return prop.cid===cid;})
                 var list = parseInt($(item).parent().attr("id").split("col")[1]); 
+                $(item).sortable({
+                    connectWith: ".oral-present-col",
+                    placeholder: "ui-state-highlight",
+                    update: this.reorder});
+            
                 proposal.set("session","OP-"+list + "-"+$(item).index());
                 proposal.save();
-            })
+            });
         }
     });
 
