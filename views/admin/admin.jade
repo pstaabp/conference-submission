@@ -228,7 +228,7 @@ block templates
   script#user-row-template(type='text/template')
     td
       .btn-group
-        button.btn.delete-user
+        button.btn.btn-default.delete-user
           i.icon-trash
     td.first-name
     td.last-name
@@ -254,7 +254,7 @@ block templates
   script#student-row-template(type='text/template')
     td
       .btn-group
-        button.btn.delete-user
+        button.btn.btn-default.delete-user
           i.icon-trash
     td <%=first_name%>
     td <%=last_name%>
@@ -283,7 +283,7 @@ block templates
   script#sponsor-row-template(type='text/template')
     td
       .btn-group
-        button.btn.delete-user
+        button.btn.btn-default.delete-user
           i.icon-trash
     td <%=first_name%>
     td <%=last_name%>
@@ -357,7 +357,7 @@ block templates
       .op-author <%=author%>   
 
   script#act-as-user-template(type="text/template")
-    a.btn.dropdown-toggle(data-toggle="dropdown",href="#") Act As User
+    a.btn.btn-default.dropdown-toggle(data-toggle="dropdown",href="#") Act As User
       span.caret
     ul.dropdown-menu
       <% _(users).each(function(user){ print('<li><a class="user-info" href="/conference-submission/admin/' + user.id + '"">' + user.name + '</a></li>')}) %>
@@ -408,7 +408,7 @@ block templates
       button.showDetails.btn.btn-default Show Details
   script#feedback-tabs(type="text/template")
     div
-      button.btn.new-feedback-btn Add New Feedback
+      button.btn.btn-default.new-feedback-btn Add New Feedback
     ul.nav.nav-tabs.feedback-tabs
     .tab-content.feedback-tab-content
 
@@ -453,7 +453,7 @@ block templates
           textarea.improvement(tabindex="9")
       tr
         td
-          button.btn.save-feedback-button(tabindex="9") Save Feedback
+          button.btn.btn-default.save-feedback-button(tabindex="9") Save Feedback
 
   script#feedback-row-template(type="text/template")
     td.session
@@ -474,7 +474,7 @@ block templates
 
   script#judges-row-template(type="text/template")
     td
-      span.btn.delete-judge
+      span.btn.btn-default.delete-judge
         i.icon-trash
     td.editable.name(contenteditable="true")
     td.editable.email(contenteditable="true")
@@ -488,7 +488,7 @@ block templates
       <%var pres = presentation.join(", "), sess = session.join(", ") %>
       <%var popoverContent = "types: " + pres + "<br>sessions: " + sess; %>
       <%if (removable) { %>
-      <%  popoverContent += "<br><span class='btn remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
+      <%  popoverContent += "<br><span class='btn btn-default remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
       <% if (session.length == 0) {%>
       span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
       <%} else {%>
@@ -554,7 +554,7 @@ block templates
           
 
       .modal-footer
-        a.btn(href="#",data-dismiss="modal") Close
+        a.btn.btn-default(href="#",data-dismiss="modal") Close
 
   script#message-pane-template(type="text/template")
     .row
