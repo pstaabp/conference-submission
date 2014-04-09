@@ -129,7 +129,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 ".human-subjects-number": "human_subjects_number",
                 ".animal-subjects-number": "animal_subjects_number",
                 ".grad-year": "grad_year",
-                ".presented-before": "presented_before"
+                ".presented-before": "presented_before",
+                ".other-authors": {observe: "other_authors", onGet: function(val){
+                    return _(val.map(function(author) { return author.get("first_name") + " " + author.get("last_name");})).join(", ");
+                }}
         },
         events: {"click .delete-proposal": "deleteProposal"},
         deleteProposal: function (){

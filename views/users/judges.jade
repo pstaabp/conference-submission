@@ -1,22 +1,20 @@
 extends ../layout
 
+block script
+  script(type="text/javascript",src="/conference-submission/javascripts/bower_components/bootstrap/dist/js/bootstrap.min.js")
+
 block container
   h2 Sign up for Judging the Conference Presentations and Posters
 
   form(action='/conference-submission/judges',method='post')
-    table.span12.table
+    - var _name = user.first_name + " " + user.last_name; 
+    input(type='hidden',name='name',value="#{_name}")
+    input(type='hidden',name='email',value="#{user.email}")
+    table.col-md-12.table
       tbody
         tr
-          td.span2 Name
-          td.span8
-            input(type="text",name="name")
-        tr
-          td.span2 Email
-          td.span8
-            input(type="text",name="email")
-        tr
-          td.span2 I'm willing to judge
-          td.span8
+          td.col-md-3 I'm willing to judge: 
+          td.col-md-9
             label.radio.inline
               input(type="radio",name="type",value="poster") 
               | Poster Presentation
@@ -27,8 +25,8 @@ block container
               input(type="radio",name="type",value="either") 
               | Either
         tr
-          td.span2 I'd like to judge any of the following types of projects
-          td.span8 
+          td.col-md-3 I'd like to judge any of the following types of projects
+          td.col-md-9
             table
               tbody
                 tr
@@ -144,7 +142,7 @@ block container
                       | Technology Education
         tr
           td
-            button.btn(type="submit") Submit             
+            button.btn.btn-default(type="submit") Submit             
 
 
             

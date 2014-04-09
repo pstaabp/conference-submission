@@ -1,0 +1,27 @@
+extends layout
+
+block container
+  h2 Hello #{user.first_name}
+  p
+    | You have chosen to add a role to this year's Undergraduate Conference. Select the addiitonal role 
+    | below. 
+  form(method='post', action='/conference-submission/add-role')
+    .form-horiztonal
+      .form-group
+        label.checkbox-inline
+          if _(user.role).contains("sponsor")
+            input#sponsor(type="checkbox",name="sponsor",checked,disabled) 
+            | Sponsor
+          else 
+            input#sponsor(type="checkbox",name="sponsor") 
+            | Sponsor
+        label.checkbox-inline
+          if _(user.role).contains("judge")
+            input#judge(type="checkbox",name="judge",checked,disabled) 
+            |   Judge
+          else
+            input#judge(type="checkbox",name="judge") 
+            |   Judge
+
+      .form-group
+        button.btn.btn-default(type='submit') Continue

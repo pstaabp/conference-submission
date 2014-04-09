@@ -28,10 +28,11 @@ html
               a.dropdown-toggle(href="#",data-toggle="dropdown") Role
                 b.caret
               ul.dropdown-menu
-                each val in user.role
-                  - var link = "/conference-submission/" + val
-                  li
-                    a(href=link)= val
+                if user && user.role
+                  each val in user.role
+                    - var link = "/conference-submission/" + val
+                    li
+                      a(href=link)= val
                 li
                   a(href='/conference-submission/add-role') Add Role
           li

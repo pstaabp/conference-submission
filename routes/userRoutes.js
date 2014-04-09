@@ -67,9 +67,61 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   	  	// Add a role
 
   	app.get('/conference-submission/add-role',loadUser,function(req,res){
-		res.render('welcome.jade',{user: req.currentUser});  		
+  		console.log(req.currentUser);
+		res.render('addrole.jade',{user: req.currentUser});  		
   	});
 
+  	// Update the role for a user
+
+  	app.post('/conference-submission/add-role',loadUser,function(req,res){
+  		var roles = _(req.currentUser.role).union(_.keys(req.body));
+  		User.findByIdAndUpdate(req.currentUser._id,{role: roles}, function(err,user){
+  			console.log(user);
+ 			res.redirect("/conference-submission/"+_.last(roles));
+  		})
+  	})
+
+	app.get('/conference-submission/judge',loadUser,function(req,res){
+		Judge.findOne({email: req.currentUser.email},function(err,_judge){
+			if(err){
+				console.log(err);
+				return;
+			}
+			if(_judge){ // the person has already signed up
+				res.render('submit-feedback.jade',{user:req.currentUser});
+			} else {
+				res.render('users/judges.jade',{user: req.currentUser});				
+			}
+		})
+
+	});
+
+	app.get('/conference-submission/judges',loadUser,function(req,res){
+		Judge.find({},function(err,_judges){
+      		if(err) {console.err(err);}
+        		res.send(_judges);
+    		});	
+		});	
+
+	app.post("/conference-submission/judges",function(req,res){
+	  	var pres = _(req.body.presentation).keys();
+  		var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.type, presentation: pres});
+  		judge.save(function (err, _judge) {
+    		if (err) {console.log(err);}
+
+		    res.render("users/judges-email.jade");
+		});
+	});
+
+	app.put("/conference-submission/judges/:id",loadUser,function(req,res){
+  
+  		var obj = _.omit(_.clone(req.body),"_id");
+		console.log(obj);
+  		Judge.findByIdAndUpdate(req.params.id,obj, function(err,_judge){
+    		if(err) {console.log(err);}
+    		res.json(_judge);
+  		});
+	});
 
     
 }
