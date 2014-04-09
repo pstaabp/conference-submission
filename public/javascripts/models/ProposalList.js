@@ -20,11 +20,9 @@ define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
             }
         },
         parse: function(response,options){
-            var proposals = [];
-            _(response).each(function(model){
-                proposals.push(Proposal.prototype.parse(model));
+            return _(response).map(function(_set){
+                return new Proposal(_set);
             });
-            return proposals;
         },
         url: function(){
             if(this.user_id){

@@ -28,10 +28,16 @@ define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbon
             type: {required: true}
         },
         idAttribute: "_id",
+        initialize: function (opts) {
+            var feedback = (opts && opts.feedback) ? opts.feedback : [];
+            this.attributes.feedback = new FeedbackList(feedback);
+            var authors = (opts && opts.other_authors) ? opts.other_authors : [];
+            this.attributes.other_authors = new FeedbackList(authors);
+        },
         parse: function(response,options){
-            response.feedback = new FeedbackList(response.feedback);
-            response.other_authors = new AuthorList(response.other_authors);
-            return response; 
+            this.set("feedback",new FeedbackList(response.feedback));
+            this.set("other_authors",new AuthorList(response.other_authors));
+            return _.omit(response,"feedback","other_authors"); 
         }
     });
 
