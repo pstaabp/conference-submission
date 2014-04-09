@@ -95,6 +95,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 
     app.post('/conference-submission/login',function(req,res){
 
+
 	function saveCookieAndRoute(user){
 	    req.session.user_id = user.id;	
 	    var loginToken = new LoginToken({ email: user.email });
@@ -106,12 +107,12 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	}
 
 
-	LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
-	    console.log("in callback");
-	    console.log(res2);
-	    if(err2){ // the password was incorrect
-	 	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
-	    } else { // password was correct
+	// LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
+	//     console.log("in callback");
+	//     console.log(res2);
+	//     if(err2){ // the password was incorrect
+	//  	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
+	//     } else { // password was correct
 		User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
 		    console.log(_user);
 		    if(_user){
@@ -140,12 +141,12 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 			});
 		    }
 		});
-	    }
-	});
+	    //}
+	//});
     });
  
     app.get('/conference-submission/login', function(req, res) {
-  	res.render('login.jade',{user: {}, msg: ""});
+  		res.render('login.jade',{user: {}, msg: ""});
     });
 
     app.get('/conference-submission/login-check',function(req,res){
