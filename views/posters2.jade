@@ -2,7 +2,6 @@ extends iframe-layout
 
 block container
   h2 Poster Presentations
-
   table.table.table-bordered
     thead
       tr
@@ -14,7 +13,7 @@ block container
         - var authors = [proposal.author].concat( _(proposal.other_authors).map(function(a) { return a.first_name + " " + a.last_name}));
         tr
           td #{proposal.session}
-          td #{authors.join(",")}
+          td #{authors.join(", ")}
           td 
             a(href!="/conference-submission/proposals/#{proposal._id}") #{proposal.title}
       
