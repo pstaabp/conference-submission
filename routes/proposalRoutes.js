@@ -147,13 +147,15 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
     app.get("/conference-submission/posters",function(req,res){
     	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
-    		res.render('posters.jade',{proposals: _proposals});
+    		var props = _(_proposals).sortBy("session");
+    		res.render('posters.jade',{proposals: props});
     	});
     });
 
     app.get("/conference-submission/posters2",function(req,res){
     	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
-    		res.render('posters2.jade',{proposals: _proposals});
+    		var props = _(_proposals).sortBy("session");
+    		res.render('posters2.jade',{proposals: props});
     	});
     });
 
