@@ -30,23 +30,24 @@ var express = require('express')
 
 var app = express();
 
-app.configure('development', function() {
+/*app.configure('development', function() {
   mongoose.set('debug',true);
   app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
   app.locals._ = require("underscore");
-}); 
+}); */ 
 
-/*app.configure('production', function() {
+app.configure('production', function() {
   mongoose.set('debug',true);
   app.set('db-uri', 'mongodb://localhost:27017/conf2014');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
-})*/
+    app.locals._ = require('underscore');
 
+});
 
 app.configure(function(){
   app.set('port', process.env.PORT || 8080);
