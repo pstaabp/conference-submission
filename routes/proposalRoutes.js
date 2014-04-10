@@ -151,6 +151,13 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     	});
     });
 
+    app.get("/conference-submission/posters2",function(req,res){
+    	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
+    		res.render('posters2.jade',{proposals: _proposals});
+    	});
+    });
+
+
     app.get("/conference-submission/orals",function(req,res){
     	Proposal.find({type: "Oral Presentation"},function(err,_proposals){
     		res.render('orals.jade',{proposals: _proposals});
