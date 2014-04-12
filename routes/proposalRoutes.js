@@ -152,19 +152,35 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     	});
     });
 
-    app.get("/conference-submission/posters2",function(req,res){
-    	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
-    		var props = _(_proposals).sortBy("session");
-    		res.render('posters2.jade',{proposals: props});
-    	});
-    });
-
 
     app.get("/conference-submission/orals",function(req,res){
     	Proposal.find({type: "Oral Presentation"},function(err,_proposals){
     		res.render('orals.jade',{proposals: _proposals});
     	});
     });
+
+    app.get("/conference-submission/schedule",function(req,res){
+
+//  var sessionRE = /OP-(\d+)-(\d+)/
+
+
+  Proposal.find({type: "Oral Presentation"}).exec(function(err,_proposals){
+    var props = [], row,col,session,theProp;
+    for(k=0;k<2;k++){
+      for(row=0;row<5;row++){
+        for(col=0; col<6; col++){
+          session = 6*k+col;
+          theProp = _.find(_proposals,function(proposal){ return proposal.session === "OP-" + session + "-" + row});
+          var sess = (theProp)? theProp.session: "none";
+          props.push(theProp);
+        }
+      }
+    }
+
+    res.render('schedule.jade',{proposals: props});
+  });
+
+});
 
 
 }

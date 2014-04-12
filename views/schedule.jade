@@ -1,4 +1,4 @@
-extends iframe-layout
+extends layout
 
 block proprow
   tr
@@ -26,14 +26,14 @@ block container
     thead
       tr
         th Time
-        th Hamm. 214
-        th Hamm. 314
-        th Alum. A
-        th Alum. C
-        th Hamm. G19
         th CTL
+        th Hamm. G01
+        th Hamm. G01B
+        th Hamm. 314
+        th Hamm. S08
+        th G19
     tbody
-      - var times = ["9:00-9:15","9:20-9:35","9:40-9:55","10:00-10:15","10:20-10:35","11:00-11:15","11:20-11:35","11:40-11:55","12:00-12:15","12:20-12:35"];
+      - var times = ["9:00-9:15","9:20-9:35","9:40-9:55","10:00-10:15","","11:00-11:15","11:20-11:35","11:40-11:55"];
       - for (var i = 0; i<10 ; i++) {
       - var time = times[i];
       -   var props =[];
