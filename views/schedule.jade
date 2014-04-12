@@ -9,13 +9,17 @@ block proprow
       - var title = "";
       - if(proposal) {
       -    authors = proposal.author;
-      -    proposal.other_authors.forEach(function(auth){ authors += ", " + auth.name;});
+      -    proposal.other_authors.forEach(function(auth){ 
+      -      if(auth && auth.first_name && auth.first_name.length>0){
+      -        authors += ", " + auth.first_name + " " + auth.last_name;
+      -      }});
       -    session = proposal.session;
       -    title = proposal.title; 
+      -    id = proposal._id;
       - }
       td.op-prop 
         
-        a(href!="/conference-submission/view-proposal?session=#{session}") #{title}
+        a(href!="/conference-submission/proposals/#{id}") #{title}
         span.op-author 
           | #{authors}
 
