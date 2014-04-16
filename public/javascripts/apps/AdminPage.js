@@ -2,11 +2,11 @@
 define(['module','jquery','backbone', 'underscore','apps/common',
     'models/UserList','models/User','models/ProposalList',
     'models/Proposal',"models/Judge","models/JudgeList","apps/UsersView",  
-    'apps/ProposalsView', 'apps/PresentationsView',
+    'apps/ProposalsView', 'apps/PresentationsView', 'apps/SponsorsView',
     'apps/JudgesView', 'apps/JudgeScheduleView', 'apps/EmailView', 'apps/AllFeedbackView',
     'views/WebPage','bootstrap'],
 function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge,JudgeList,UsersView, ProposalsView, PresentationsView,
-            JudgesView, JudgeScheduleView, EmailView, AllFeedbackView,WebPage){
+            SponsorsView, JudgesView, JudgeScheduleView, EmailView, AllFeedbackView,WebPage){
 
 // define(['module','jquery','backbone','views/WebPage','models/ProposalList','models/UserList','models/JudgeList','apps/UsersView'],
 // function(module,$,Backbone,WebPage,ProposalList,UserList,JudgeList,UsersView){
@@ -34,7 +34,8 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
                 judgesView : new JudgesView({parent: this, el: $("#judges")}),
                 judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
                 emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")}),
-                feedbackView: new AllFeedbackView({proposals: this.proposals, el: $("#feedback")})
+                feedbackView: new AllFeedbackView({proposals: this.proposals, el: $("#feedback")}),
+                sponsorsView: new SponsorsView({users: this.users, el: $("#sponsors-view")})
             }
 
             this.users.on({"change": this.updateUser,"sync": this.syncUser});
