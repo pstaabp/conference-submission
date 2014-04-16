@@ -28,6 +28,8 @@ block container
       a(href="#emails",data-toggle="tab",data-view="emailView") Emails
     li
       a(href="#feedback",data-toggle="tab",data-view="feedbackView") Feedback
+    li
+      a(href="#sponsors-view",data-toggle="tab",data-view="sponsorsView") Sponsors
     
       
   .tab-content
@@ -173,6 +175,7 @@ block container
             th Author
             th Feedback
         tbody
+    .tab-pane#sponsors-view
 
 
 
@@ -561,4 +564,8 @@ block templates
       .pull-right
         button.close &times;
         ul.main-message-pane.no-bullets
+
+  script#sponsor-table-template(type="text/template")
+    h2 List of all Sponsors
+
 
