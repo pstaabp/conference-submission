@@ -10,10 +10,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.proposals = options.proposals;
             this.proposals.on("remove",this.render);
             this.users = options.users;
-
-            // this is used for the stickit select options below. 
-            this.judgeList = options.judges.chain().sortBy(function(judge){ return judge.get("name");}).
-                map(function(judge){ return {name: judge.get("name"), id: judge.id};}).value();            
+            this.judges = options.judges;
         },
         render: function(){
             var self = this;
@@ -32,14 +29,14 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         showHideFeedback: function ($el,model,target) {
             if(target.text()==="Show"){
                 target.text("Hide");
-                $el.parent().siblings(".proposal-detail-row").each(function(i,v){
+                $el.parent().siblings(".feedback-tab-row").each(function(i,v){
                     $(v).prev().children(".show-proposal").children("button").text("Show");
                     $(v).remove();
                 })
-                $el.parent().after(new FeedbackTabView({model: model, users: this.users}).render().el);
+                $el.parent().after(new FeedbackTabView({model: model, judges: this.judges}).render().el);
             } else {
                 target.text("Show");
-                $el.parent().siblings(".proposal-detail-row").remove();
+                $el.parent().siblings(".feedback-tab-row").remove();
             }   
             
         },
@@ -82,10 +79,13 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         tagName: "tr",
         className: "feedback-tab-row",
         initialize: function (options){
-
+            this.judges = options.judges;
+            _(this).bindAll("render");
         },
         render: function(){
             this.$el.html($("#feedback-tabs").html());
+            var session = this.model.get("session");
+            var judges = this.judges.filter(function(judge){ return _(judge.get("sessions")).contains(session);})
             return this;
         },
          bindings: {".accepted": "accepted",
@@ -108,14 +108,6 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 ".other-authors": {observe: "other_authors", onGet: function(val){
                     return _(val.map(function(author) { return author.get("first_name") + " " + author.get("last_name");})).join(", ");
                 }}
-        },
-        events: {"click .delete-proposal": "deleteProposal"},
-        deleteProposal: function (){
-            var del = confirm("Do you want to delete the proposal entitled: " + this.model.get("title"));
-            if(del){
-                this.proposal.destroy();
-                this.$el.remove();
-            }
         }    
     });
 
