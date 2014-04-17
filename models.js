@@ -1,7 +1,10 @@
 var crypto = require('crypto'),
     Document,
     User,
-    LoginToken;
+    LoginToken,
+    Feedback,
+    Proposal,
+    Judge;
 
 function extractKeywords(text) {
   if (!text) return [];
@@ -16,7 +19,7 @@ function defineModels(mongoose, fn) {
   var Schema = mongoose.Schema,
       ObjectId = Schema.ObjectId;
 
-  var Feedback = new Schema({
+  Feedback = new Schema({
     judge_id: String,
     visual_design: Number,
     verbal_presentation: Number,
@@ -35,7 +38,7 @@ function defineModels(mongoose, fn) {
   })
 
  
-  var Proposal = new Schema({
+  Proposal = new Schema({
     author: String,
     email: String,
     author_id: String,
@@ -65,7 +68,7 @@ function defineModels(mongoose, fn) {
     return value && value.length;
   }
 
-  var User = new Schema({
+  User = new Schema({
     first_name: String,
     last_name: String,
     role: Array,
@@ -99,12 +102,11 @@ function defineModels(mongoose, fn) {
  *
  **/
 
-var Judge = new Schema({
+Judge = new Schema({
   name: String,
   email: String,
   type: String,
-  session: Array,
-  presentation: Array
+  sessions: Array
 })
 
 

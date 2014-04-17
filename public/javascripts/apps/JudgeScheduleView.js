@@ -3,7 +3,10 @@ define(['backbone','bootstrap'], function(Backbone){
     var JudgeScheduleView = Backbone.View.extend({
         initialize: function(options){
             _.bindAll(this,"render","showPosters","showOrals");
-            this.parent = options.parent;
+            this.proposals = options.proposals;
+            this.judges = options.judges; 
+            this.sessionNames = "ABCDEFGHIJKL";
+            this.judgeTemplate = _.template($("#judges-schedule-row-template").html());
         },
         render: function () {
             this.$(".posters,.orals").css("display","none");
@@ -18,10 +21,10 @@ define(['backbone','bootstrap'], function(Backbone){
         removeJudgeFromSession: function(evt){
             
             var judgeID = $(evt.target).data("judgeid");
-            var judge= this.parent.judges.get(judgeID);
-            var sessions = judge.get("session");
+            var judge= this.judges.get(judgeID);
+            var sessions = judge.get("sessions");
             var sessionName = $(evt.target).data("session");
-            judge.set({session: _(sessions).without(sessionName)});
+            judge.set({sessions: _(sessions).without(sessionName)});
 
             judge.save();
             this.render();
@@ -30,18 +33,14 @@ define(['backbone','bootstrap'], function(Backbone){
             var self = this;
 
             var posterTemplate = _.template($("#judges-schedule-poster-row").html());
-            var judgeTemplate = _.template($("#judges-schedule-row-template").html());
-
             
-            this.$(".posters tbody").html("<tr><td><ul id='judge-list-poster'></ul></td><td colspan='8'></td></tr>");
+            this.$(".posters tbody").html("<tr><td><ul class='all-judge-list'></ul></td><td colspan='8'></td></tr>");
 
-            var judges = this.parent.judges.filter(function(judge){ 
+            var judges = this.judges.filter(function(judge){ 
                     return (judge.get("type")==="poster") || (judge.get("type")==="either"); });
 
-            var sessionNames = "ABCDEFGHIJKL";
-
-            var posters = _(this.parent.proposals.filter(function(prop) { return prop.get("type")==="Poster Presentation";}))
-                    .sortBy(function(poster){ return poster.get("session");});
+            var posters = _(this.proposals.filter(function(prop) { return prop.get("type")==="Poster Presentation";}))
+                    .sortBy("session");
 
             for(var i=0; i<posters.length; i+=4){
                 var rowString = "<tr>";
@@ -56,24 +55,18 @@ define(['backbone','bootstrap'], function(Backbone){
             // Add the judges to each session
 
             _(posters).each(function(poster,i){
-                var _sessionName = (i)<9?"P0"+(i+1):"P"+(i+1);
-                var sessionJudges = _(judges).filter(function(judge) { return _(judge.get("session")).contains(_sessionName)});
+                var _sessionName = poster.get("session");
+                var sessionJudges = _(judges).filter(function(judge) { return _(judge.get("sessions")).contains(_sessionName)});
                
                 _(sessionJudges).each(function(judge) {
                     var obj = {};
                     _.extend(obj,judge.attributes,{cid: judge.cid, removable: true, sessionName: _sessionName});
-                    $(".poster-judge[data-session='" + _sessionName + "'] ul").append(judgeTemplate(obj));
+                    $(".poster-judge[data-session='" + _sessionName + "'] ul").append(self.judgeTemplate(obj));
                 });
             });
 
-            var judgeListCell = this.$("#judge-list-poster");
-            judgeListCell.parent().attr("rowspan",parseInt(Math.floor(posters.length/4)+2));
-            _(judges).each(function(judge){  
-                var obj = {};
-                _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
-                judgeListCell.append(judgeTemplate(obj));
-            });
-
+            this.$(".all-judge-list").parent().attr("rowspan",parseInt(Math.floor(posters.length/4)+2));
+            this.listAllJudges();
 
             this.$(".judge-popover").popover().draggable({revert: true});
             this.$(".poster-judge").droppable({
@@ -81,20 +74,21 @@ define(['backbone','bootstrap'], function(Backbone){
                 scroll: true,
                 helper: "clone",
                 drop: function( event, ui ) {  
-                    console.log("dropped"); 
-                    $(ui.draggable).removeClass("no-sessions"); 
-                    
                     var _sessionName = $(event.target).data("session");
-                    var judge = self.parent.judges.get($(ui.draggable).data("judgeid"));
-                    var _sessions = judge.get("session");
+                    var judge = self.judges.get($(ui.draggable).data("judgeid"));
+                    var _sessions = judge.get("sessions");
                     _sessions.push(_sessionName);
 
-                    judge.set({session: _sessions});
+                    judge.set({sessions: _sessions});
                     judge.save();
 
                     var obj = {};
                     _.extend(obj,judge.attributes,{cid: judge.cid,removable: true, sessionName: _sessionName});
-                    $(event.target).children("ul").append(judgeTemplate(obj));
+                    $(event.target).children("ul").append(self.judgeTemplate(obj));
+                    $(ui.draggable).popover("disable");
+                    if(judge.get("sessions").length>1){
+                        self.$("ul.all-judge-list li[data-judgeid='"+judge.get("_id") + "']").removeClass("no-sessions")
+                    }
                 }
             });
 
@@ -102,54 +96,69 @@ define(['backbone','bootstrap'], function(Backbone){
         },
         showOrals: function (){
             var self = this;
-
             // Need to empty all of the ul's in the table. 
-
             this.$("ul").html("");
-
-            var template = _.template($("#judges-schedule-row-template").html());
-            var judgeListCell = this.$("#judge-list-oral"); 
-            var judges = this.parent.judges.filter(function(judge){ return (judge.get("type")==="oral") || (judge.get("type")==="either"); });
-
-            var sessionNames = "ABCDEFGHIJKL";
-
-            _(judges).each(function(judge){  
-                var obj = {};
-                _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
-                judgeListCell.append(template(obj));
-                for(var i =0; i<sessionNames.length;i++){
-                    if (_(judge.get("session")).contains(sessionNames[i])) {
-                        obj["removable"]=true;
-                        obj["sessionName"] = sessionNames[i];
-                        self.$("#"+sessionNames[i]+ " ul").append(template(obj));
-                    }
-                }
-            });
-
-
-
-
+            for(var i =0; i<this.sessionNames.length;i++){
+                this.renderSession(i);
+            }
+            this.listAllJudges();
 
             this.$(".judge-popover").popover().draggable({revert: true});
             this.$(".session").droppable({
                 hoverClass: "ui-session-highlight",
-                drop: function( event, ui ) {  
-                    console.log("dropped"); 
-                    var _sessionName = $(ui.draggable).data("session"); 
-                    var judge = self.parent.judges.get($(ui.draggable).data("judgeid"));
-                    var _sessions = judge.get("session");
-                    _sessions.push($(event.target).attr("id"));
-                    judge.set({session: _sessions});
+                drop: function( evt, ui ) { 
+                    var sessionNumber = $(evt.target).attr("id").charCodeAt(0)-65; 
+                    var sessionRE = new RegExp("OP\-"+sessionNumber+"\-");
+                    var props = self.proposals.filter(function(prop){ return sessionRE.test(prop.get("session"));});
+                    var judge = self.judges.get($(ui.draggable).data("judgeid"));
+                    judge.set({sessions: _(props).map(function(p) { return p.get("session");})});
                     judge.save();
-                    var obj = {};
-                    _.extend(obj,judge.attributes,{cid: judge.cid, removable: true, sessionName: _sessionName});
-                    $(event.target).children("ul").append(template(obj));
-                    $(ui.draggable).removeClass("no-sessions");   
-
+                    self.renderSession(sessionNumber);
+                    self.$("ul.all-judge-list li[data-judgeid='"+judge.get("_id") + "']").removeClass("no-sessions")
                 }
             });
+        },
+        renderSession: function(sessionNumber){
+            var ul = this.$("td#"+this.sessionNames[sessionNumber]+" ul").empty();
+            var self = this; 
+            var sessionRE = new RegExp("OP\-"+sessionNumber+"\-");
+            var judges = this.judges.filter(function(j) { return _(j.get("sessions")).some(function(s){ return sessionRE.test(s);});});
+            _(judges).each(function(judge){
+                var obj = {};
+                _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
+                ul.append(self.judgeTemplate(obj));
+            });
+        },
+        listAllJudges: function(){
+            var self = this; 
+            var judgeListCell = this.$(".all-judge-list").empty();
+            var judgeTemplate = $("#judge-template").html();
+            this.judges.each(function(judge){
+                judgeListCell.append( new JudgeView({model: judge,template: judgeTemplate}).render().el);
+            });
+
         }
     });
+
+    var JudgeView = Backbone.View.extend({
+        tagName: "li",
+        className: "judge-popover",
+        initialize: function(opts){
+            this.template = opts.template; 
+        },
+        render: function(){
+            this.$el.html(this.template);
+            this.$el.attr("data-judgeid",this.model.get("_id"));
+            if(this.model.get("sessions").length<2){
+                this.$el.addClass("no-sessions");
+            }
+            this.stickit();
+            return this;
+        },
+        bindings: {
+            ".name": "name"
+        }
+    })
 
     return JudgeScheduleView;
 });

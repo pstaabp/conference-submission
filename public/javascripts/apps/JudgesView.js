@@ -21,8 +21,7 @@ define(['backbone','apps/common'], function(Backbone,common){
         initialize: function (options) {
             _.bindAll(this,"render","save","deleteJudge");
             this.rowTemplate = options.rowTemplate;
-            this.model.on("change",function(model) {console.log(model)});
-
+            this.sessionTemplate = _.template($("#session-template").html());
         },
         render: function() {
             this.$el.html(this.rowTemplate());
@@ -42,6 +41,16 @@ define(['backbone','apps/common'], function(Backbone,common){
             ".type": {observe: "type",
                 selectOptions: {
                     collection: ["oral","poster","either"]
+                }
+            },
+            ".sessions-to-judge": {
+                observe: "sessions", 
+                update: function($el, val, model, options) { 
+                    $el.html(this.sessionTemplate({sessions: val}));
+                    $el.children("button").on("click",function(evt){
+                        model.set("sessions",_(model.get("session")).without($(evt.target).data("session")));
+                        model.save();
+                    })
                 }
             }
         },

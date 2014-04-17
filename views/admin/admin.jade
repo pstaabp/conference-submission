@@ -116,7 +116,7 @@ block container
           tbody
             tr
               td(rowspan="3")
-                ul#judge-list-oral
+                ul.all-judge-list
               td.session#A
                 ul
               td.session#B
@@ -167,14 +167,16 @@ block container
 
     .tab-pane#emails
     .tab-pane#feedback
-      table.table.table-bordered.all-feedback-table
-        thead
-          tr
-            th Session
-            th Project Title
-            th Author
-            th Feedback
-        tbody
+      .row
+        .col-md-4
+          .form-horizontal
+            label.control-label Search
+              input.search-all-feedback(type="search")
+            button.btn.btn-default.clear-search-all-feedback Clear
+        .col-md-4.pull-right
+          p.num-proposals
+            
+      .feedback-table-container
     .tab-pane#sponsors-view
 
 
@@ -218,6 +220,10 @@ block templates
             td.grad-year
             td.presented-before
             td.other-authors(colspan="2")
+          tr
+            td
+            td.header Judges
+            td(colspan="4").judges
           tr
             td
             td.header Proposal Text
@@ -303,6 +309,15 @@ block templates
       div.span4.pull-right  total number: <%= number %>
     table#proposal-table-header.table.table-bordered.proposal-table
       tbody
+
+  script#all-feedback-template(type="text/template")
+    div.row
+      div.span4
+        h3 <%= propHeader %>
+      div.span4.pull-right  total number: <%= number %>
+    table#proposal-table-header.table.table-bordered.proposal-table
+      tbody
+      
       
 
   script#schedule-template(type="text/template")
@@ -410,8 +425,6 @@ block templates
     td
       button.showDetails.btn.btn-default Show Details
   script#feedback-tabs(type="text/template")
-    div
-      button.btn.btn-default.new-feedback-btn Add New Feedback
     ul.nav.nav-tabs.feedback-tabs
     .tab-content.feedback-tab-content
 
@@ -473,33 +486,42 @@ block templates
           th Email
           th Type
           th Fields
+          th Sessions
       tbody
 
   script#judges-row-template(type="text/template")
     td
       span.btn.btn-default.delete-judge
-        i.icon-trash
-    td.editable.name(contenteditable="true")
-    td.editable.email(contenteditable="true")
+        i.fa.fa-trash-o
+    td.name
+    td.email
     td
       select.type
     td
       select.presentation(multiple="true")
+    td.sessions-to-judge
+
+  script#session-template(type="text/template")   
+    <%=sessions.map(function(s) { return "<button class='btn btn-default' data-session='"+s+"'>" + s + "</button>"; }).join(", ") %>
+    
     
   script#judges-schedule-row-template(type="text/template")
     li 
-      <%var pres = presentation.join(", "), sess = session.join(", ") %>
+      <%var pres = presentation.join(", "), sess = sessions.join(", ") %>
       <%var popoverContent = "types: " + pres + "<br>sessions: " + sess; %>
       <%if (removable) { %>
       <%  popoverContent += "<br><span class='btn btn-default remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
-      <% if (session.length == 0) {%>
+      <% if (sessions.length == 0) {%>
       span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
       <%} else {%>
       span.judge-popover(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
       <% } %>
 
+  script#judge-template(type="text/template")
+    span.name
+
   script#judges-schedule-poster-row(type="text/template")
-      td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:red'>" + sponsor_name + "</span>") %>
+      td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:blue'>" + sponsor_name + "</span>") %>
       td.poster-judge(data-session!="<%=session%>")
         ul
 
