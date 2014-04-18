@@ -32,9 +32,9 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
                                    judges: this.judges, el: $("#proposals")}),
                presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
                 judgesView : new JudgesView({parent: this, el: $("#judges")}),
-                judgeScheduleView : new JudgeScheduleView({parent: this, el: $("#judge-schedule")}),
+                judgeScheduleView : new JudgeScheduleView({proposals: this.proposals, judges: this.judges, el: $("#judge-schedule")}),
                 emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")}),
-                feedbackView: new AllFeedbackView({proposals: this.proposals, el: $("#feedback")}),
+                feedbackView: new AllFeedbackView({proposals: this.proposals, judges: this.judges, el: $("#feedback")}),
                 sponsorsView: new SponsorsView({users: this.users, el: $("#sponsors-view")})
             }
 

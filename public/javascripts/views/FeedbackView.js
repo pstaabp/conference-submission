@@ -6,11 +6,11 @@ var FeedbackView = Backbone.View.extend({
         render: function(){
             this.$el.html($("#feedback-template").html());
             this.stickit();
-            this.$(".modal").modal().width($(window).width()*0.90)
+            /*this.$(".modal").modal().width($(window).width()*0.90)
                 .css("margin-left", -1*this.$(".modal").width()/2 + "px");
             this.$(".total-score").text(0 + this.model.get("visual_design") + this.model.get("knowledge") 
                     + this.model.get("verbal_presentation") + this.model.get("organization_and_logic")
-                    + this.model.get("explanations") + this.model.get("overall"));
+                    + this.model.get("explanations") + this.model.get("overall"));*/
         },
         bindings: {".visual-design": "visual_design",
                     ".knowledge": "knowledge",
