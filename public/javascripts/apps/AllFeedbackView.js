@@ -56,7 +56,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                     var names = author.split(" ");
                     return names[names.length-1].toLowerCase();
                 }},
-            {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
+            {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", datatype: "string"},
             ];
         },
         search: function(evt){
