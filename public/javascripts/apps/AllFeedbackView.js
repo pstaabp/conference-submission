@@ -11,6 +11,11 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.proposals.on("remove",this.render);
             this.users = options.users;
             this.judges = options.judges;
+            this.tabTemplate = _.template($("#feedback-tab-template").html());
+
+            this.proposals.on("change", function(p){
+                console.log(p);
+            })
         },
         render: function(){
             var self = this;
@@ -33,7 +38,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                     $(v).prev().children(".show-proposal").children("button").text("Show");
                     $(v).remove();
                 })
-                $el.parent().after(new FeedbackTabView({model: model, judges: this.judges}).render().el);
+                $el.parent().after(new FeedbackTabView({model: model, judges: this.judges, tabTemplate: this.tabTemplate}).render().el);
             } else {
                 target.text("Show");
                 $el.parent().siblings(".feedback-tab-row").remove();
@@ -79,97 +84,58 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         tagName: "tr",
         className: "feedback-tab-row",
         initialize: function (options){
+            var self = this; 
             this.judges = options.judges;
+            this.tabTemplate = options.tabTemplate;
             _(this).bindAll("render");
+            this.model.get("feedback").on("remove",function(feedback){
+                self.render();
+                self.model.save();
+            })
         },
         render: function(){
+            var self = this;
+            var hi = "hi";
             this.$el.html($("#feedback-tabs").html());
-            var session = this.model.get("session");
-            var judges = this.judges.filter(function(judge){ return _(judge.get("sessions")).contains(session);})
-            return this;
-        },
-         bindings: {".accepted": "accepted",
-                ".author": "author",
-                ".session": "session",
-                ".type": "type",
-                ".title": "title",
-                ".submitted-date": "submit_date",
-                ".sponsor-name": "sponsor_name",
-                ".sponsor-email": "sponsor_email",
-                ".sponsor-dept": "sponsor_dept",
-                ".use-human-subjects": "use_human_subjects",
-                ".use-animal-subjects": "use_animal_subjects",
-                ".proposal-content": "content",
-                ".sponsor-statement": "sponsor_statement",
-                ".human-subjects-number": "human_subjects_number",
-                ".animal-subjects-number": "animal_subjects_number",
-                ".grad-year": "grad_year",
-                ".presented-before": "presented_before",
-                ".other-authors": {observe: "other_authors", onGet: function(val){
-                    return _(val.map(function(author) { return author.get("first_name") + " " + author.get("last_name");})).join(", ");
-                }}
-        }    
-    });
-
-
-    var FeedbackView2 = Backbone.View.extend({
-        initialize: function (options){
-            _.bindAll(this,"render","newFeedback");
-            this.judgeList = options.judgeList;
-            this.proposal = options.proposal;
-        },
-        render: function() {
-            var self = this; 
-            this.$el.html($("#feedback-tabs").html());
-            this.proposal.get("feedback").each(function(feed,i){
-                var linkName = self.proposal.id  + "j" + (i+1);
-                this.$(".feedback-tabs").append(_.template($("#feedback-tab").html(),{tabID: linkName, judgeNum: (i+1)}));
-                this.$(".feedback-tab-content").append((new FeedbackItemView({num: (i+1), tabID: linkName,
-                                model: feed, judgeList: self.judgeList, proposal: self.proposal})).render().el);
+            this.model.get("feedback").each(function(feedback,i){
+                var obj = {
+                   judge_name:  (feedback.get("judge_id")=="") ? "NONE": 
+                    self.judges.get(feedback.get("judge_id")).get("name"),
+                    tab_no: (i+1)};
+                self.$(".feedback-tabs").append(self.tabTemplate(obj));
+                self.$(".feedback-tab-content").append( 
+                    new FeedbackView({tab_no: (i+1), model: feedback, judges: self.judges}).render().el);
             });
 
-            this.$("ul.feedback-tabs li:eq(0)").addClass("active");
-            this.$(".feedback-tab-content .tab-pane:eq(0)").addClass("active");
-            
-        }, 
-        events: {"click .new-feedback-btn": "newFeedback",
-                 "click .feedback-tabs a": "showTab"},
-        newFeedback: function (){
-            this.proposal.get("feedback").add(new Feedback());
-            this.render();
-            this.$('.feedback-tabs a:last').tab('show');
-        }, 
-        // Not sure why this is needed.  This is perhaps because it is generated dynamically. 
-        showTab: function(evt){
-          evt.preventDefault();
-          $(this).tab('show');
-        }
+            this.$(".feedback-tabs a:first").tab('show');
+            this.$("#feedback-tab-1").addClass("active");
+            return this;
+        },
+        events: { 'a[data-toggle-tab] show.bs.tab': function(evt){
+            evt.preventDefault()
+            $(this).tab('show')
+        }}
     });
 
-    var FeedbackItemView = Backbone.View.extend({
+    var FeedbackView = Backbone.View.extend({
         tagName: "div",
         className: "tab-pane",
-        initialize: function (){
+        initialize: function (options){
             var self = this; 
             _.bindAll(this,"render","saveFeedback");
-            this.judgeList = this.options.judgeList;
-            this.proposal = this.options.proposal;
+            this.judges = options.judges;
             this.invBindings = _.invert(_.extend(_.omit(this.bindings,".judge"),{".judge": "judge_id"}));
+            this.tab_no = options.tab_no; 
         },
         render: function (){
             var self = this;
-            this.$el.attr("id", this.options.tabID);
+            this.$el.attr("id", "feedback-tab-" + this.tab_no);
             this.$el.html($("#feedback-edit-template").html());
-            backbone.Validation.bind(this);
+            Backbone.Validation.bind(this);
             this.stickit();
             return this;
         },
-        bindings: {".judge": {
-                observe: "judge_id",
-                selectOptions: { collection: "this.judgeList", labelPath: "name", valuePath: "id", 
-                    defaultOption: { label: 'Choose one...',  value: null },
-                }
-            },
+        bindings: {
             ".visual-design": "visual_design",
             ".knowledge": "knowledge",
             ".verbal-presentation": "verbal_presentation",
@@ -179,7 +145,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             ".strength": "strength_comment",
             ".improvement": "improvement_comment"
         },
-        events: {"click .save-feedback-button": "saveFeedback"},
+        events: {
+            "click .save-feedback-button": "saveFeedback",
+            "click .delete-feedback-button": "deleteFeedback"
+        },
         saveFeedback: function (){
             var self = this;
             var errors = this.model.validate();
@@ -190,6 +159,13 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             } else {
                 this.$(".error").removeClass("error");
                 this.proposal.save();
+            }
+        },
+        deleteFeedback: function(){
+            var del = confirm("Do you want to delete this feedback?");
+            if(del){
+                this.model.collection.remove(this.model);
+                this.remove();
             }
         }
     });

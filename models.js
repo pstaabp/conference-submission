@@ -105,8 +105,7 @@ function defineModels(mongoose, fn) {
 Judge = new Schema({
   name: String,
   email: String,
-  type: String,
-  sessions: Array
+  type: String
 })
 
 

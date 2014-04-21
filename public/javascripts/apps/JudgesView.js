@@ -2,16 +2,17 @@ define(['backbone','apps/common'], function(Backbone,common){
     var JudgesView = Backbone.View.extend({
         initialize: function (options) {
             _.bindAll(this,"render");
-            this.parent = options.parent;
+            this.judges = options.judges; 
+            this.proposals = options.proposals;
             this.rowTemplate = _.template($("#judges-row-template").html());
-            this.parent.judges.on("remove", this.render);
+            this.judges.on("remove", this.render);
         },
         render: function() {
             var self = this; 
             this.$el.html($("#judges-table-template").html());
             var judgesTable = this.$(".judges-table tbody");
-            this.parent.judges.each(function(judge){
-                judgesTable.append((new JudgesRowView({model: judge, rowTemplate: self.rowTemplate})).render().el);
+            this.judges.each(function(judge){
+                judgesTable.append((new JudgesRowView({model: judge, rowTemplate: self.rowTemplate, proposals: self.proposals})).render().el);
             })
         }
     });
@@ -19,9 +20,18 @@ define(['backbone','apps/common'], function(Backbone,common){
     var JudgesRowView = Backbone.View.extend({
         tagName: "tr",
         initialize: function (options) {
+            var self = this;
             _.bindAll(this,"render","save","deleteJudge");
             this.rowTemplate = options.rowTemplate;
             this.sessionTemplate = _.template($("#session-template").html());
+            var sessions = [];
+            options.proposals.each(function(prop){ 
+                prop.get("feedback").each(function(feed){ 
+                    if(feed.get("judge_id")===self.model.id){
+                        sessions.push(prop.get("session"))}
+                    });
+            });
+            this.model.set("sessions",sessions);
         },
         render: function() {
             this.$el.html(this.rowTemplate());

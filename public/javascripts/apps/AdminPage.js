@@ -26,12 +26,12 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
 					     " was saved.", type: "success"});
             });
 
-           this.views = {
-               usersView : new UsersView({users: this.users, rowTemplate: "#user-row-template", el: $("#users")}),
-               proposalsView : new ProposalsView({users: this.users,proposals: this.proposals, 
+            this.views = {
+                usersView : new UsersView({users: this.users, rowTemplate: "#user-row-template", el: $("#users")}),
+                proposalsView : new ProposalsView({users: this.users,proposals: this.proposals, 
                                    judges: this.judges, el: $("#proposals")}),
-               presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
-                judgesView : new JudgesView({parent: this, el: $("#judges")}),
+                presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
+                judgesView : new JudgesView({judges: this.judges, proposals: this.proposals, el: $("#judges")}),
                 judgeScheduleView : new JudgeScheduleView({proposals: this.proposals, judges: this.judges, el: $("#judge-schedule")}),
                 emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges, el: $("#emails")}),
                 feedbackView: new AllFeedbackView({proposals: this.proposals, judges: this.judges, el: $("#feedback")}),
