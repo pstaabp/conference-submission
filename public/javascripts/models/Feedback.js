@@ -30,7 +30,11 @@ define(['backbone'], function(Backbone){
             explanations: { pattern: judgePts, msg: pointMessage},
             overall: { pattern: judgePts, msg: pointMessage},
         },
-        idAttribute: "_id"
+        idAttribute: "_id",
+        numericalAttributes: ["visual_design","verbal_presentation","organization_and_logic","knowledge","explanations","overall"],
+        score: function () { // total all the numerical Attributes
+            return _(this.pick(this.numericalAttributes)).chain().values().reduce(function(memo, num){ return memo + num; }).value();
+        }
     });
 
     return Feedback;

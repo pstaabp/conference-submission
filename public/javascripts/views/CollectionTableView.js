@@ -44,6 +44,15 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 					_.extend(obj["."+col.classname],col.stickit_options);
 					col.use_contenteditable = col.editable;
 				}
+				if(col.value && _.isFunction(col.value)) { // then the value is calculated.
+					self.collection.each(function(_model){
+						if(!_model._extra){
+							_model._extra= {};
+						}
+						_model._extra[col.key]=col.value.apply(this,[_model]);
+					})
+				}
+
 				_.extend(self.bindings, obj);
 			});
 
@@ -202,17 +211,21 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 
 			/* Need a more robust comparator function. */
 			this.collection.comparator = function(model1,model2) { 
+				var value1 = model1.get(sort.key) || model1._extra[sort.key],
+					value2 = model2.get(sort.key) || model2._extra[sort.key];
 				switch(sort.datatype){
 					case "string":
-						if (sortFunction(model1.get(sort.key))===sortFunction(model2.get(sort.key))) {return 0;}
-						return self.sortInfo.direction*
-							(sortFunction(model1.get(sort.key))<sortFunction(model2.get(sort.key))? -1: 1);
+						if (sortFunction(value1)===sortFunction(value2))
+							return 0;
+						return self.sortInfo.direction*(sortFunction(value1)<sortFunction(value2)? -1: 1);
 					break;
 					case "integer":
-						if(parseInt(sortFunction(model1.get(sort.key)))===parseInt(sortFunction(model2.get(sort.key)))){return 0;}
-					    return self.sortInfo.direction* 
-					    	(parseInt(sortFunction(model1.get(sort.key)))<parseInt(sortFunction(model2.get(sort.key)))? -1:1);
-
+						if(parseInt(sortFunction(value1))===parseInt(sortFunction(value2))){return 0;}
+					    return self.sortInfo.direction*(parseInt(sortFunction(value1))<parseInt(sortFunction(value2))? -1:1);
+					break;
+					case "number":
+						if(parseFloat(sortFunction(value1))===parseFloat(sortFunction(value2))){return 0;}
+					    return self.sortInfo.direction*(parseFloat(sortFunction(value1))<parseFloat(sortFunction(value2))? -1:1);
 					break;
 				} 
 				
@@ -252,13 +265,13 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 					self.$el.append(cell);
 				} else if(col.use_contenteditable){
 					self.$el.append(cell.addClass(classname).attr("contenteditable",col.editable));
+				} else if(col.value && _.isFunction(col.value)){
+					self.$el.append(cell.append(self.model._extra[col.key]).addClass(classname));
+				} else if (col.stickit_options && col.stickit_options.selectOptions){
+					var select = $(col.multiple?"<select multiple='true'>":"<select>").addClass("input-small").addClass(classname);
+					self.$el.append(cell.append(select));
 				} else {
-					if (col.stickit_options && col.stickit_options.selectOptions){
-						var select = $(col.multiple?"<select multiple='true'>":"<select>").addClass("input-small").addClass(classname);
-						self.$el.append(cell.append(select));
-					} else {
 						self.$el.append(cell.addClass(classname));
-					}
 				}
 				if(col.additionalClass){
 					self.$el.find("." + col.classname).addClass(col.additionalClass);

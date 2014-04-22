@@ -317,6 +317,11 @@ block templates
       div.span4.pull-right  total number: <%= number %>
     table#proposal-table-header.table.table-bordered.proposal-table
       tbody
+
+  script#feedback-tab-template(type="text/template")
+    li
+      a(href!="#feedback-tab-<%=tab_no%>",data-toggle="tab") <%=judge_name%>
+
       
       
 
@@ -425,19 +430,16 @@ block templates
     td
       button.showDetails.btn.btn-default Show Details
   script#feedback-tabs(type="text/template")
-    ul.nav.nav-tabs.feedback-tabs
-    .tab-content.feedback-tab-content
+    td(colspan="4")
+      ul.nav.nav-tabs.feedback-tabs
+      .tab-content.feedback-tab-content
 
   script#feedback-tab(type="text/template")
     li
       a(href!="#<%=tabID%>",data-toggle="tab") Judge #<%=judgeNum%>
 
   script#feedback-edit-template(type="text/template")
-    table
-      tr
-        td Judge
-        td
-          select.judge(tabindex="1")
+    table.table.table-bordered
       tr
         td Visual Design
         td
@@ -470,6 +472,8 @@ block templates
       tr
         td
           button.btn.btn-default.save-feedback-button(tabindex="9") Save Feedback
+        td
+          button.btn.btn-default.delete-feedback-button(tabindex="10") Delete Feedback
 
   script#feedback-row-template(type="text/template")
     td.session
