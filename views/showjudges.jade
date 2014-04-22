@@ -1,4 +1,4 @@
-extends iframe-layout
+extends layout
 
 block container
   h2 Judges
@@ -7,26 +7,12 @@ block container
     thead
       tr
         th Name
-        th Role
-        th Judging Sessions
-        th Presentation Types
-        th Subjects
+        th Poster Number (or Room/Time)
     tbody
       each judge in judges
-        - var theSessions = judge.session.join(", ");
-        - var thePresentations = judge.presentation.join(", ");
-        - var emailResults = /(\w+)@(student\.)?fitchburgstate\.edu/.exec(judge.email);
-        - var role = "unknown";
-        - if (emailResults) { 
-          -   role = emailResults[2]?"student":"faculty";
-          - } 
         tr
           td #{judge.name}
-          td #{role}
-          //td #{judge.email}
-          td #{theSessions}
-          td #{judge.type}
-          td #{thePresentations}
+          td #{judge.sessions}
       
 
 
