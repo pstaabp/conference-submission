@@ -123,5 +123,49 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		});
 	});
 
+	var oralSessions=[
+		{session: "0", location: "CTL  (9am-10am)"},
+		{session: "1", location: "Hamm. G01 (9am-10am)"},
+		{session: "2", location: "Hamm. G01B (9am-10am)"},
+		{session: "3", location: "Hamm. 314 (9am-10am)"},
+		{session: "4", location: "Hamm. S08 (9am-10am)"},
+		{session: "5", location: "Hamm. G19 (9am-10:15am)"},
+		{session: "6", location: "CTL  (11am-noon)"},
+		{session: "7", location: "Hamm. G01 (11am-noon)"},
+		{session: "8", location: "Hamm. G01B (11am-noon)"},
+		{session: "9", location: "Hamm. 314 (11am-noon)"},
+		{session: "10", location: "Hamm. S08 (11am-noon)"},
+		{session: "11", location: "Hamm. G19 (11am-noon)"}];
+
+	var oralRE = /OP-(\d+)-(\d+)/;
+
+
+	app.get("/conference-submission/judges-schedule",function(req,res){
+		var judgeInfo = [], i= 1; 
+		Judge.count(function(err3,numjudges){
+	  		Judge.find({}).sort("name").exec(function(err,_judges){
+	  			console.log(_judges);
+	  			_(_judges).each(function(_judge){
+		  			var j = {name: _judge.name, sessions: [] }
+		  			Proposal.find({feedback: { $elemMatch: { judge_id: _judge._id }}}).exec(function(err2,_proposals){
+		  				j.sessions=_(_proposals).pluck("session");
+		  				judgeInfo.push(j);
+		  				if(numjudges===judgeInfo.length){
+		  					_(judgeInfo).each(function(jud,i){
+		  						console.log(jud);
+		  						var sessions = _(jud.sessions).chain().map(function(s) {
+		  							return oralRE.test(s)? _(oralSessions).findWhere({session: oralRE.exec(s)[1]}).location : s;
+		  						}).uniq().value();
+		  						judgeInfo[i].sessions = sessions;
+
+		  					})
+			  				res.render("showjudges.jade",{judges: judgeInfo});
+			  			} 
+		  			})
+		  		});
+	  		});
+	  	});
+	});
+
     
 }
