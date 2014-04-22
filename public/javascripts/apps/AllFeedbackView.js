@@ -5,6 +5,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
 
     var AllFeedbackView = Backbone.View.extend({
         initialize: function(options){
+            var self = this;
             _.bindAll(this, "render");
             this.rowTemplate = $("#all-feedback-template").html();
             this.proposals = options.proposals;
@@ -13,8 +14,8 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.judges = options.judges;
             this.tabTemplate = _.template($("#feedback-tab-template").html());
 
-            this.proposals.on("change", function(p){
-                console.log(p);
+            this.proposals.on("sync",function(_proposal){
+                self.render();
             })
         },
         render: function(){
@@ -62,6 +63,20 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                     return names[names.length-1].toLowerCase();
                 }},
             {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", datatype: "string"},
+            {name: "Score (# judges)", key: "score", classname: "score", datatype: "number", 
+                value: function(model){
+                    var score = model.get("feedback").map(function(f) { return f.score();})
+                    if(score.length>0){
+                        return _(score).reduce(function(n,m){return n+m;});
+                    } else {
+                        return 0;
+                    }
+                },
+                stickit_options: {
+                    update: function($el, val, model, options) { 
+                        $el.text(model._extra.score + " (" + model.get("feedback").length + ")");
+                    }
+                }}
             ];
         },
         search: function(evt){
@@ -104,7 +119,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                     tab_no: (i+1)};
                 self.$(".feedback-tabs").append(self.tabTemplate(obj));
                 self.$(".feedback-tab-content").append( 
-                    new FeedbackView({tab_no: (i+1), model: feedback, judges: self.judges}).render().el);
+                    new FeedbackView({tab_no: (i+1), model: feedback, proposal: self.model, judges: self.judges}).render().el);
             });
 
             this.$(".feedback-tabs a:first").tab('show');
@@ -124,6 +139,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             var self = this; 
             _.bindAll(this,"render","saveFeedback");
             this.judges = options.judges;
+            this.proposal = options.proposal;
             this.invBindings = _.invert(_.extend(_.omit(this.bindings,".judge"),{".judge": "judge_id"}));
             this.tab_no = options.tab_no; 
         },
