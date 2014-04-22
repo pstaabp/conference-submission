@@ -511,8 +511,7 @@ block templates
     
   script#judges-schedule-row-template(type="text/template")
     li 
-      <%var pres = presentation.join(", "), sess = sessions.join(", ") %>
-      <%var popoverContent = "types: " + pres + "<br>sessions: " + sess; %>
+      <%var popoverContent = "fields: " + presentation.join(", ") %>
       <%if (removable) { %>
       <%  popoverContent += "<br><span class='btn btn-default remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
       <% if (sessions.length == 0) {%>

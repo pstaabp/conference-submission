@@ -172,7 +172,9 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         render: function(){
             var self = this;
             this.$el.html(this.template);
-            this.$el.attr("data-judgeid",this.model.id);
+            this.$el.attr("data-judgeid",this.model.id)
+                .attr("data-html",true)
+                .attr("data-content","fields: " + this.model.get("presentation").join(", "));
             var numProps = 0;
             this.proposals.each(function(prop){ 
                 prop.get("feedback").each(function(feed){ 
