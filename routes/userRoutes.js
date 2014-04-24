@@ -88,7 +88,9 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 				return;
 			}
 			if(_judge){ // the person has already signed up
-				res.render('submit-feedback.jade',{user:req.currentUser});
+				Proposal.find({feedback: { $elemMatch: { judge_id: _judge._id }}}).exec(function(err2,_proposals){
+					res.render('submit-feedback.jade',{user:req.currentUser, proposals: _proposals});
+				});	
 			} else {
 				res.render('users/judges.jade',{user: req.currentUser});				
 			}
@@ -166,6 +168,8 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	  		});
 	  	});
 	});
+
+
 
     
 }
