@@ -20,6 +20,52 @@ block container
 
 
 block templates
-  script#feedback-template(type='text/template')
+  script#feedback-tabs-template(type='text/template')
     ul.nav.nav-tabs.feedback-tabs
     .tab-content.feedback-content
+
+  script#feedback-tab-template(type='text/template')
+    li
+      a(href!="#tab-num-<%=prop_num%>",data-toggle="tab") <%=author%>
+
+  script#feedback-template(type='text/template')
+    table.table.table-bordered
+      tr
+        td(colspan="2").col-md-8 
+          | Visual Design: Professional appearance of poster, appropriate amount of text, 
+          | legible text, appropriate use of figures, logical presentation of project
+        td.col-md-1.visual-design
+      tr
+        td(colspan="2").col-md-8
+          | Verbal Presentation: Description of project logical and consise, audible and clear
+          | presentation, liveliness and professional style
+        td.verbal-presentation
+      tr
+        td(colspan="2") Organization And Logic: Problem/objective clearly stated, methods and results explained.
+        td.organization-and-logic
+      tr
+        td(colspan="2") Appropriate Knowledge of Field: Demonstrated understanding of probject and boarder context
+        td.knowledge
+      tr
+        td(colspan="2") Clear Explanations/ability to answer questions
+        td.explanations
+      tr
+        td(colspan="2") 
+          | Overall Impression: Impression compared to other posters judges/additional comments useful for judging
+        td.overall
+      tr
+        td
+        td(style="text-align: right") Total Score
+        td.total-score
+      tr
+        td.col-md-2 Strength of Poster/Presentation
+        td(colspan="2").col-md-8
+          textarea.strength(rows="6")
+      tr
+        td.col-md-2 Suggestions for Improvement
+        td(colspan="2").col-md-8
+          textarea.improvement(rows="6")
+      tr
+        td(colspan="3")
+          button.btn.btn-default.save-feedback-button Save Feedback
+        

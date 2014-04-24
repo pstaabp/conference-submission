@@ -89,7 +89,9 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 			}
 			if(_judge){ // the person has already signed up
 				Proposal.find({feedback: { $elemMatch: { judge_id: _judge._id }}}).exec(function(err2,_proposals){
-					res.render('submit-feedback.jade',{user:req.currentUser, proposals: _proposals});
+					var _user = {judge_id: _judge._id};
+					_(_user).extend(_(req.currentUser).pick("falconkey","first_name","last_name","email"));
+					res.render('submit-feedback.jade',{user:_user, proposals: _proposals});
 				});	
 			} else {
 				res.render('users/judges.jade',{user: req.currentUser});				

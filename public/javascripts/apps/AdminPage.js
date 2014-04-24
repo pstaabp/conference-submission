@@ -12,7 +12,7 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
 // function(module,$,Backbone,WebPage,ProposalList,UserList,JudgeList,UsersView){
     var AdminPage = WebPage.extend({
         initialize: function () {
-            this.constructor.__super__.initialize.apply(this, {el: this.el});
+            WebPage.prototype.initialize.apply(this, {el: this.el});
 
             _.bindAll(this, 'render','updateUser','syncUser');  // include all functions that need the this object
             var self = this;
@@ -44,7 +44,7 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
         },
         events: {"shown.bs.tab #admin-tabs a[data-toggle='tab']": "changeView"},
         render: function () {
-            this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
+            WebPage.prototype.render.apply(this);  // Call  WebPage.render(); 
 
             var userNames = _(this.users.sortBy(function(user) { return user.get("last_name");}))
                         .map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
