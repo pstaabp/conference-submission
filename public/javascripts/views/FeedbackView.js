@@ -1,16 +1,19 @@
 define(['backbone', 'underscore','stickit'], function(Backbone, _){
 var FeedbackView = Backbone.View.extend({
-        initialize: function (){
+        className: "tab-pane",
+        initialize: function (opts){
             _.bindAll(this,"render");
+            this.tab_num = opts.tab_num;
+            this.proposal = opts.proposal;
         },
         render: function(){
             this.$el.html($("#feedback-template").html());
+            this.$el.attr("id","tab-num-"+this.tab_num);
             this.stickit();
-            /*this.$(".modal").modal().width($(window).width()*0.90)
-                .css("margin-left", -1*this.$(".modal").width()/2 + "px");
-            this.$(".total-score").text(0 + this.model.get("visual_design") + this.model.get("knowledge") 
-                    + this.model.get("verbal_presentation") + this.model.get("organization_and_logic")
-                    + this.model.get("explanations") + this.model.get("overall"));*/
+            return this;
+        },
+        events: {
+            "click .save-feedback-button": "saveFeedback"
         },
         bindings: {".visual-design": "visual_design",
                     ".knowledge": "knowledge",
@@ -19,7 +22,13 @@ var FeedbackView = Backbone.View.extend({
                     ".explanations": "explanations",
                     ".overall": "overall",
                     ".strength": "strength_comment",
-                    ".improvement": "improvement_comment"}
+                    ".improvement": "improvement_comment",
+                    ".total-score": {observe: "score", update: function($el, val, model, options){
+                        $el.text(model.score());
+                    }}},
+        saveFeedback: function(){
+            this.proposal.save();
+        }
     });
 
     return FeedbackView;

@@ -29,8 +29,8 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.$('.num-proposals').text("There are " + this.proposals.size() + " proposals shown.");
         },
         events: {
-            "keyup .search-proposals": "search",
-            "click .clear-search-proposal": "clearSearch"
+            "keyup .search-all-feedback": "search",
+            "click .clear-search-all-feedback": "clearSearch"
         },
         showHideFeedback: function ($el,model,target) {
             if(target.text()==="Show"){
@@ -80,16 +80,16 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             ];
         },
         search: function(evt){
-            this.proposalsTable.filter($(evt.target).val());
-            this.proposalsTable.render();
-            this.$('.num-proposals').text("There are " + this.proposalsTable.filteredCollection.length
+            this.feedbackTable.filter($(evt.target).val());
+            this.feedbackTable.render();
+            this.$('.num-proposals').text("There are " + this.feedbackTable.filteredCollection.length
                 + " of " + this.proposals.size() 
                 + " proposals shown.");
         },
         clearSearch: function(evt){
-            this.$(".search-proposals").val("");
-            this.proposalsTable.filter("");
-            this.proposalsTable.render();
+            this.$(".search-all-feedback").val("");
+            this.feedbackTable.filter("");
+            this.feedbackTable.render();
             this.$('.num-proposals').text("There are " + this.proposals.size() + " proposals shown.");
         }
 
