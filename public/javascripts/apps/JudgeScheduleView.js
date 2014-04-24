@@ -22,12 +22,20 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             
             var judgeID = $(evt.target).data("judgeid");
             var judge= this.judges.get(judgeID);
-            
             var sessionName = $(evt.target).data("session");
-            var prop = this.proposals.findWhere({session: $(evt.target).data("session")});
-            var feedback = prop.get("feedback").findWhere({judge_id: judge.id});
-            prop.get("feedback").remove(feedback);
-            prop.save();
+            var props = [];
+            if(/^[A-L]$/.test(sessionName)){
+                var sessionRE = new RegExp("^OP-"+(sessionName.charCodeAt(0)-65));
+                props = this.proposals.filter(function(prop) { return sessionRE.test(prop.get("session"));})
+            } else {
+                props.push(this.proposals.findWhere({session: sessionName}));
+            }
+            _(props).each(function(_proposal){
+                var feedback = _proposal.get("feedback").findWhere({judge_id: judge.id});    
+                _proposal.get("feedback").remove(feedback);
+                _proposal.save();
+            });
+            
             this.render();
         },
         showPosters: function () {
@@ -129,8 +137,9 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                         _proposal.get("feedback").add(new Feedback({judge_id: judge.id}));
                         _proposal.save();
                     })
-                    self.renderSession(sessionNumber);
                     self.$("ul.all-judge-list li[data-judgeid='"+judge.get("_id") + "']").removeClass("no-sessions")
+
+                    self.render();
                 }
             });
         },
@@ -146,8 +155,8 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             judges = _(judges).chain().flatten().uniq().compact().value();
             _(judges).each(function(id){
                 var judge = self.judges.get(id);
-                var obj = {};
-                _.extend(obj,judge.attributes,{cid: judge.cid,removable: false});
+                var obj = {removable: true, cid: judge.cid, sessionName: self.sessionNames[sessionNumber]};
+                _.extend(obj,judge.attributes);
                 ul.append(self.judgeTemplate(obj));
             });
         },
@@ -175,6 +184,8 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             this.$el.attr("data-judgeid",this.model.id)
                 .attr("data-html",true)
                 .attr("data-content","fields: " + this.model.get("presentation").join(", "));
+
+
             var numProps = 0;
             this.proposals.each(function(prop){ 
                 prop.get("feedback").each(function(feed){ 
