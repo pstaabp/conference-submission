@@ -36,7 +36,7 @@ app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
-  app.locals._ = require("underscore");
+  app.locals._ = require('underscore');
 }); 
 
 /*app.configure('production', function() {
@@ -45,7 +45,7 @@ app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
-})*/
+}) */
 
 
 app.configure(function(){

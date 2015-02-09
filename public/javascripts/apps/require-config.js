@@ -8,11 +8,11 @@ var require = {
         "backbone":               "bower_components/backbone/backbone",
         "backbone-validation":    "bower_components/backbone-validation/dist/backbone-validation",
         "underscore":             "bower_components/underscore/underscore",
-        "jquery":                 "bower_components/jquery/jquery",
+        "jquery":                 "bower_components/jquery/dist/jquery",
         "jquery-truncate":        "bower_components/jquery-truncate/jquery.truncate",
         "bootstrap":              "bower_components/bootstrap/dist/js/bootstrap",
         "moment":                 "bower_components/moment/moment",
-        "jquery-ui":              "bower_components/jquery-ui/ui/jquery-ui",
+        "jquery-ui":              "bower_components/jquery-ui/jquery-ui",
         "stickit":                "bower_components/backbone.stickit/backbone.stickit"
     },
     waitSeconds: 15,

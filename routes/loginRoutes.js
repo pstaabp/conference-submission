@@ -42,7 +42,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	var client = ldap.createClient({
 	    url: ldap_settings.settings.ldap_url
 	});
-	console.log({user: user, password: pass});
+	//console.log({user: user, password: pass});
 	
 	client.bind(user,pass,function(err){
 	    console.log("inside client.bind");
@@ -95,7 +95,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 
     app.post('/conference-submission/login',function(req,res){
 
-
 	function saveCookieAndRoute(user){
 	    req.session.user_id = user.id;	
 	    var loginToken = new LoginToken({ email: user.email });
@@ -106,47 +105,58 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	    });
 	}
 
+	console.log("in POST /conference-submission/login");
+	if(ldap_settings.settings.use_ldap){
 
-	// LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
-	//     console.log("in callback");
-	//     console.log(res2);
-	//     if(err2){ // the password was incorrect
-	//  	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
-	//     } else { // password was correct
-		User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
-		    console.log(_user);
-		    if(_user){
-			saveCookieAndRoute(_user);
-		    } else {//the user isn't in the database yet 
-			LDAPsearch(req.body.user.falconkey,function(err,result){
-			    console.log("in LDAPsearch callback");
-			    if(err)
-				assert.ifError(err);
-			    if(result){
-				console.log(result);
-				if(_.isEqual(result,{})){ // can't find the user
-				    res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." }); 
-				}
-				var _role = (result.other.match(/^Student/))? ["student"] : [];
-				user = new User({email: result.email, first_name: result.first_name, 
-					  last_name: result.last_name,falconkey: req.body.user.falconkey, role: _role})
-				    .save(function(error, _user) {
-					if (error)
-					    console.log(error);
-					if(_user)
-					    saveCookieAndRoute(_user);
-				    });
+
+		LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
+		    console.log("in callback");
+		    console.log(res2);
+		    if(err2){ // the password was incorrect
+		 	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
+		    } else { // password was correct
+			User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
+			    console.log(_user);
+			    if(_user){
+				saveCookieAndRoute(_user);
+			    } else {//the user isn't in the database yet 
+				LDAPsearch(req.body.user.falconkey,function(err,result){
+				    console.log("in LDAPsearch callback");
+				    if(err)
+					assert.ifError(err);
+				    if(result){
+					console.log(result);
+					if(_.isEqual(result,{})){ // can't find the user
+					    res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." }); 
+					}
+					var _role = (result.other.match(/^Student/))? ["student"] : [];
+					user = new User({email: result.email, first_name: result.first_name, 
+						  last_name: result.last_name,falconkey: req.body.user.falconkey, role: _role})
+					    .save(function(error, _user) {
+						if (error)
+						    console.log(error);
+						if(_user)
+						    saveCookieAndRoute(_user);
+					    });
+				    }
+				    
+				});
 			    }
-			    
 			});
 		    }
 		});
-	    //}
-	//});
+	} else { // don't use ldap (for testing only)
+		User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
+			console.log(_user);
+			    if(_user){
+				saveCookieAndRoute(_user);
+			    }
+			});
+	}
     });
  
     app.get('/conference-submission/login', function(req, res) {
-  		res.render('login.jade',{user: {}, msg: ""});
+  	res.render('login.jade',{user: {}, msg: ""});
     });
 
     app.get('/conference-submission/login-check',function(req,res){
