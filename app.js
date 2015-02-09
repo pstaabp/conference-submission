@@ -36,8 +36,13 @@ var app = express();
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
+<<<<<<< HEAD
   app.locals._ = require("underscore");
 }); */ 
+=======
+  app.locals._ = require('underscore');
+}); 
+>>>>>>> 9d487dbad668c2f75b0493fd3570c583e2f3eea7
 
 app.configure('production', function() {
   mongoose.set('debug',true);
@@ -45,7 +50,11 @@ app.configure('production', function() {
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
+<<<<<<< HEAD
     app.locals._ = require('underscore');
+=======
+}) */
+>>>>>>> 9d487dbad668c2f75b0493fd3570c583e2f3eea7
 
 });
 

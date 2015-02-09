@@ -73,8 +73,11 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                     }
                 },
                 stickit_options: {
-                    update: function($el, val, model, options) { 
-                        $el.text(model._extra.score + " (" + model.get("feedback").length + ")");
+                    update: function($el, val, model, options) {
+			var numJudges = model.get("feedback").length; 
+			var score = model._extra.score/numJudges/5;
+			var scoreAsString = parseInt(100*score)/100;
+                        $el.text(scoreAsString + " (" + numJudges + ")");
                     }
                 }}
             ];
@@ -113,10 +116,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             var hi = "hi";
             this.$el.html($("#feedback-tabs").html());
             this.model.get("feedback").each(function(feedback,i){
+		var judgeName =   self.judges.get(feedback.get("judge_id")) ? self.judges.get(feedback.get("judge_id")).get("name") : "OOPS";
+		
                 var obj = {
-                   judge_name:  (feedback.get("judge_id")=="") ? "NONE": 
-                    self.judges.get(feedback.get("judge_id")).get("name"),
-                    tab_no: (i+1)};
+                    judge_name:  (feedback.get("judge_id")=="") ? "NONE": judgeName,                tab_no: (i+1)};
                 self.$(".feedback-tabs").append(self.tabTemplate(obj));
                 self.$(".feedback-tab-content").append( 
                     new FeedbackView({tab_no: (i+1), model: feedback, proposal: self.model, judges: self.judges}).render().el);

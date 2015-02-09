@@ -1,7 +1,7 @@
 define(['backbone'], function(Backbone){
 
-    var judgePts = /^([0-4](\.[0|5])?|5|5\.0)$/;
-    var pointMessage = 'The points must be between 0.0 and 5.0 in increments of 0.5';
+    var judgePts = /^([01]?\d?\d)$/;
+    var pointMessage = 'The points must be between 1 and 100';
     /**
      *
      * This defines an Feedback from a judge
