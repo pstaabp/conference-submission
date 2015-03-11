@@ -83,7 +83,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 	});
     });
 
-    app.del('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
+    app.delete('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
   		User.findById(req.session.user_id, function(err, admin_user) {
 
   			console.log(admin_user);

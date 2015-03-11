@@ -12,6 +12,9 @@ var express = require('express')
   , path = require('path')
   , connect = require('connect')
   , connectTimeout = require('connect-timeout')
+  , morgan = require('morgan')
+  , cookieParser = require('cookie-parser')
+  , bodyParser = require('body-parser')
   , mongoose = require('mongoose')
   , mongoStore = require('connect-mongodb')
   , nodemailer = require("nodemailer")
@@ -29,15 +32,30 @@ var express = require('express')
   , Settings = { development: {}, test: {}, production: {} };
 
 var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(morgan('combined'))
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('port',8080);
+mongoose.set('debug',true);
+app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
+app.locals.pretty = true;
+app.locals.moment = require('moment');
+app.locals._ = require('underscore');
+app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
+app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
+app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
 
-app.configure('development', function() {
-  mongoose.set('debug',true);
-  app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
-  app.use(express.errorHandler({ dumpExceptions: true }));
-  app.locals.pretty = true;
-  app.locals.moment = require('moment');
-  app.locals._ = require('underscore');
-}); 
+
+// app.configure('development', function() {
+//   mongoose.set('debug',true);
+   app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
+//   app.use(express.errorHandler({ dumpExceptions: true }));
+//   app.locals.pretty = true;
+//   app.locals.moment = require('moment');
+//   app.locals._ = require('underscore');
+// }); 
 
 /*app.configure('production', function() {
   mongoose.set('debug',true);
@@ -49,21 +67,21 @@ app.configure('development', function() {
 }); */ 
 
 
-app.configure(function(){
-  app.set('port', process.env.PORT || 8080);
-  app.set('views', __dirname + '/views');
-  app.use(express.favicon());
-  app.use(express.bodyParser());
-  app.use(express.cookieParser());
-  app.use(connectTimeout({ time: 10000 }));
-  app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
-  app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
-  app.use(express.methodOverride());
-  app.use(flash());
-  app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
-  app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
-  app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
-});
+// app.configure(function(){
+//   app.set('port', process.env.PORT || 8080);
+//   app.set('views', __dirname + '/views');
+//   app.use(express.favicon());
+//   app.use(express.bodyParser());
+//   app.use(express.cookieParser());
+//   app.use(connectTimeout({ time: 10000 }));
+//   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
+//   app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
+//   app.use(express.methodOverride());
+//   app.use(flash());
+//   app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
+//   app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
+//   app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
+// });
 
 models.defineModels(mongoose, function() {
   app.Proposal = Proposal = mongoose.model('Proposal');
@@ -143,8 +161,47 @@ var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);
 var userRoutes = new UserRoutes(app,loadUser,User,Proposal,Judge);
 var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
-if (!module.parent) {
-  app.listen(app.set("port"));
-  console.log('Express server listening on port %s, environment: %s', app.set("port"), app.settings.env);
-  console.log('Using connect %s, Express %s, Jade %s', connect.version, express.version, jade.version);
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
 }
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+
+module.exports = app;
+
+console.log("Running on port " + app.get("port"));
+
+var server = app.listen(app.get("port"), function () {
+
+  var host = server.address().address
+  var port = server.address().port
+
+  console.log('Example app listening at http://%s:%s', host, port)
+
+})
+
+
+// if (!module.parent) {
+//   app.listen(app.set("port"));
+//   console.log('Express server listening on port %s, environment: %s', app.set("port"), app.settings.env);
+//   console.log('Using connect %s, Express %s, Jade %s', connect.version, express.version, jade.version);
+// }
