@@ -4,7 +4,7 @@
  */
 
 var express = require('express')
-  //, ldap_settings = require('./ldap')
+  , ldap_settings = require('./ldap')
   , flash = require('connect-flash')
   , jade = require('jade')
   , _und = require('underscore')
@@ -30,33 +30,24 @@ var express = require('express')
 
 var app = express();
 
-/*app.configure('development', function() {
+app.configure('development', function() {
   mongoose.set('debug',true);
   app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
-<<<<<<< HEAD
-  app.locals._ = require("underscore");
-}); */ 
-=======
   app.locals._ = require('underscore');
 }); 
->>>>>>> 9d487dbad668c2f75b0493fd3570c583e2f3eea7
 
-app.configure('production', function() {
+/*app.configure('production', function() {
   mongoose.set('debug',true);
   app.set('db-uri', 'mongodb://localhost:27017/conf2014');
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.locals.pretty = true;
   app.locals.moment = require('moment');
-<<<<<<< HEAD
-    app.locals._ = require('underscore');
-=======
-}) */
->>>>>>> 9d487dbad668c2f75b0493fd3570c583e2f3eea7
+  app.locals._ = require('underscore');
+}); */ 
 
-});
 
 app.configure(function(){
   app.set('port', process.env.PORT || 8080);
