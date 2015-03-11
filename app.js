@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(morgan('combined'))
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('port',8080);
+//app.set('port',8080);
 mongoose.set('debug',true);
 app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
 app.locals.pretty = true;
@@ -188,9 +188,7 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-console.log("Running on port " + app.get("port"));
-
-var server = app.listen(app.get("port"), function () {
+var server = app.listen(8080, function () {
 
   var host = server.address().address
   var port = server.address().port
