@@ -119,23 +119,23 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		    if(err2){ // the password was incorrect
 		 	res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." })
 		    } else { // password was correct
-			User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
+			User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
 			    console.log(_user);
 			    if(_user){
 				saveCookieAndRoute(_user);
 			    } else {//the user isn't in the database yet 
-				LDAPsearch(req.body.user.falconkey,function(err,result){
+				LDAPsearch(req.body['user[falconkey]'],function(err,result){
 				    console.log("in LDAPsearch callback");
 				    if(err)
 					assert.ifError(err);
 				    if(result){
 					console.log(result);
 					if(_.isEqual(result,{})){ // can't find the user
-					    res.render('login.jade',{user: {falconkey: req.body.user.falconkey}, msg: "Your username and password are not correct. Please try again." }); 
+					    res.render('login.jade',{user: {falconkey: req.body['user[falconkey]']}, msg: "Your username and password are not correct. Please try again." }); 
 					}
 					var _role = (result.other.match(/^Student/))? ["student"] : [];
 					user = new User({email: result.email, first_name: result.first_name, 
-						  last_name: result.last_name,falconkey: req.body.user.falconkey, role: _role})
+						  last_name: result.last_name,falconkey: req.body['user[falconkey]'], role: _role})
 					    .save(function(error, _user) {
 						if (error)
 						    console.log(error);
@@ -170,7 +170,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     app.get('/conference-submission/login-check',function(req,res){
 		console.log(req.body.user);
 		//console.log(client);
-		client.bind("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err,_res){
+		client.bind("fscad\\"+req.body['user[falconkey]'],req.body['user[password]'],function(err,_res){
 		    console.log("error: " + err);
 		    res.json({});
 		});
