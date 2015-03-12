@@ -25,6 +25,7 @@ define(['backbone', 'underscore','apps/common','models/Proposal','bootstrap'], f
                         
                 }
             });
+            this.model.on({"sync": this.syncUser});
             this.render();
     	},
     	render: function (){
@@ -43,19 +44,21 @@ define(['backbone', 'underscore','apps/common','models/Proposal','bootstrap'], f
             }});
 
         },
+        save: function (){
+            this.model.save();
+        },
         events: {"click #save-info": "submit",
-                 "change input": "update",
-                 "change select": "update",
                  "click button#submit-proposal": "createProposal"},
-        bindings: {".first-name": "first_name",
-                ".last-name": "last_name",
-                ".email": "email",
-                ".grad-year": {observe: "grad_year", events: ["blur"]}, 
-                ".presented-before": "presented_before",
-                ".major": {observe: "major", selectOptions: {collection: function() {
-                    return common.majors;
-                }, defaultOption: {label: "Select Major...", value: null}}
-			  }}
+        bindings: {
+            ".first-name": "first_name",
+            ".last-name": "last_name",
+            ".email": "email",
+            ".grad-year": {observe: "grad_year", events: ["blur"]}, 
+            ".presented-before": "presented_before",
+            ".major": {observe: "major", selectOptions: {collection: function() {
+                return common.majors;
+            }, defaultOption: {label: "Select Major...", value: null}}
+		  }}
     });
 
     return PersonalInfoView;

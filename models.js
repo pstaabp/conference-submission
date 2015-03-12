@@ -90,7 +90,9 @@ function defineModels(mongoose, fn) {
         last_name: this.last_name,
         role: this.role,
         major: this.major,
-        email: this.email
+        email: this.email,
+        grad_year: this.grad_year,
+        presented_before: this.presented_before
     };
     return returnObject;
 };

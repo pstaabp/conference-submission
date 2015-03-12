@@ -158,11 +158,31 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		console.log(req.body);
 		console.log(req.body['user[falconkey]']);
 		User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
-				//console.log(_user);
+				console.log(_user);
 			    if(_user){
+			    	console.log("found the user")
 					//saveCookieAndRoute(_user);
 					req.session.user_id = _user._id;
 					routeUser(res,_user);	
+			    } else { 
+			    	console.log("a new user");
+			    	// this is for testing only
+			    	var result = {email : "billy@student.fitchburgstate.edu",
+			    		first_name : "Billy",
+			    		last_name : "Clinton",
+			    		role : ["student"],
+			   			};
+
+			    	user = new User({email: result.email, first_name: result.first_name, 
+							  last_name: result.last_name,falconkey: req.body['user[falconkey]'], role: result.role})
+						    .save(function(error, _user) {
+							if (error)
+							    console.log(error);
+							if(_user)
+							    //saveCookieAndRoute(_user);
+								req.session.user_id = _user._id;
+								routeUser(res,_user);	
+						    });
 			    }
 			});
 		}

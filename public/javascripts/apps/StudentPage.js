@@ -5,7 +5,7 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
 
     var StudentPage = WebPage.extend({
         initialize: function () {
-            this.constructor.__super__.initialize.apply(this, {el: this.el});
+            WebPage.prototype.initialize.apply(this, {el: this.el});
             _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
             
@@ -19,15 +19,27 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
             }).on("sync",function(_proposal){
                 self.messagePane.addMessage({short: "Proposal Saved.", type: "success"});
             });
+            this.user.on({
+                "change": function(_user){
+                    _user.changingAttributes=_.pick(_user._previousAttributes,_.keys(_user.changed));
+                },
+                "sync": function(_user){
+                _(_.keys(_user.changingAttributes||{})).each(function(key){
+                    self.messagePane.addMessage({type: "success", 
+                        short: "User Saved",
+                        text: "Property " + key + " for " + _user.get("first_name") + " " + _user.get("last_name") + " has "
+                            + "changed from " + _user.changingAttributes[key] + " to " + _user.get(key) + "."});
+                });  
+            }});
             this.render();
         },
         render: function () {
             this.$el.html("");
-            this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
+            WebPage.prototype.render.apply(this);  // Call  WebPage.render(); 
             var self = this;
             this.$el.append(_.template($("#student-tabs-template").html()));
             if (this.user) {
-                new PersonalInfoView({el: $("#personal"), user: this.user, proposals: this.proposals, editMode: false});
+                this.personalInfoView = new PersonalInfoView({el: $("#personal"), user: this.user, proposals: this.proposals, editMode: false});
                 if (this.user.get("role")!=="student"){
                     $("#submit-proposal-row").addClass("hidden");
                 }
@@ -39,7 +51,13 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
                 self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1))}).render());
             });
         },
-        events: {"click button#submit-proposal": "newProposal"},
+        updateInfo: function(){
+            this.personalInfoView.save();
+        },
+        events: {
+            "click button#submit-proposal": "newProposal",
+            "click button#update-info-btn": "updateInfo"
+        },
     });
 
     new StudentPage({el: $("#container")});
