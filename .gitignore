@@ -1,5 +1,4 @@
 ldap.js
-bower_components/
 logs/
 node_modules/
 testldap.js
