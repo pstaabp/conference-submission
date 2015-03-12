@@ -100,7 +100,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     	console.log("in POST /conference-submission/login")
 
 		function saveCookieAndRoute(user){
-			//console.log(req);
 		    req.session.user_id = user._id;	
 		    var loginToken = new LoginToken({ email: user.email });
 	            loginToken.save(function() {
@@ -115,14 +114,14 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 
 		LDAPcheckPassword("fscad\\"+req.body['user[falconkey]'],req.body['user[password]'],function(err2,res2){
 		    console.log("in callback");
-		    console.log(res2);
 		    if(err2){ // the password was incorrect
 		 		res.render('login.jade',{user: {falconkey: req.body['user[password]']}, msg: "Your username and password are not correct. Please try again." })
 		    } else { // password was correct
 			User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
 			    console.log(_user);
 			    if(_user){
-					saveCookieAndRoute(_user);
+					//saveCookieAndRoute(_user);
+					req.session.user_id = _user._id;	
 			    } else {//the user isn't in the database yet 
 					LDAPsearch(req.body['user[falconkey]'],function(err,result){
 					    console.log("in LDAPsearch callback");
@@ -140,7 +139,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 							if (error)
 							    console.log(error);
 							if(_user)
-							    saveCookieAndRoute(_user);
+							    //saveCookieAndRoute(_user);
+								req.session.user_id = _user._id;	
 						    });
 					    }
 					    
@@ -155,9 +155,10 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		console.log(req.body);
 		console.log(req.body['user[falconkey]']);
 		User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
-				console.log(_user);
+				//console.log(_user);
 			    if(_user){
-					saveCookieAndRoute(_user);
+					//saveCookieAndRoute(_user);
+					req.session.user_id = _user._id;	
 			    }
 			});
 		}
@@ -168,6 +169,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     });
 
     app.get('/conference-submission/login-check',function(req,res){
+    	console.log("in GET login-check");
 		console.log(req.body.user);
 		//console.log(client);
 		client.bind("fscad\\"+req.body['user[falconkey]'],req.body['user[password]'],function(err,_res){
