@@ -123,7 +123,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 			    if(_user){
 					//saveCookieAndRoute(_user);
 					req.session.user_id = _user._id;
-					routeUser(res,user);	
+					routeUser(res,_user);	
 			    } else {//the user isn't in the database yet 
 					LDAPsearch(req.body['user[falconkey]'],function(err,result){
 					    console.log("in LDAPsearch callback");
@@ -143,7 +143,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 							if(_user)
 							    //saveCookieAndRoute(_user);
 								req.session.user_id = _user._id;
-								routeUser(res,user);	
+								routeUser(res,_user);	
 						    });
 					    }
 					    
@@ -162,7 +162,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 			    if(_user){
 					//saveCookieAndRoute(_user);
 					req.session.user_id = _user._id;
-					routeUser(res,user);	
+					routeUser(res,_user);	
 			    }
 			});
 		}
