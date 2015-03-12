@@ -45,10 +45,11 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		
 		client.bind(user,pass,function(err){
 		    console.log("inside client.bind");
-		    console.log(err);
+		    
 		    if(err)
 		    {
-			return callback(err);
+		    	console.log(err);
+				return callback(err);
 		    }
 		    client.unbind(function(err) {
 			assert.ifError(err);
@@ -121,7 +122,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 			    console.log(_user);
 			    if(_user){
 					//saveCookieAndRoute(_user);
-					req.session.user_id = _user._id;	
+					req.session.user_id = _user._id;
+					routeUser(res,user);	
 			    } else {//the user isn't in the database yet 
 					LDAPsearch(req.body['user[falconkey]'],function(err,result){
 					    console.log("in LDAPsearch callback");
@@ -140,7 +142,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 							    console.log(error);
 							if(_user)
 							    //saveCookieAndRoute(_user);
-								req.session.user_id = _user._id;	
+								req.session.user_id = _user._id;
+								routeUser(res,user);	
 						    });
 					    }
 					    
@@ -158,7 +161,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 				//console.log(_user);
 			    if(_user){
 					//saveCookieAndRoute(_user);
-					req.session.user_id = _user._id;	
+					req.session.user_id = _user._id;
+					routeUser(res,user);	
 			    }
 			});
 		}
