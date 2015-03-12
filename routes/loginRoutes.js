@@ -113,7 +113,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		if(ldap_settings.settings.use_ldap){
 
 
-		LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
+		LDAPcheckPassword("fscad\\"+req.body['user[falconkey]'],req.body['user[password]'],function(err2,res2){
 		    console.log("in callback");
 		    console.log(res2);
 		    if(err2){ // the password was incorrect
