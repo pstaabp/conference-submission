@@ -5,8 +5,9 @@
 
 var express = require('express')
   , ldap_settings = require('./ldap')
-  , flash = require('connect-flash')
+  //, flash = require('connect-flash')
   , jade = require('jade')
+  , session = require('express-session')
   , _und = require('underscore')
   , http = require('http')
   , path = require('path')
@@ -15,6 +16,7 @@ var express = require('express')
   , morgan = require('morgan')
   , cookieParser = require('cookie-parser')
   , bodyParser = require('body-parser')
+  , jsonParser = bodyParser.json()
   , mongoose = require('mongoose')
   , mongoStore = require('connect-mongodb')
   , nodemailer = require("nodemailer")
@@ -35,7 +37,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(morgan('combined'))
+
 app.use(express.static(path.join(__dirname, 'public')));
 //app.set('port',8080);
 mongoose.set('debug',true);
@@ -46,6 +48,18 @@ app.locals._ = require('underscore');
 app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
 app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
 app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
+
+// change this to either development or production
+app.set('env','development');
+
+// set up the session variables
+
+var sess = {
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {}
+};
 
 
 // app.configure('development', function() {
@@ -157,9 +171,6 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 mongoose.connection.on('error', function(err){console.log("err: " + err)});
 
-var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);
-var userRoutes = new UserRoutes(app,loadUser,User,Proposal,Judge);
-var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
 // error handlers
 
@@ -168,22 +179,39 @@ var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
+    app.use(morgan('dev'));
     res.render('error', {
       message: err.message,
       error: err
     });
   });
-}
+} else {
 
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    app.use(morgan('combined'))
+    app.set('trust proxy', 1) // trust first proxy
+    sess.cookie.secure = true // serve secure cookies
+
+    res.render('error', {
+      message: err.message,
+      error: {}
+    });
   });
+}
+app.use(session(sess));
+
+// testing the session data
+
+app.use(function (req, res, next) {
+  console.log("testing");
+  next();
 });
+
+
+var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);
+var userRoutes = new UserRoutes(app,loadUser,User,Proposal,Judge);
+var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
 
 module.exports = app;

@@ -4,109 +4,113 @@ _ = require("underscore"),
 assert = require("assert"),
 sprintf = require("util").format;
 
-module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
+module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bodyParser) {
     
     function LDAPBind(callback){
-	assert.equal(typeof (callback), 'function');
+		assert.equal(typeof (callback), 'function');
 
-	var client = ldap.createClient({
-	    url: ldap_settings.settings.ldap_url
-	}), 
-	entry;
-	    
-	return client.bind(ldap_settings.settings.ldap_user,ldap_settings.settings.ldap_password,function(err){
-	    if(err){
-		console.log("in LDAPbind error");
-		console.log({user: ldap_settings.settings.ldap_user,pass: ldap_settings.settings.ldap_password});
-		
-		return callback(err);
-	    }
-	    client.unbind(function(err) {
-		assert.ifError(err);
-	    });
-	    return callback(null);
-	});
+		var client = ldap.createClient({
+		    	url: ldap_settings.settings.ldap_url
+			}), entry;
+		    
+		return client.bind(ldap_settings.settings.ldap_user,ldap_settings.settings.ldap_password,function(err){
+		    if(err){
+			console.log("in LDAPbind error");
+			console.log({user: ldap_settings.settings.ldap_user,pass: ldap_settings.settings.ldap_password});
+			
+			return callback(err);
+		    }
+		    client.unbind(function(err) {
+			assert.ifError(err);
+		    });
+		    return callback(null);
+		});
     }
 			
     function LDAPcheckPassword(user,pass,callback){
 
-	if(pass==="") {
-	    return callback({error: "You must provide a password!"});
-	}
+		if(pass==="") {
+		    return callback({error: "You must provide a password!"});
+		}
 
-	console.log("checking password");
-	assert.equal(typeof (user), 'string');
-	assert.equal(typeof (pass), 'string');
-	assert.equal(typeof (callback), 'function');
-	
-	var client = ldap.createClient({
-	    url: ldap_settings.settings.ldap_url
-	});
-	//console.log({user: user, password: pass});
-	
-	client.bind(user,pass,function(err){
-	    console.log("inside client.bind");
-	    console.log(err);
-	    if(err)
-	    {
-		return callback(err);
-	    }
-	    client.unbind(function(err) {
-		assert.ifError(err);
-	    });
-	    return callback(null);
-	});
+		console.log("checking password");
+		assert.equal(typeof (user), 'string');
+		assert.equal(typeof (pass), 'string');
+		assert.equal(typeof (callback), 'function');
+		
+		var client = ldap.createClient({
+		    url: ldap_settings.settings.ldap_url
+		});
+		//console.log({user: user, password: pass});
+		
+		client.bind(user,pass,function(err){
+		    console.log("inside client.bind");
+		    console.log(err);
+		    if(err)
+		    {
+			return callback(err);
+		    }
+		    client.unbind(function(err) {
+			assert.ifError(err);
+		    });
+		    return callback(null);
+		});
 
     }
 
     function LDAPsearch(falconkey,callback){
 
-	var FILTER_FMT = "(&(sAMAccountName=%s))"
-	, opts = { filter: sprintf(FILTER_FMT, falconkey), scope: 'sub' }
-	, client = ldap.createClient({
-	    url: ldap_settings.settings.ldap_url
-	});
+		var FILTER_FMT = "(&(sAMAccountName=%s))"
+		, opts = { filter: sprintf(FILTER_FMT, falconkey), scope: 'sub' }
+		, client = ldap.createClient({
+		    url: ldap_settings.settings.ldap_url
+		});
 
-	client.bind(ldap_settings.settings.ldap_user,ldap_settings.settings.ldap_password,function(err){
-	    if(err)
-		assert.ifError(err);
-	    
-	    client.search("",opts,function(_err,_res){
-		var searchResult = {};					
-
-	      	_res.on('end', function(result) {
-		    client.unbind(function(err){
+		client.bind(ldap_settings.settings.ldap_user,ldap_settings.settings.ldap_password,function(err){
+		    if(err)
 			assert.ifError(err);
+		    
+		    client.search("",opts,function(_err,_res){
+			var searchResult = {};					
+
+		      	_res.on('end', function(result) {
+			    client.unbind(function(err){
+				assert.ifError(err);
+			    });
+			    return callback(null,searchResult);
+	  	      	});
+		      	_res.on('error', function(err) {
+	    		    console.error('error: ' + err.message);
+	  	      	});
+		      	_res.on('searchEntry', function(entry) {
+			    searchResult = {first_name: entry.object.givenName, 
+					    last_name:entry.object.sn,email:entry.object.mail, 
+					    other: entry.object.description};
+	           	});
 		    });
-		    return callback(null,searchResult);
-  	      	});
-	      	_res.on('error', function(err) {
-    		    console.error('error: ' + err.message);
-  	      	});
-	      	_res.on('searchEntry', function(entry) {
-		    searchResult = {first_name: entry.object.givenName, 
-				    last_name:entry.object.sn,email:entry.object.mail, 
-				    other: entry.object.description};
-           	});
-	    });
-	});
+		});
     }
 	
+	/*
+	*  The login routes 
+	*/
 
     app.post('/conference-submission/login',function(req,res){
 
-	function saveCookieAndRoute(user){
-	    req.session.user_id = user.id;	
-	    var loginToken = new LoginToken({ email: user.email });
-            loginToken.save(function() {
-          	res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
-          	routeUser(res,user);
-		
-	    });
-	}
+    	console.log("in POST /conference-submission/login")
 
-	console.log("in POST /conference-submission/login");
-	if(ldap_settings.settings.use_ldap){
+		function saveCookieAndRoute(user){
+			//console.log(req);
+		    req.session.user_id = user._id;	
+		    var loginToken = new LoginToken({ email: user.email });
+	            loginToken.save(function() {
+	          	res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 2 * 604800000), path: '/' });
+	          	routeUser(res,user);
+			
+		    });
+		}
+
+		if(ldap_settings.settings.use_ldap){
 
 
 		LDAPcheckPassword("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err2,res2){
@@ -146,26 +150,30 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 		    }
 		});
 	} else { // don't use ldap (for testing only)
-		User.findOne({falconkey: req.body.user.falconkey},function(err2,_user){
-			console.log(_user);
+
+		console.log("we didn't use LDAP ");
+		console.log(req.body);
+		console.log(req.body['user[falconkey]']);
+		User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
+				console.log(_user);
 			    if(_user){
-				saveCookieAndRoute(_user);
+					saveCookieAndRoute(_user);
 			    }
 			});
-	}
+		}
     });
  
     app.get('/conference-submission/login', function(req, res) {
-  	res.render('login.jade',{user: {}, msg: ""});
+  		res.render('login.jade',{user: {}, msg: ""});
     });
 
     app.get('/conference-submission/login-check',function(req,res){
-	console.log(req.body.user);
-	//console.log(client);
-	client.bind("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err,_res){
-	    console.log("error: " + err);
-	    res.json({});
-	});
+		console.log(req.body.user);
+		//console.log(client);
+		client.bind("fscad\\"+req.body.user.falconkey,req.body.user.password,function(err,_res){
+		    console.log("error: " + err);
+		    res.json({});
+		});
     });
 
 
@@ -182,18 +190,18 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
     // The following is a route for student or faculty that is at the website for the first time. 
 
     app.get('/conference-submission/welcome',loadUser, function(req,res){
-	console.log(req.flash("other"));
-	console.log(req.currentUser);
-	res.render('welcome.jade',{user: req.currentUser});
+		console.log(req.flash("other"));
+		console.log(req.currentUser);
+		res.render('welcome.jade',{user: req.currentUser});
     });
 
     // The following is used to help finalize the role of the faculty/staff member.
 
     app.post('/conference-submission/user',loadUser,function(req,res){
-	// update the User in the DB
-	User.update({falconkey: req.currentUser.falconkey},{role: _.keys(req.body)},function(err,numAffected, raw){
-	    res.redirect('/conference-submission/'+_(req.body).keys()[0]);
-	});		
+		// update the User in the DB
+		User.update({falconkey: req.currentUser.falconkey},{role: _.keys(req.body)},function(err,numAffected, raw){
+		    res.redirect('/conference-submission/'+_(req.body).keys()[0]);
+		});		
     });
 
 
@@ -205,13 +213,13 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser) {
 	 *
 	 */
 
-    app.get("/conference-submission/users/:falconkey/check",function(req,response){
+    app.get("/conference-submission/users/:falconkey/check",function(req,res){
 	//console.log(req.param("falconkey"));
 	LDAPsearch(req.param("falconkey"),function(err,results){
 	    if(err)
-		assert.ifError(err);
+			assert.ifError(err);
 	    if(results)
-		response.json(results);
+			res.json(results);
 
 	});
     });

@@ -8,7 +8,7 @@
     "connect": "*",
     "cookie-sessions": "*",
     "nodemailer": "*",
-    "express": "*",
+    "express": "4.*",
     "supervisor": "*",
     "connect-timeout": "*",
     "connect-mongodb": "*",
@@ -19,7 +19,7 @@
     "body-parser": "*",
     "underscore": "*",
     "jade": "*",
-    "mongoose": "3.*",
+    "mongoose": "3.8",
     "ldapjs": "*"
   },
   "devDependencies": {},
