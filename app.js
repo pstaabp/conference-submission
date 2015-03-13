@@ -131,7 +131,7 @@ function loadUser(req, res, next) {
     authenticateFromLoginToken(req, res, next);
   } else {
     console.log("[loadUser]  No session data");
-    res.redirect('/conference-submission/login',{user: {}, msg: ""});
+    res.redirect({user: {}, msg: ""},'/conference-submission/login');
   }
 }
 

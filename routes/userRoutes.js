@@ -26,20 +26,29 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
     });
 
     app.put("/conference-submission/users/:user_id", loadUser, function (req,res){
-	console.log("in put /users/user");
-	User.findByIdAndUpdate(req.params.user_id,_.omit(req.body,"_id"), function (err, user) {    
-	    console.log("updated!!");
-	    if(err) {
-    		res.json({msg: "An error occurred"});
-	    }
+		console.log("in put /users/user");
+		User.findByIdAndUpdate(req.params.user_id,_.omit(req.body,"_id"), function (err, user) {    
+		    console.log("updated!!");
+		    if(err) {
+	    		res.json({msg: "An error occurred"});
+		    }
 
-	    res.json(user.getPublicFields());
-	});
+		    res.json(user.getPublicFields());
+		});
     });
 
 	
   	app.get('/conference-submission/users/:user_id',loadUser, function(req,res){
   		User.findById(req.param("user_id"),function(err,user){
+  			res.json(user);
+  		});
+  	});
+
+  	app.delete('/conference-submission/users/:user_id',loadUser, function(req,res){
+  		User.remove({_id: req.param("user_id")},function(err,user){
+  			if(err){
+  				console.log(err);
+  			}
   			res.json(user);
   		});
   	});

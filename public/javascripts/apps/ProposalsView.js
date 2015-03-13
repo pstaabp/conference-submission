@@ -31,7 +31,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         },
         events: {
             "keyup .search-proposals": "search",
-            "click .clear-search-proposal": "clearSearch"
+            "click .clear-search-proposals": "clearSearch"
         },
         showHideProposal: function ($el,model,target) {
             if(target.text()==="Show"){
@@ -40,32 +40,39 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                     $(v).prev().children(".show-proposal").children("button").text("Show");
                     $(v).remove();
                 })
-                $el.parent().after(new ProposalDetailView({proposal: model, users: this.users}).render().el);
+                $el.parent().after(new ProposalDetailView({proposal: model, users: this.users, hidden: true}).render().el);
+                $el.parent().siblings(".proposal-detail-row").show("blind",250);
+                
             } else {
                 target.text("Show");
-                $el.parent().siblings(".proposal-detail-row").remove();
+                $el.parent().siblings(".proposal-detail-row").hide("blind",450, function(){
+                    $el.parent().siblings(".proposal-detail-row").remove();
+                    $el.parent().parent().find(".ui-effects-wrapper").remove();  // this thing still was there and messed up the table.
+
+                })
             }   
             
         },
         tableSetup: function(){
             var self = this;
             var roleTemplate = _.template($("#role-template").html());
-            this.cols = [{name: "Show", key: "show_proposal", classname: "show-proposal", 
-                stickit_options: {update: function($el, val, model, options) {
-                    $el.html($("#show-button-template").html());
-                    $el.children(".btn").on("click",function(evt) {
-                        self.showHideProposal($el,model,$(evt.target));
-                    });
-                }}},
-            {name: "Accepted", key: "accepted", classname: "accepted", editable: true, datatype: "boolean"},
-            {name: "Session", key: "session", classname: "session", editable: false, datatype: "string"},
-            {name: "Main Author", key: "author", classname: "author", editable: false, datatype: "string",
-                sort_function: function(author){
-                    var names = author.split(" ");
-                    return names[names.length-1].toLowerCase();
-                }},
-            {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
-            {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"}
+            this.cols = [
+                {name: "Show", key: "show_proposal", classname: "show-proposal", 
+                    stickit_options: {update: function($el, val, model, options) {
+                        $el.html($("#show-button-template").html());
+                        $el.children(".btn").on("click",function(evt) {
+                            self.showHideProposal($el,model,$(evt.target));
+                        });
+                    }}},
+                {name: "Accepted", key: "accepted", classname: "accepted", editable: true, datatype: "boolean"},
+                {name: "Session", key: "session", classname: "session", editable: false, datatype: "string"},
+                {name: "Main Author", key: "author", classname: "author", editable: false, datatype: "string",
+                    sort_function: function(author){
+                        var names = author.split(" ");
+                        return names[names.length-1].toLowerCase();
+                    }},
+                {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
+                {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"}
             ];
         },
         search: function(evt){
@@ -93,6 +100,9 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             var ExtendedProposal = Backbone.Model.extend({})
                 , attrs = {};
             this.proposal = options.proposal;
+            if(options.hidden){
+                this.$el.css("display","none");
+            }
             _(attrs).extend(options.proposal.attributes);
             _(attrs).extend(options.users.findWhere({email: options.proposal.get("email")}).pick("grad_year","presented_before"));
             this.model = new ExtendedProposal(attrs);

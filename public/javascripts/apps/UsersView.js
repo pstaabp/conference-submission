@@ -3,6 +3,7 @@ define(['backbone','views/CollectionTableView','models/UserList'], function(Back
         initialize: function(options){
             _.bindAll(this, "render");
             this.users = options.users;
+            this.proposals = options.proposals;
             this.rowTemplate = _.template($("#user-row-template").html());
             this.users.on("remove",this.render);
             this.tableSetup();
@@ -81,11 +82,18 @@ define(['backbone','views/CollectionTableView','models/UserList'], function(Back
             ];
 
         },
-        deleteUser: function (model){
-            var del = confirm("Do you wish to delete the user: " + this.model.get("first_name") + " " 
-                                    + this.model.get("last_name") +"?");
+        deleteUser: function (_user){
+            var del = confirm("Do you wish to delete the user: " + _user.get("first_name") + " " 
+                                    + _user.get("last_name") +"?  This will also delete all proposals "+
+                                    "submitted by the user");
             if (del){
-                this.model.destroy();
+                _user.destroy();
+                // also destroy all proposals 
+                _(this.proposals.where({email: _user.get("email")})).each(function(_prop){
+                    _prop.destroy();
+                })
+
+
             }
         },
         search: function(evt){

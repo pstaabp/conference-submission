@@ -84,9 +84,12 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	    		    console.error('error: ' + err.message);
 	  	      	});
 		      	_res.on('searchEntry', function(entry) {
-			    searchResult = {first_name: entry.object.givenName, 
-					    last_name:entry.object.sn,email:entry.object.mail, 
-					    other: entry.object.description};
+			    searchResult = {
+			    		first_name: entry.object.givenName, 
+					    last_name:entry.object.sn,
+					    email:entry.object.mail, 
+					    other: entry.object.description
+					};
 	           	});
 		    });
 		});
@@ -167,9 +170,9 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 			    } else { 
 			    	console.log("a new user");
 			    	// this is for testing only
-			    	var result = {email : "billy@student.fitchburgstate.edu",
-			    		first_name : "Billy",
-			    		last_name : "Clinton",
+			    	var result = {email : "barney@student.fitchburgstate.edu",
+			    		first_name : "Barney",
+			    		last_name : "Rubble",
 			    		role : ["student"],
 			   			};
 
@@ -241,13 +244,21 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 
     app.get("/conference-submission/users/:falconkey/check",function(req,res){
 	//console.log(req.param("falconkey"));
-	LDAPsearch(req.param("falconkey"),function(err,results){
-	    if(err)
-			assert.ifError(err);
-	    if(results)
-			res.json(results);
+		console.log(ldap_settings.settings.use_ldap);
+		if(ldap_settings.settings.use_ldap){
+			LDAPsearch(req.param("falconkey"),function(err,results){
+			    if(err)
+					assert.ifError(err);
+			    if(results)
+					res.json(results);
 
-	});
+			});
+		} else {
+			res.json({first_name: "Peter", 
+					    last_name: "Staab",
+					    email: "pstaab@fitchburgstate.edu", 
+					    other: "Mathematics"});
+		}
     });
 
 

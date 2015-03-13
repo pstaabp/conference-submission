@@ -21,13 +21,17 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
             this.judges = (module.config()) ? new JudgeList(module.config().judges) : new JudgeList();
             this.proposals.on("add",this.render);
 
-            this.proposals.on("sync",function(_prop){
-                self.messagePane.addMessage({short:"The proposal for " + _prop.get("author") + 
+            this.proposals.on(
+                {"sync": function(_prop){
+                        self.messagePane.addMessage({short:"The proposal for " + _prop.get("author") + 
 					     " was saved.", type: "success"});
-            });
+                    }},
+                {"remove": function(_prop){
+                    self.messagePane.addMessage({short: "A proposal for " + _prop.get("author") + " was deleted."});
+                }});
 
             this.views = {
-                usersView : new UsersView({users: this.users, rowTemplate: "#user-row-template", el: $("#users")}),
+                usersView : new UsersView({users: this.users, proposals: this.proposals, rowTemplate: "#user-row-template", el: $("#users")}),
                 proposalsView : new ProposalsView({users: this.users,proposals: this.proposals, 
                                    judges: this.judges, el: $("#proposals")}),
                 presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),

@@ -1,4 +1,5 @@
 var _ = require("underscore")
+  , ldap_settings = require('../ldap')
   , path = require('path')
   , nodemailer = require("nodemailer")
   , templatesDir   = path.join(__dirname, '../templates')
@@ -28,7 +29,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
 		template('submitted', locals, function(err, html, text) {
 		    if (err) {
-			console.log(err);
+				console.log(err);
 		    } else {
 			smtpTransport.sendMail({
 			    from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
@@ -40,11 +41,11 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 			    text: text
 			}, function(err, responseStatus) {
 			    if (err) {
-				return callback(err);
+					return callback(err);
 				
 			    } else {
-				console.log(responseStatus);
-				return callback(null,{msg_status:responseStatus.message}); 
+					console.log(responseStatus);
+					return callback(null,{msg_status:responseStatus.message}); 
 			    }
 			});
 		    }
@@ -54,33 +55,33 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     }
 
     app.post('/conference-submission/email/test',function(req,res){
-	var prop = {title: "The Title",sponsor_name: "Peter Staab",sponsor_dept: "Mathematics",
-		    sponsor_email: "pstaab@fitchburgstate.edu", type: "poster", 
-		    other_authors: [],other_equipment: "",content: "This is the proposal"};
-	var _user = {first_name: "Peter", last_name: "Staab", email: "pstaab@fitchburgstate.edu"};
-	sendEmail({user:_user,proposal: prop, email: _user.email},function(err,msg){
-	    if(err){
-		console.log(err);
-	    }
-	    if(msg){
-		res.json(msg);
-	    }
-	});
+		var prop = {title: "The Title",sponsor_name: "Peter Staab",sponsor_dept: "Mathematics",
+			    sponsor_email: "pstaab@fitchburgstate.edu", type: "poster", 
+			    other_authors: [],other_equipment: "",content: "This is the proposal"};
+		var _user = {first_name: "Peter", last_name: "Staab", email: "pstaab@fitchburgstate.edu"};
+		sendEmail({user:_user,proposal: prop, email: _user.email},function(err,msg){
+		    if(err){
+			console.log(err);
+		    }
+		    if(msg){
+			res.json(msg);
+		    }
+		});
     });
 
 
     app.get('/conference-submission/proposals/:proposal_id',function(req,res){
-	Proposal.findById(req.param("proposal_id"),function(err,_proposal){
-		console.log(req.is("html"));
-		console.log(req.is());
-		if(req.is("application/json")){
-			res.json(_proposal);
-		} else {
-			res.render('show-proposal.jade',{proposal: _proposal})
-		    
-		}
+		Proposal.findById(req.param("proposal_id"),function(err,_proposal){
+			console.log(req.is("html"));
+			console.log(req.is());
+			if(req.is("application/json")){
+				res.json(_proposal);
+			} else {
+				res.render('show-proposal.jade',{proposal: _proposal})
+			    
+			}
 
-	});
+		});
     });
 
     app.delete('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
@@ -105,35 +106,40 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     });
 
     app.post("/conference-submission/users/:user_id/proposals",loadUser,function(req,res){
-	var proposal = new Proposal(req.body);
+		var proposal = new Proposal(req.body);
 
-	proposal.save(function (err, prop) {
+		proposal.save(function (err, prop) {
     	    if (err){ 
-		console.log(err);
-		return;
-	    }
-	    if(prop){
-		var emails = _(prop.other_authors).pluck("email");
-		emails.push(prop.sponsor_email);
-		console.log(emails);
+				console.log(err);
+				return;
+		    }
+		    if(prop){
+				var emails = _(prop.other_authors).pluck("email");
+				emails.push(prop.sponsor_email);
+				console.log(emails);
+				if(ldap_settings.settings.use_ldap){
+		    		sendEmail({user:req.currentUser ,proposal: prop, email: prop.email, cc: emails.join(", ")},function(err,msg){
 
-    		sendEmail({user:req.currentUser ,proposal: prop, email: prop.email, cc: emails.join(", ")},function(err,msg){
-		    if(err)
-			console.log(err);
-		    if(msg)
-			res.json({emailsSent: true});
-		});
-	    }
-	   
+					    if(err)
+							console.log(err);
+					    if(msg)
+							res.json({emailsSent: true});
+					});
+		    	} else {
+		    		console.log("sending email not supported. ");
+		    		res.json({emailsSent: false});
+		    	}
+		    }
+		   
     	});
     });
 
     app.put("/conference-submission/proposals/:proposal_id",loadUser,function(req,res){
-	Proposal.findByIdAndUpdate(req.params.proposal_id,_.omit(req.body, "_id"), function (err, prop) {
-    	    if (err) {console.log(err);}
-	    
-    	    res.json(prop);
-	});
+		Proposal.findByIdAndUpdate(req.params.proposal_id,_.omit(req.body, "_id"), function (err, prop) {
+	    	    if (err) {console.log(err);}
+		    
+	    	    res.json(prop);
+		});
     });
 
 
