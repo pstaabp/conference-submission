@@ -170,10 +170,10 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 			    } else { 
 			    	console.log("a new user");
 			    	// this is for testing only
-			    	var result = {email : "barney@student.fitchburgstate.edu",
-			    		first_name : "Barney",
-			    		last_name : "Rubble",
-			    		role : ["student"],
+			    	var result = {email : "pstaab@fitchburgstate.edu",
+			    		first_name : "Peter",
+			    		last_name : "Staab",
+			    		role : ["sponsor"],
 			   			};
 
 			    	user = new User({email: result.email, first_name: result.first_name, 

@@ -136,6 +136,26 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		});
 	});
 
+	app.delete('/conference-submission/judges/:id',loadUser, function(req,res){
+  		Judge.remove({_id: req.param("id")},function(err,judge){
+  			if(err){
+  				console.log(err);
+  			}
+  			User.findOne({email: judge.email},function(err2,_user){
+  				User.findByIdAndUpdate(_user._id,{role: _(_user.role).difference(["judge"])},function(err3,_user2){
+  					if(err3){
+  						console.log(err3);
+  					}	
+	  				console.log(_user2.role);
+  				});
+
+  			});
+
+  			res.json(judge);
+  		});
+  	});
+
+
 	var oralSessions=[
 		{session: "0", location: "CTL  (9am-10am)"},
 		{session: "1", location: "Hamm. G01 (9am-10am)"},

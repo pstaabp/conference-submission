@@ -45,6 +45,7 @@ app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
 app.locals.pretty = true;
 app.locals.moment = require('moment');
 app.locals._ = require('underscore');
+app.set('views', __dirname + '/views');
 app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
 app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
 app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
@@ -83,7 +84,7 @@ var sess = {
 
 // app.configure(function(){
 //   app.set('port', process.env.PORT || 8080);
-//   app.set('views', __dirname + '/views');
+
 //   app.use(express.favicon());
 //   app.use(express.bodyParser());
 //   app.use(express.cookieParser());
