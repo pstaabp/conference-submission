@@ -34,26 +34,27 @@ block container
       
   .tab-content
     .tab-pane.active#users
-      .user-choices.col-md-8
-        label.radio-inline.control-label
-          input(type="radio",name="usersview",value="all",checked)
-          | View All Users
-        label.radio-inline.control-label
-          input(type="radio",name="usersview",value="students")
-          | View Students
-        label.radio-inline.control-label
-          input(type="radio",name="usersview",value="sponsors")
-          | View Sponsors
-        label.radio-inline.control-label
-          input(type="radio",name="usersview",value="judges")
-          | View Judges
-      .users-search.col-md-4
-        .form-horizontal
-          label.control-label Search
-            input.search-user-box(type="search")
-          button.btn.btn-default.clear-search-user Clear
-
-      .users-table
+      .row
+        .user-choices.col-md-8
+          label.radio-inline.control-label
+            input(type="radio",name="usersview",value="all",checked)
+            | View All Users
+          label.radio-inline.control-label
+            input(type="radio",name="usersview",value="students")
+            | View Students
+          label.radio-inline.control-label
+            input(type="radio",name="usersview",value="sponsors")
+            | View Sponsors
+          label.radio-inline.control-label
+            input(type="radio",name="usersview",value="judges")
+            | View Judges
+        .users-search.col-md-4
+          .form-horizontal
+            label.control-label Search
+              input.search-user-box(type="search")
+            button.btn.btn-default.clear-search-user Clear
+      .row
+        .users-table
     .tab-pane#proposals
       .row
         .col-md-4
