@@ -219,7 +219,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     // The following is a route for student or faculty that is at the website for the first time. 
 
     app.get('/conference-submission/welcome',loadUser, function(req,res){
-		console.log(req.flash("other"));
+		//console.log(req.flash("other"));
 		console.log(req.currentUser);
 		res.render('welcome.jade',{user: req.currentUser});
     });

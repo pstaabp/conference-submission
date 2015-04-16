@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 //app.set('port',8080);
 //mongoose.set('debug',true);
-app.set('db-uri', 'mongodb://localhost:27017/conf-2015');
+app.set('db-uri', 'mongodb://localhost:27017/conf-dev');
 app.locals.pretty = true;
 app.locals.moment = require('moment');
 app.locals._ = require('underscore');
@@ -217,7 +217,7 @@ var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
 module.exports = app;
 
-var server = app.listen(8080, function () {
+var server = app.listen(8088, function () {
 
   var host = server.address().address
   var port = server.address().port
