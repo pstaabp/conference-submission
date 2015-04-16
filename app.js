@@ -53,6 +53,8 @@ app.use('/' + ldap_settings.settings.top_dir + '/img',express.static(__dirname +
 // change this to either development or production
 app.set('env','production');
 
+console.log(ldap_settings);
+
 // set up the session variables
 
 var sess = {
@@ -89,14 +91,14 @@ function loadUser(req, res, next) {
         req.currentUser = user;
         next();
       } else {
-        res.redirect('/' + ldap_settings.settings.top_dir + '/login',{user: {}, msg: ""});
+        res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
     console.log("[loadUser]  No session data");
-    res.redirect('/' + ldap_settings.settings.top_dir + '/login',{user: {}, msg: ""});
+    res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
   }
 }
 
