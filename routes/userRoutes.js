@@ -1,8 +1,9 @@
-var _ = require("underscore");
+var _ = require("underscore")
+, ldap_settings = require('../ldap');
 
 module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	
-    app.get('/conference-submission/admin',loadUser, function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/admin',loadUser, function(req,res){
 		console.log("in /admin");
 		User.findOne({_id: req.currentUser.id},function(err,_user){
 		    console.log(_user);
@@ -20,12 +21,12 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 			    });
 			});
 		    } else {
-			res.redirect("/conference-submission/"+_user.role);
+			res.redirect("/' + ldap_settings.settings.top_dir + '/"+_user.role);
 		    }
 		});
     });
 
-    app.put("/conference-submission/users/:user_id", loadUser, function (req,res){
+    app.put('/' + ldap_settings.settings.top_dir + '/users/:user_id', loadUser, function (req,res){
 		console.log("in put /users/user");
 		User.findByIdAndUpdate(req.params.user_id,_.omit(req.body,"_id"), function (err, user) {    
 		    console.log("updated!!");
@@ -38,13 +39,13 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
     });
 
 	
-  	app.get('/conference-submission/users/:user_id',loadUser, function(req,res){
+  	app.get('/' + ldap_settings.settings.top_dir + '/users/:user_id',loadUser, function(req,res){
   		User.findById(req.param("user_id"),function(err,user){
   			res.json(user);
   		});
   	});
 
-  	app.delete('/conference-submission/users/:user_id',loadUser, function(req,res){
+  	app.delete('/' + ldap_settings.settings.top_dir + '/users/:user_id',loadUser, function(req,res){
   		User.remove({_id: req.param("user_id")},function(err,user){
   			if(err){
   				console.log(err);
@@ -56,7 +57,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
 	// The main page for student views
 
-	app.get('/conference-submission/student',loadUser, function(req,res){
+	app.get('/' + ldap_settings.settings.top_dir + '/student',loadUser, function(req,res){
 		Proposal.find({email: req.currentUser.email}, function(err,_proposals){
 		   	res.render('student.jade',{user: req.currentUser, proposals: _proposals});			
 		});
@@ -64,8 +65,8 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
   	// The main page for sponsors
 
-  	app.get('/conference-submission/sponsor',loadUser,function(req,res){
-  		console.log("in /conference-submission/sponsor");
+  	app.get('/' + ldap_settings.settings.top_dir + '/sponsor',loadUser,function(req,res){
+  		console.log("in /' + ldap_settings.settings.top_dir + '/sponsor");
   		console.log(req.currentUser);
   		Proposal.find({sponsor_email: req.currentUser.email},function(err,_proposals){
   			console.log(_proposals);
@@ -75,22 +76,22 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
   	  	// Add a role
 
-  	app.get('/conference-submission/add-role',loadUser,function(req,res){
+  	app.get('/' + ldap_settings.settings.top_dir + '/add-role',loadUser,function(req,res){
   		console.log(req.currentUser);
 		res.render('addrole.jade',{user: req.currentUser});  		
   	});
 
   	// Update the role for a user
 
-  	app.post('/conference-submission/add-role',loadUser,function(req,res){
+  	app.post('/' + ldap_settings.settings.top_dir + '/add-role',loadUser,function(req,res){
   		var roles = _(req.currentUser.role).union(_.keys(req.body));
   		User.findByIdAndUpdate(req.currentUser._id,{role: roles}, function(err,user){
   			console.log(user);
- 			res.redirect("/conference-submission/"+_.last(roles));
+ 			res.redirect("/' + ldap_settings.settings.top_dir + '/"+_.last(roles));
   		})
   	})
 
-	app.get('/conference-submission/judge',loadUser,function(req,res){
+	app.get('/' + ldap_settings.settings.top_dir + '/judge',loadUser,function(req,res){
 		Judge.findOne({email: req.currentUser.email},function(err,_judge){
 			if(err){
 				console.log(err);
@@ -109,14 +110,14 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
 	});
 
-	app.get('/conference-submission/judges',loadUser,function(req,res){
+	app.get('/' + ldap_settings.settings.top_dir + '/judges',loadUser,function(req,res){
 		Judge.find({},function(err,_judges){
       		if(err) {console.err(err);}
         		res.send(_judges);
     		});	
 		});	
 
-	app.post("/conference-submission/judges",function(req,res){
+	app.post('/' + ldap_settings.settings.top_dir + '/judges',function(req,res){
 	  	var pres = _(req.body.presentation).keys();
   		var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.type, presentation: pres});
   		judge.save(function (err, _judge) {
@@ -126,7 +127,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 		});
 	});
 
-	app.put("/conference-submission/judges/:id",loadUser,function(req,res){
+	app.put('/' + ldap_settings.settings.top_dir + '/judges/:id',loadUser,function(req,res){
   
   		var obj = _.omit(_.clone(req.body),"_id");
 		console.log(obj);
@@ -136,7 +137,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		});
 	});
 
-	app.delete('/conference-submission/judges/:id',loadUser, function(req,res){
+	app.delete('/' + ldap_settings.settings.top_dir + '/judges/:id',loadUser, function(req,res){
   		Judge.remove({_id: req.param("id")},function(err,judge){
   			if(err){
   				console.log(err);
@@ -173,7 +174,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	var oralRE = /OP-(\d+)-(\d+)/;
 
 
-	app.get("/conference-submission/judges-schedule",function(req,res){
+	app.get('/' + ldap_settings.settings.top_dir + '/judges-schedule',function(req,res){
 		var judgeInfo = [], i= 1; 
 		Judge.count(function(err3,numjudges){
 	  		Judge.find({}).sort("name").exec(function(err,_judges){

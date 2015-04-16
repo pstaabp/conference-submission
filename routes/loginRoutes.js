@@ -99,9 +99,9 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	*  The login routes 
 	*/
 
-    app.post('/conference-submission/login',function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/login',function(req,res){
 
-    	console.log("in POST /conference-submission/login")
+    	console.log("in POST /' + ldap_settings.settings.top_dir + '/login")
 
 		function saveCookieAndRoute(user){
 		    req.session.user_id = user._id;	
@@ -191,11 +191,11 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		}
     });
  
-    app.get('/conference-submission/login', function(req, res) {
+    app.get('/' + ldap_settings.settings.top_dir + '/login', function(req, res) {
   		res.render('login.jade',{user: {}, msg: ""});
     });
 
-    app.get('/conference-submission/login-check',function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/login-check',function(req,res){
     	console.log("in GET login-check");
 		console.log(req.body.user);
 		//console.log(client);
@@ -206,19 +206,19 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     });
 
 
-    app.post('/conference-submission/logout',loadUser,function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/logout',loadUser,function(req,res){
 	if (req.session) {
 	    LoginToken.remove({ email: req.currentUser.email }, function() {});
 	    res.clearCookie('logintoken');
 	    req.session.destroy(function() {});
 	}
-	res.redirect('/conference-submission/login');
+	res.redirect('/' + ldap_settings.settings.top_dir + '/login');
     });
 
 
     // The following is a route for student or faculty that is at the website for the first time. 
 
-    app.get('/conference-submission/welcome',loadUser, function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/welcome',loadUser, function(req,res){
 		//console.log(req.flash("other"));
 		console.log(req.currentUser);
 		res.render('welcome.jade',{user: req.currentUser});
@@ -226,10 +226,10 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 
     // The following is used to help finalize the role of the faculty/staff member.
 
-    app.post('/conference-submission/user',loadUser,function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/user',loadUser,function(req,res){
 		// update the User in the DB
 		User.update({falconkey: req.currentUser.falconkey},{role: _.keys(req.body)},function(err,numAffected, raw){
-		    res.redirect('/conference-submission/'+_(req.body).keys()[0]);
+		    res.redirect('/' + ldap_settings.settings.top_dir + '/'+_(req.body).keys()[0]);
 		});		
     });
 
@@ -242,7 +242,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	 *
 	 */
 
-    app.get("/conference-submission/users/:falconkey/check",function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/users/:falconkey/check',function(req,res){
 	//console.log(req.param("falconkey"));
 		console.log(ldap_settings.settings.use_ldap);
 		if(ldap_settings.settings.use_ldap){
