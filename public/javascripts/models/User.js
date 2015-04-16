@@ -1,4 +1,4 @@
-define(['backbone','underscore'], function(Backbone,_){
+define(['backbone','underscore','apps/settings'], function(Backbone,_,settings){
     /**
      *
      * This defines a User
@@ -33,7 +33,7 @@ define(['backbone','underscore'], function(Backbone,_){
 	    }
         },
         url : function() {
-            return '/conference-submission/users/' + this.get("_id");
+            return '/' + settings.top_dir + 'users/' + this.get("_id");
         },
         idAttribute: "_id"
     });

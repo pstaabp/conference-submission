@@ -1,5 +1,5 @@
-define(['backbone','views/MessageListView', 'jquery-truncate','jquery-ui'], 
-function(Backbone,MessageListView){
+define(['backbone','views/MessageListView','apps/settings' 'jquery-truncate','jquery-ui'], 
+function(Backbone,MessageListView,settings){
 var WebPage = Backbone.View.extend({
 
     initialize: function (options) {
@@ -47,7 +47,7 @@ var WebPage = Backbone.View.extend({
             if (confirm('Are you sure you want to log out?')) {
               var element = $(this),
                   form = $('<form></form>');
-              form.attr({method: 'POST',action: '/conference-submission/logout'})
+              form.attr({method: 'POST',action: '/' + settings.top_dir + 'logout'})
                   .hide()
                   .append('<input type="hidden" />')
                   .find('input')

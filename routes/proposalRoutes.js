@@ -77,7 +77,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 			if(req.is("application/json")){
 				res.json(_proposal);
 			} else {
-				res.render('show-proposal.jade',{proposal: _proposal})
+				res.render('show-proposal.jade',{proposal: _proposal,top_dir: ldap_settings.settings.top_dir})
 			    
 			}
 
@@ -154,14 +154,14 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     app.get('/' + ldap_settings.settings.top_dir + '/posters',function(req,res){
     	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
     		var props = _(_proposals).sortBy("session");
-    		res.render('posters.jade',{proposals: props});
+    		res.render('posters.jade',{proposals: props,top_dir: ldap_settings.settings.top_dir});
     	});
     });
 
 
     app.get('/' + ldap_settings.settings.top_dir + '/orals',function(req,res){
     	Proposal.find({type: "Oral Presentation"},function(err,_proposals){
-    		res.render('orals.jade',{proposals: _proposals});
+    		res.render('orals.jade',{proposals: _proposals,top_dir: ldap_settings.settings.top_dir});
     	});
     });
 
@@ -181,7 +181,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
       }
     }
 
-    res.render('schedule.jade',{proposals: props});
+    res.render('schedule.jade',{proposals: prop,top_dir: ldap_settings.settings.top_dirs});
   });
 
 });

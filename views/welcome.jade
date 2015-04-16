@@ -9,13 +9,13 @@ block container
       | Here you will be able to submit and edit proposals for the Conference. 
       | You will need a faculty sponsor for each proposal that you submit and you should have talked about your proposal with your
       | sponsor.  Make sure that you have your sponsor's correct FSU email address before submitting.  
-    a.btn.btn-default(href="/conference-submission/student") Continue
+    a.btn.btn-default(href="/#{top_dir}/student") Continue
   else
     p
       | Thank you for your help in the FSU Undergraduate Conference.  You should be here if you are 
       | either a faculty or staff that is a sponsor or judge.  Please select your role(s) below and hit 
       | Continue.
-    form(method='post', action='/conference-submission/user')
+    form(method='post', action='/#{top_dir}/user')
       .form-horiztonal
         .form-group
           label.checkbox-inline

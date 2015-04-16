@@ -1,4 +1,4 @@
-define(['backbone','models/User'], function(Backbone, User){
+define(['backbone','models/User','apps/settings'], function(Backbone, User,settings){
     /**
      *
      * This defines a User
@@ -8,7 +8,7 @@ define(['backbone','models/User'], function(Backbone, User){
 
     var UserList = Backbone.Collection.extend({
         model: User,
-        url: '/conference-submission/users'
+        url: '/' + settings.top_dir + 'users'
 
     });
 

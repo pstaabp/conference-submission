@@ -60,7 +60,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
 	app.get('/' + ldap_settings.settings.top_dir + '/student',loadUser, function(req,res){
 		Proposal.find({email: req.currentUser.email}, function(err,_proposals){
-		   	res.render('student.jade',{user: req.currentUser, proposals: _proposals});			
+		   	res.render('student.jade',{user: req.currentUser, proposals: _proposals,top_dir: ldap_settings.settings.top_dir});			
 		});
   	});
 
@@ -71,7 +71,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		console.log(req.currentUser);
   		Proposal.find({sponsor_email: req.currentUser.email},function(err,_proposals){
   			console.log(_proposals);
-  			res.render('sponsor.jade',{user: req.currentUser, proposals: _proposals});
+  			res.render('sponsor.jade',{user: req.currentUser, proposals: _proposals,top_dir: ldap_settings.settings.top_dir});
   		});
   	});
 
@@ -79,7 +79,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
   	app.get('/' + ldap_settings.settings.top_dir + '/add-role',loadUser,function(req,res){
   		console.log(req.currentUser);
-		res.render('addrole.jade',{user: req.currentUser});  		
+		res.render('addrole.jade',{user: req.currentUser,top_dir: ldap_settings.settings.top_dir});  		
   	});
 
   	// Update the role for a user
@@ -102,10 +102,10 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 				Proposal.find({feedback: { $elemMatch: { judge_id: _judge._id }}}).exec(function(err2,_proposals){
 					var _user = {judge_id: _judge._id};
 					_(_user).extend(_(req.currentUser).pick("falconkey","first_name","last_name","email"));
-					res.render('submit-feedback.jade',{user:_user, proposals: _proposals});
+					res.render('submit-feedback.jade',{user:_user, proposals: _proposals,top_dir: ldap_settings.settings.top_dir});
 				});	
 			} else {
-				res.render('users/judges.jade',{user: req.currentUser});				
+				res.render('users/judges.jade',{user: req.currentUser,top_dir: ldap_settings.settings.top_dir});				
 			}
 		})
 
@@ -124,7 +124,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		judge.save(function (err, _judge) {
     		if (err) {console.log(err);}
 
-		    res.render("users/judges-email.jade");
+		    res.render("users/judges-email.jade",{top_dir: ldap_settings.settings.top_dir});
 		});
 	});
 
@@ -194,7 +194,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 		  						judgeInfo[i].sessions = sessions;
 
 		  					})
-			  				res.render("showjudges.jade",{judges: judgeInfo});
+			  				res.render("showjudges.jade",{judges: judgeInfo,top_dir: ldap_settings.settings.top_dir});
 			  			} 
 		  			})
 		  		});

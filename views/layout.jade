@@ -2,9 +2,9 @@ doctype html
 html
   head
     title Undergraduate Conference Submission
-    link(href="/conference-submission/javascripts/bower_components/font-awesome/css/font-awesome.min.css",rel="stylesheet")
-    link(href='/conference-submission/javascripts/bower_components/bootstrap/dist/css/bootstrap.css',rel='stylesheet',media="screen")
-    link(href='/conference-submission/stylesheets/style.css',rel='stylesheet')
+    link(href="/#{top_dir}/javascripts/bower_components/font-awesome/css/font-awesome.min.css",rel="stylesheet")
+    link(href='/#{top_dir}/javascripts/bower_components/bootstrap/dist/css/bootstrap.css',rel='stylesheet',media="screen")
+    link(href='/#{top_dir}/stylesheets/style.css',rel='stylesheet')
     block script
   body
     nav.navbar.navbar-default.navbar-fixed-top(role="navigation")
@@ -30,11 +30,11 @@ html
               ul.dropdown-menu
                 if user && user.role
                   each val in user.role
-                    - var link = "/conference-submission/" + val
+                    - var link = "/#{top_dir}/" + val
                     li
                       a(href=link)= val
                 li
-                  a(href='/conference-submission/add-role') Add Role
+                  a(href='/#{top_dir}/add-role') Add Role
           li
             if user
               button.btn.btn-default.navbar-btn#logout Log Out

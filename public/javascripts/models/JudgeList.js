@@ -1,4 +1,4 @@
-define(['backbone', 'underscore','./Judge'], function(Backbone, _,Judge){
+define(['backbone', 'underscore','./Judge','apps/settings'], function(Backbone, _,Judge,settings){
     /**
      *
      * This defines a Judge
@@ -11,7 +11,7 @@ define(['backbone', 'underscore','./Judge'], function(Backbone, _,Judge){
         initialize:function () {
     
         },
-        url: '/conference-submission/judges',
+        url: '/' + settings.top_dir + 'judges',
         /*parse: function (response){
             console.log(response);
             return response;

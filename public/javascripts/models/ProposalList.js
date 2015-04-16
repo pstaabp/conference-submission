@@ -1,4 +1,4 @@
-define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
+define(['backbone', 'models/Proposal','apps/settings'], function(Backbone,Proposal,settings){
     /**
      *
      * This defines a User
@@ -26,9 +26,9 @@ define(['backbone', 'models/Proposal'], function(Backbone,Proposal){
         },
         url: function(){
             if(this.user_id){
-                return '/conference-submission/users/' + this.user_id + '/proposals';    
+                return '/' + settings.top_dir + 'users/' + this.user_id + '/proposals';    
             } else {
-                return '/conference-submission/proposals';
+                return '/' + settings.top_dir + 'proposals';
             }
             
         }

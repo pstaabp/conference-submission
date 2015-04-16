@@ -1,8 +1,8 @@
 extends layout
 
 block script
-  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js")
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/FacultyPage',src='/conference-submission/javascripts/vendor/require.js')
+  script(type="text/javascript",src="/#{top_dir}/javascripts/apps/require-config.js")
+  script(type='text/javascript',data-main='/#{top_dir}/javascripts/apps/FacultyPage',src='/#{top_dir}/javascripts/vendor/require.js')
 
 block templates
   include users/info.jade

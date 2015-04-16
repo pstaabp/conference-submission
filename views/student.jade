@@ -1,15 +1,15 @@
 extends layout
 
 block script
-  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js").
+  script(type="text/javascript",src="/#{top_dir}/javascripts/apps/require-config.js").
   script(type="text/javascript").
-    require.config = { "/conference-submission/javascripts/apps/StudentPage.js": {
+    require.config = { "/#{top_dir}/javascripts/apps/StudentPage.js": {
       user: !{JSON.stringify(user)},
       proposals: !{JSON.stringify(proposals)}
       }
     };
 
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/StudentPage.js',src='/conference-submission/javascripts/bower_components/requirejs/require.js').
+  script(type='text/javascript',data-main='/#{top_dir}/javascripts/apps/StudentPage.js',src='/#{top_dir}/javascripts/bower_components/requirejs/require.js').
 
 
 block templates

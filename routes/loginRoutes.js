@@ -119,7 +119,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		LDAPcheckPassword("fscad\\"+req.body['user[falconkey]'],req.body['user[password]'],function(err2,res2){
 		    console.log("in callback");
 		    if(err2){ // the password was incorrect
-		 		res.render('login.jade',{user: {falconkey: req.body['user[password]']}, msg: "Your username and password are not correct. Please try again." })
+		 		res.render('login.jade',{user: {falconkey: req.body['user[password]']},top_dir: ldap_settings.settings.top_dir,  
+		 			msg: "Your username and password are not correct. Please try again." })
 		    } else { // password was correct
 			User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
 			    console.log(_user);
@@ -135,7 +136,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 					    if(result){
 						console.log(result);
 						if(_.isEqual(result,{})){ // can't find the user
-						    res.render('login.jade',{user: {falconkey: req.body['user[falconkey]']}, msg: "Your username and password are not correct. Please try again." }); 
+						    res.render('login.jade',{top_dir: ldap_settings.settings.top_dir,user: {falconkey: req.body['user[falconkey]']}, 
+						    	msg: "Your username and password are not correct. Please try again." }); 
 						}
 						var _role = (result.other.match(/^Student/))? ["student"] : [];
 						user = new User({email: result.email, first_name: result.first_name, 
@@ -144,7 +146,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 							if (error)
 							    console.log(error);
 							if(_user)
-							    //saveCookieAndRoute(_user);
 								req.session.user_id = _user._id;
 								routeUser(res,_user);	
 						    });
@@ -158,8 +159,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	} else { // don't use ldap (for testing only)
 
 		console.log("we didn't use LDAP ");
-		console.log(req.body);
-		console.log(req.body['user[falconkey]']);
 		User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
 				console.log(_user);
 			    if(_user){
@@ -221,7 +220,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     app.get('/' + ldap_settings.settings.top_dir + '/welcome',loadUser, function(req,res){
 		//console.log(req.flash("other"));
 		console.log(req.currentUser);
-		res.render('welcome.jade',{user: req.currentUser});
+		res.render('welcome.jade',{user: req.currentUser,top_dir: ldap_settings.settings.top_dir});
     });
 
     // The following is used to help finalize the role of the faculty/staff member.
