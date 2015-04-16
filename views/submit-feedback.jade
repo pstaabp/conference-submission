@@ -29,7 +29,7 @@ block templates
     li
       a(href!="#tab-num-<%=prop_num%>",data-toggle="tab") <%=author%>
 
-  script#feedback-template(type='text/template')
+  script#poster-feedback-template(type='text/template')
     table.table.table-bordered
       tr
         td(colspan="2").col-sm-10
@@ -80,4 +80,57 @@ block templates
       tr
         td(colspan="3").col-sm-12
           button.btn.btn-default.save-feedback-button Save Feedback
-        
+
+
+
+  script#oral-feedback-template(type='text/template')
+    table.table.table-bordered
+      tr
+        td(colspan="2").col-sm-10
+          | Visual design: Professional appearance of presentation, appropriate amount of text, legible text, 
+          | appropriate use of figures, logical presentation of project
+        td.col-sm-2
+          select.visual-design
+      tr
+        td(colspan="2").col-sm-10
+          | Verbal Presentation: Description of project logical and consise, audible and clear
+          | presentation, liveliness and professional style
+        td.col-sm-2
+          select.verbal-presentation
+      tr
+        td(colspan="2").col-sm-10 Organization And Logic: Problem/objective clearly stated, methods and results explained.
+        td.col-sm-2
+          select.organization-and-logic
+      tr
+        td(colspan="2").col-sm-10 Appropriate Knowledge of Field: Demonstrated understanding of project and broader context
+        td.col-sm-2
+          select.knowledge
+      tr
+        td(colspan="2").col-sm-10 Clear Explanations/ability to answer questions
+        td.col-sm-2
+          select.explanations
+      tr
+        td(colspan="2").col-sm-10 
+          | Overall Impression: Impression compared to other oral presentations judged/additional comments useful for judging
+        td.col-sm-2
+          select.overall
+      tr
+        td.col-sm-2
+        td.col-sm-8(style="text-align: right") Total Score
+        td.total-score.col-sm-2
+      tr
+        td(colspan="3").col-sm-12
+          em
+            | The two fields below are free response sections.  These comments will go to the students after the conference to give them 
+            | feedback and improve their presentation skills.  They will not be used in the scoring to the contest.  
+      tr
+        td.col-sm-2 Strength of Poster/Presentation
+        td(colspan="2").col-sm-10
+          textarea.strength(rows="6")
+      tr
+        td.col-sm-2 Suggestions for Improvement
+        td(colspan="2").col-sm-10
+          textarea.improvement(rows="6")
+      tr
+        td(colspan="3").col-sm-12
+          button.btn.btn-default.save-feedback-button Save Feedback

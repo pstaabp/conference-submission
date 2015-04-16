@@ -155,9 +155,11 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             judges = _(judges).chain().flatten().uniq().compact().value();
             _(judges).each(function(id){
                 var judge = self.judges.get(id);
-                var obj = {removable: true, cid: judge.cid, sessionName: self.sessionNames[sessionNumber]};
-                _.extend(obj,judge.attributes);
-                ul.append(self.judgeTemplate(obj));
+                if(judge){
+                    var obj = {removable: true, cid: judge.cid, sessionName: self.sessionNames[sessionNumber]};
+                    _.extend(obj,judge.attributes);
+                    ul.append(self.judgeTemplate(obj));
+                }
             });
         },
         listAllJudges: function(){

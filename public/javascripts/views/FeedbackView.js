@@ -12,7 +12,11 @@ var FeedbackView = Backbone.View.extend({
             this.numberRange =  _(_.range(11)).map(function(v) { return {label: ""+v, value: v}});
         },
         render: function(){
-            this.$el.html($("#feedback-template").html());
+            switch(this.proposal.get("type")){
+                case "Poster Presentation": this.$el.html($("#poster-feedback-template").html()); break;
+                case "Oral Presentation":   this.$el.html($("#oral-feedback-template").html()); break;
+            }
+
             this.$el.attr("id","tab-num-"+this.tab_num);
             this.stickit();
             return this;

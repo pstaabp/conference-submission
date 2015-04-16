@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 //app.set('port',8080);
 //mongoose.set('debug',true);
-app.set('db-uri', 'mongodb://localhost:27017/conf-2015');
+app.set('db-uri', 'mongodb://localhost:27017/' + ldap_settings.settings.db_name);
 app.locals.pretty = true;
 app.locals.moment = require('moment');
 app.locals._ = require('underscore');
