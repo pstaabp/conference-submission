@@ -33,7 +33,7 @@ define(['backbone','underscore','apps/settings'], function(Backbone,_,settings){
 	    }
         },
         url : function() {
-            return '/' + settings.top_dir + 'users/' + this.get("_id");
+            return '/' + settings.top_dir + '/users/' + this.get("_id");
         },
         idAttribute: "_id"
     });

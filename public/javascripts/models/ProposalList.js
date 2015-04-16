@@ -26,9 +26,9 @@ define(['backbone', 'models/Proposal','apps/settings'], function(Backbone,Propos
         },
         url: function(){
             if(this.user_id){
-                return '/' + settings.top_dir + 'users/' + this.user_id + '/proposals';    
+                return '/' + settings.top_dir + '/users/' + this.user_id + '/proposals';    
             } else {
-                return '/' + settings.top_dir + 'proposals';
+                return '/' + settings.top_dir + '/proposals';
             }
             
         }

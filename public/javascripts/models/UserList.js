@@ -8,7 +8,7 @@ define(['backbone','models/User','apps/settings'], function(Backbone, User,setti
 
     var UserList = Backbone.Collection.extend({
         model: User,
-        url: '/' + settings.top_dir + 'users'
+        url: '/' + settings.top_dir + '/users'
 
     });
 

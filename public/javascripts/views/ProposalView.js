@@ -108,7 +108,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
 	    var FSUemailRE = /^(\w+)@fitchburgstate.edu$/;
 	    var match = FSUemailRE.exec(this.model.get("sponsor_email"));
 	    if(match){
-		$.ajax({url: '/' + settings.top_dir + 'users/'+match[1]+"/check",
+		$.ajax({url: '/' + settings.top_dir + '/users/'+match[1]+"/check",
                     type: "GET", success: this.verifySponsorEmail});
 	    } else {
 		this.verifySponsorEmail({});
@@ -154,7 +154,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
 	    var match = emailRE.exec(this.addAuthor.get("falconkey"))
 	    var falconkey = match ? match[1]: this.addAuthor.get("falconkey");
 	    if(falconkey != "") {
-		$.ajax({url: "/' + settings.top_dir + 'users/"+falconkey+"/check",
+		$.ajax({url: "/' + settings.top_dir + '/users/"+falconkey+"/check",
 			type: "GET", success: this.updateAuthorList});
 	    }
         },

@@ -11,7 +11,7 @@ define(['backbone', 'underscore','./Judge','apps/settings'], function(Backbone, 
         initialize:function () {
     
         },
-        url: '/' + settings.top_dir + 'judges',
+        url: '/' + settings.top_dir + '/judges',
         /*parse: function (response){
             console.log(response);
             return response;

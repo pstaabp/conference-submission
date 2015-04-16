@@ -30,7 +30,7 @@ html
               ul.dropdown-menu
                 if user && user.role
                   each val in user.role
-                    - var link = "/#{top_dir}/" + val
+                    - var link = '/' + top_dir + '/' + val
                     li
                       a(href=link)= val
                 li
