@@ -33,7 +33,7 @@ define(['backbone'], function(Backbone){
         idAttribute: "_id",
         numericalAttributes: ["visual_design","verbal_presentation","organization_and_logic","knowledge","explanations","overall"],
         score: function () { // total all the numerical Attributes
-            return _(this.pick(this.numericalAttributes)).chain().values().reduce(function(memo, num){ return memo + num; }).value();
+            return _(this.pick(this.numericalAttributes)).chain().values().reduce(function(memo, num){ return parseInt(memo) + parseInt(num); }).value();
         }
     });
 

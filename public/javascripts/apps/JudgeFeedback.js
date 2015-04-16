@@ -26,7 +26,7 @@ function(module,$, Backbone, _,WebPage,ProposalList,FeedbackView) {
 			});
 
 			this.$(".feedback-tabs a:first").tab("show");
-		}
+		},
 
 	});
 

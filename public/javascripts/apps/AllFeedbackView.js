@@ -74,9 +74,9 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 },
                 stickit_options: {
                     update: function($el, val, model, options) {
-			var numJudges = model.get("feedback").length; 
-			var score = model._extra.score/numJudges/5;
-			var scoreAsString = parseInt(100*score)/100;
+			            var numJudges = model.get("feedback").length; 
+			            var score = model._extra.score/numJudges*10/6;
+			            var scoreAsString = parseInt(100*score)/100;
                         $el.text(scoreAsString + " (" + numJudges + ")");
                     }
                 }}
@@ -145,6 +145,9 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.proposal = options.proposal;
             this.invBindings = _.invert(_.extend(_.omit(this.bindings,".judge"),{".judge": "judge_id"}));
             this.tab_no = options.tab_no; 
+            this.model.on("change",function(m){
+                self.$(".total-score").text(self.model.score());
+            })
         },
         render: function (){
             var self = this;
@@ -152,6 +155,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.$el.html($("#feedback-edit-template").html());
             Backbone.Validation.bind(this);
             this.stickit();
+            this.$(".total-score").text(this.model.score());
             return this;
         },
         bindings: {
