@@ -217,7 +217,7 @@ var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
 module.exports = app;
 
-var server = app.listen(8080, function () {
+var server = app.listen(ldap_settings.settings.app_port, function () {
 
   var host = server.address().address
   var port = server.address().port
