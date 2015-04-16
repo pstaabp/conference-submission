@@ -21,7 +21,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 			    });
 			});
 		    } else {
-			res.redirect("/' + ldap_settings.settings.top_dir + '/"+_user.role);
+			res.redirect('/' + ldap_settings.settings.top_dir + '/'+_user.role);
 		    }
 		});
     });
@@ -66,7 +66,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   	// The main page for sponsors
 
   	app.get('/' + ldap_settings.settings.top_dir + '/sponsor',loadUser,function(req,res){
-  		console.log("in /' + ldap_settings.settings.top_dir + '/sponsor");
+  		console.log('in /' + ldap_settings.settings.top_dir + '/sponsor');
   		console.log(req.currentUser);
   		Proposal.find({sponsor_email: req.currentUser.email},function(err,_proposals){
   			console.log(_proposals);
@@ -87,7 +87,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		var roles = _(req.currentUser.role).union(_.keys(req.body));
   		User.findByIdAndUpdate(req.currentUser._id,{role: roles}, function(err,user){
   			console.log(user);
- 			res.redirect("/' + ldap_settings.settings.top_dir + '/"+_.last(roles));
+ 			res.redirect('/' + ldap_settings.settings.top_dir + '/'+_.last(roles));
   		})
   	})
 

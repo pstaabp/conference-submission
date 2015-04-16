@@ -101,7 +101,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 
     app.post('/' + ldap_settings.settings.top_dir + '/login',function(req,res){
 
-    	console.log("in POST /' + ldap_settings.settings.top_dir + '/login")
+    	console.log('in POST /' + ldap_settings.settings.top_dir + '/login')
 
 		function saveCookieAndRoute(user){
 		    req.session.user_id = user._id;	

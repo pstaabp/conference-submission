@@ -62,42 +62,6 @@ var sess = {
   cookie: {}
 };
 
-
-// app.configure('development', function() {
-//   mongoose.set('debug',true);
-//   app.set('db-uri', 'mongodb://localhost:27017/conf-2015');
-//   app.use(express.errorHandler({ dumpExceptions: true }));
-//   app.locals.pretty = true;
-//   app.locals.moment = require('moment');
-//   app.locals._ = require('underscore');
-// }); 
-
-/*app.configure('production', function() {
-  mongoose.set('debug',true);
-  app.set('db-uri', 'mongodb://localhost:27017/conf2014');
-  app.use(express.errorHandler({ dumpExceptions: true }));
-  app.locals.pretty = true;
-  app.locals.moment = require('moment');
-  app.locals._ = require('underscore');
-}); */ 
-
-
-// app.configure(function(){
-//   app.set('port', process.env.PORT || 8080);
-
-//   app.use(express.favicon());
-//   app.use(express.bodyParser());
-//   app.use(express.cookieParser());
-//   app.use(connectTimeout({ time: 10000 }));
-//   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
-//   app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
-//   app.use(express.methodOverride());
-//   app.use(flash());
-//   app.use("/' + ldap_settings.settings.top_dir + '/stylesheets",express.static(__dirname + "/public/stylesheets"));
-//   app.use("/' + ldap_settings.settings.top_dir + '/javascripts",express.static(__dirname + "/public/javascripts"));
-//   app.use("/' + ldap_settings.settings.top_dir + '/img",express.static(__dirname + "/public/images"));
-// });
-
 models.defineModels(mongoose, function() {
   app.Proposal = Proposal = mongoose.model('Proposal');
   app.User = User = mongoose.model('User');
@@ -132,7 +96,7 @@ function loadUser(req, res, next) {
     authenticateFromLoginToken(req, res, next);
   } else {
     console.log("[loadUser]  No session data");
-    res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
+    res.redirect('/' + ldap_settings.settings.top_dir + '/login',{user: {}, msg: ""});
   }
 }
 
