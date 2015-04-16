@@ -192,7 +192,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     });
  
     app.get('/' + ldap_settings.settings.top_dir + '/login', function(req, res) {
-  		res.render('login.jade',{user: {}, msg: ""});
+  		res.render('login.jade',{user: {}, msg: "", top_dir: ldap_settings.settings.top_dir});
     });
 
     app.get('/' + ldap_settings.settings.top_dir + '/login-check',function(req,res){

@@ -6,7 +6,7 @@ block container
     | Use your falconkey and password to login onto to the website. 
   if msg  
     .alert.alert-danger #{msg}
-  form.users#login(method='post', action='/conference-submission/login')
+  form.users#login(method='post', action='/#{top_dir}/login')
     .form-group
       label Falconkey
         input.form-control(type='text',name='user[falconkey]', value=user.falconkey || '')
