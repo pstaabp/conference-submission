@@ -68,10 +68,10 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
   	app.get('/' + ldap_settings.settings.top_dir + '/sponsor',loadUser,function(req,res){
   		console.log('in /' + ldap_settings.settings.top_dir + '/sponsor');
-  		console.log(req.currentUser);
   		Proposal.find({sponsor_email: req.currentUser.email},function(err,_proposals){
-  			console.log(_proposals);
-  			res.render('sponsor.jade',{user: req.currentUser, proposals: _proposals,top_dir: ldap_settings.settings.top_dir});
+  			console.log("rendering sponsor page.")
+  			res.render('sponsor.jade',{user: req.currentUser, proposals: _proposals, top_dir: ldap_settings.settings.top_dir});
+  			console.log("sponsor page rendered.")
   		});
   	});
 

@@ -51,7 +51,7 @@ app.use('/' + ldap_settings.settings.top_dir + '/javascripts',express.static(__d
 app.use('/' + ldap_settings.settings.top_dir + '/img',express.static(__dirname + "/public/images"));
 
 // change this to either development or production
-app.set('env','production');
+app.set('env','development');
 
 console.log(ldap_settings);
 
@@ -98,6 +98,7 @@ function loadUser(req, res, next) {
     authenticateFromLoginToken(req, res, next);
   } else {
     console.log("[loadUser]  No session data");
+    console.log(ldap_settings.settings.top_dir)
     res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
   }
 }
@@ -141,6 +142,8 @@ mongoose.connection.on('error', function(err){console.log("err: " + err)});
 
 // error handlers
 
+console.log(app.get("env"))
+
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -167,13 +170,6 @@ if (app.get('env') === 'development') {
   });
 }
 app.use(session(sess));
-
-// testing the session data
-
-app.use(function (req, res, next) {
-  console.log("testing");
-  next();
-});
 
 
 var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);

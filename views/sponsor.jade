@@ -1,7 +1,7 @@
 extends layout
 
 block script
-  script(type="text/javascript",src="/#{top_dir}/javascripts/apps/require-config.js").
+  script(type="text/javascript",src="/#{top_dir}/javascripts/apps/require-config.js")
   script(type="text/javascript").
     require.config = { "/#{top_dir}/javascripts/apps/SponsorPage.js": {
       user: !{JSON.stringify(user)},
