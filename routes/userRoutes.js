@@ -157,18 +157,19 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 
 
 	var oralSessions=[
-		{session: "0", location: "CTL  (9am-10am)"},
-		{session: "1", location: "Hamm. G01 (9am-10am)"},
-		{session: "2", location: "Hamm. G01B (9am-10am)"},
-		{session: "3", location: "Hamm. 314 (9am-10am)"},
-		{session: "4", location: "Hamm. S08 (9am-10am)"},
-		{session: "5", location: "Hamm. G19 (9am-10:15am)"},
-		{session: "6", location: "CTL  (11am-noon)"},
-		{session: "7", location: "Hamm. G01 (11am-noon)"},
-		{session: "8", location: "Hamm. G01B (11am-noon)"},
-		{session: "9", location: "Hamm. 314 (11am-noon)"},
-		{session: "10", location: "Hamm. S08 (11am-noon)"},
-		{session: "11", location: "Hamm. G19 (11am-noon)"}];
+		{session: "0", location: "Hamm. G01  (9am-10am)"},
+		{session: "1", location: "Hamm. G01B (9am-10am)"},
+		{session: "2", location: "Hamm. G19 (9am-10am)"},
+		//{session: "3", location: "Hamm. 314 (9am-10am)"},
+		//{session: "4", location: "Hamm. S08 (9am-10am)"},
+		//{session: "5", location: "Hamm. G19 (9am-10:15am)"},
+		{session: "6", location: "Hamm. G01  (11am-noon)"},
+		{session: "7", location: "Hamm. G01B (11am-noon)"},
+		{session: "8", location: "Hamm. G19 (11am-noon)"},
+		//{session: "9", location: "Hamm. 314 (11am-noon)"},
+		//{session: "10", location: "Hamm. S08 (11am-noon)"},
+		//{session: "11", location: "Hamm. G19 (11am-noon)"}
+];
 
 	var oralRE = /OP-(\d+)-(\d+)/;
 
