@@ -8,7 +8,7 @@ var express = require('express')
   , flash = require('connect-flash')
   , jade = require('jade')
   , session = require('express-session')
-  , _und = require('underscore')
+  , _ = require('underscore')
   , http = require('http')
   , path = require('path')
   , connect = require('connect')
@@ -46,12 +46,14 @@ app.locals.pretty = true;
 app.locals.moment = require('moment');
 app.locals._ = require('underscore');
 app.set('views', __dirname + '/views');
-app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
-app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
-app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
+app.use('/' + ldap_settings.settings.top_dir + '/stylesheets',express.static(__dirname + "/public/stylesheets"));
+app.use('/' + ldap_settings.settings.top_dir + '/javascripts',express.static(__dirname + "/public/javascripts"));
+app.use('/' + ldap_settings.settings.top_dir + '/img',express.static(__dirname + "/public/images"));
 
 // change this to either development or production
-app.set('env','production');
+app.set('env','development');
+
+console.log(ldap_settings);
 
 // set up the session variables
 
@@ -61,42 +63,6 @@ var sess = {
   saveUninitialized: true,
   cookie: {}
 };
-
-
-// app.configure('development', function() {
-//   mongoose.set('debug',true);
-//   app.set('db-uri', 'mongodb://localhost:27017/conf-2015');
-//   app.use(express.errorHandler({ dumpExceptions: true }));
-//   app.locals.pretty = true;
-//   app.locals.moment = require('moment');
-//   app.locals._ = require('underscore');
-// }); 
-
-/*app.configure('production', function() {
-  mongoose.set('debug',true);
-  app.set('db-uri', 'mongodb://localhost:27017/conf2014');
-  app.use(express.errorHandler({ dumpExceptions: true }));
-  app.locals.pretty = true;
-  app.locals.moment = require('moment');
-  app.locals._ = require('underscore');
-}); */ 
-
-
-// app.configure(function(){
-//   app.set('port', process.env.PORT || 8080);
-
-//   app.use(express.favicon());
-//   app.use(express.bodyParser());
-//   app.use(express.cookieParser());
-//   app.use(connectTimeout({ time: 10000 }));
-//   app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'topsecret' }));
-//   app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
-//   app.use(express.methodOverride());
-//   app.use(flash());
-//   app.use("/conference-submission/stylesheets",express.static(__dirname + "/public/stylesheets"));
-//   app.use("/conference-submission/javascripts",express.static(__dirname + "/public/javascripts"));
-//   app.use("/conference-submission/img",express.static(__dirname + "/public/images"));
-// });
 
 models.defineModels(mongoose, function() {
   app.Proposal = Proposal = mongoose.model('Proposal');
@@ -115,7 +81,12 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 
 
 function routeUser(res,user){
-  res.redirect("/conference-submission/" + (typeof(user.role[0])==="undefined"? "welcome": user.role[0]));
+  if (_(user.role).contains("judge")){
+    res.redirect('/' + ldap_settings.settings.top_dir + '/judge');
+  } else {
+    res.redirect('/' + ldap_settings.settings.top_dir + '/' + (typeof(user.role[0])==="undefined"? "welcome": user.role[0]));  
+  }
+  
 }
 
 function loadUser(req, res, next) {
@@ -125,14 +96,15 @@ function loadUser(req, res, next) {
         req.currentUser = user;
         next();
       } else {
-        res.redirect('/conference-submission/login',{user: {}, msg: ""});
+        res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
       }
     });
   } else if (req.cookies.logintoken) {
     authenticateFromLoginToken(req, res, next);
   } else {
     console.log("[loadUser]  No session data");
-    res.redirect({user: {}, msg: ""},'/conference-submission/login');
+    console.log(ldap_settings.settings.top_dir)
+    res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
   }
 }
 
@@ -144,7 +116,7 @@ function authenticateFromLoginToken(req, res, next) {
                        token: cookie.token }, (function(err, token) {
 
     if (!token) {
-      res.redirect('/conference-submission/login');
+      res.redirect('/' + ldap_settings.settings.top_dir + '/login');
       return;
     }
 
@@ -161,7 +133,7 @@ function authenticateFromLoginToken(req, res, next) {
           next();
         });
       } else {
-        res.redirect('/conference-submission/login');
+        res.redirect('/' + ldap_settings.settings.top_dir + '/login');
       }
     });
   }));
@@ -174,6 +146,8 @@ mongoose.connection.on('error', function(err){console.log("err: " + err)});
 
 
 // error handlers
+
+console.log(app.get("env"))
 
 // development error handler
 // will print stacktrace
@@ -202,13 +176,6 @@ if (app.get('env') === 'development') {
 }
 app.use(session(sess));
 
-// testing the session data
-
-app.use(function (req, res, next) {
-  console.log("testing");
-  next();
-});
-
 
 var loginRoutes = new LoginRoutes(app,User,routeUser,LoginToken,loadUser);
 var userRoutes = new UserRoutes(app,loadUser,User,Proposal,Judge);
@@ -217,7 +184,7 @@ var proposalRoutes = new ProposalRoutes(app,loadUser,User,Proposal);
 
 module.exports = app;
 
-var server = app.listen(8080, function () {
+var server = app.listen(ldap_settings.settings.app_port, function () {
 
   var host = server.address().address
   var port = server.address().port

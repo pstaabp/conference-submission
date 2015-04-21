@@ -1,12 +1,12 @@
 extends ../layout
 
 block script
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/LoginPage',src='/conference-submission/javascripts/vendor/require.js')
+  script(type='text/javascript',data-main='/#{top_dir}/javascripts/apps/LoginPage',src='/#{top_dir}/javascripts/vendor/require.js')
 
 block container
   h2 Reset your Password
   p
-    a.button(href='/conference-submission/users/new') Create an account &rarr;
+    a.button(href='/#{top_dir}/users/new') Create an account &rarr;
   p Enter your email below and you will receive an email to reset your password. 
   table
     tr
@@ -16,7 +16,7 @@ block container
         input#email_reset(name="email_reset")
       td
         button#reset-password.btn Reset my Password
-  form.users#reset-form(method='post', action='/conference-submission/sessions/password-sent')
+  form.users#reset-form(method='post', action='/#{top_dir}/sessions/password-sent')
     input#email(name="email",type='hidden')
 block templates
   script#help-text(type='text/template')

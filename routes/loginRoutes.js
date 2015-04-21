@@ -99,9 +99,9 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	*  The login routes 
 	*/
 
-    app.post('/conference-submission/login',function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/login',function(req,res){
 
-    	console.log("in POST /conference-submission/login")
+    	console.log('in POST /' + ldap_settings.settings.top_dir + '/login')
 
 		function saveCookieAndRoute(user){
 		    req.session.user_id = user._id;	
@@ -119,7 +119,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		LDAPcheckPassword("fscad\\"+req.body['user[falconkey]'],req.body['user[password]'],function(err2,res2){
 		    console.log("in callback");
 		    if(err2){ // the password was incorrect
-		 		res.render('login.jade',{user: {falconkey: req.body['user[password]']}, msg: "Your username and password are not correct. Please try again." })
+		 		res.render('login.jade',{user: {falconkey: req.body['user[password]']},top_dir: ldap_settings.settings.top_dir,  
+		 			msg: "Your username and password are not correct. Please try again." })
 		    } else { // password was correct
 			User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
 			    console.log(_user);
@@ -135,7 +136,8 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 					    if(result){
 						console.log(result);
 						if(_.isEqual(result,{})){ // can't find the user
-						    res.render('login.jade',{user: {falconkey: req.body['user[falconkey]']}, msg: "Your username and password are not correct. Please try again." }); 
+						    res.render('login.jade',{top_dir: ldap_settings.settings.top_dir,user: {falconkey: req.body['user[falconkey]']}, 
+						    	msg: "Your username and password are not correct. Please try again." }); 
 						}
 						var _role = (result.other.match(/^Student/))? ["student"] : [];
 						user = new User({email: result.email, first_name: result.first_name, 
@@ -144,7 +146,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 							if (error)
 							    console.log(error);
 							if(_user)
-							    //saveCookieAndRoute(_user);
 								req.session.user_id = _user._id;
 								routeUser(res,_user);	
 						    });
@@ -158,8 +159,6 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	} else { // don't use ldap (for testing only)
 
 		console.log("we didn't use LDAP ");
-		console.log(req.body);
-		console.log(req.body['user[falconkey]']);
 		User.findOne({falconkey: req.body['user[falconkey]']},function(err2,_user){
 				console.log(_user);
 			    if(_user){
@@ -191,11 +190,11 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 		}
     });
  
-    app.get('/conference-submission/login', function(req, res) {
-  		res.render('login.jade',{user: {}, msg: ""});
+    app.get('/' + ldap_settings.settings.top_dir + '/login', function(req, res) {
+  		res.render('login.jade',{user: {}, msg: "", top_dir: ldap_settings.settings.top_dir});
     });
 
-    app.get('/conference-submission/login-check',function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/login-check',function(req,res){
     	console.log("in GET login-check");
 		console.log(req.body.user);
 		//console.log(client);
@@ -206,30 +205,30 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
     });
 
 
-    app.post('/conference-submission/logout',loadUser,function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/logout',loadUser,function(req,res){
 	if (req.session) {
 	    LoginToken.remove({ email: req.currentUser.email }, function() {});
 	    res.clearCookie('logintoken');
 	    req.session.destroy(function() {});
 	}
-	res.redirect('/conference-submission/login');
+	res.redirect('/' + ldap_settings.settings.top_dir + '/login');
     });
 
 
     // The following is a route for student or faculty that is at the website for the first time. 
 
-    app.get('/conference-submission/welcome',loadUser, function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/welcome',loadUser, function(req,res){
 		//console.log(req.flash("other"));
 		console.log(req.currentUser);
-		res.render('welcome.jade',{user: req.currentUser});
+		res.render('welcome.jade',{user: req.currentUser,top_dir: ldap_settings.settings.top_dir});
     });
 
     // The following is used to help finalize the role of the faculty/staff member.
 
-    app.post('/conference-submission/user',loadUser,function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/user',loadUser,function(req,res){
 		// update the User in the DB
 		User.update({falconkey: req.currentUser.falconkey},{role: _.keys(req.body)},function(err,numAffected, raw){
-		    res.redirect('/conference-submission/'+_(req.body).keys()[0]);
+		    res.redirect('/' + ldap_settings.settings.top_dir + '/'+_(req.body).keys()[0]);
 		});		
     });
 
@@ -242,7 +241,7 @@ module.exports = function loginRoutes(app,User,routeUser,LoginToken,loadUser,bod
 	 *
 	 */
 
-    app.get("/conference-submission/users/:falconkey/check",function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/users/:falconkey/check',function(req,res){
 	//console.log(req.param("falconkey"));
 		console.log(ldap_settings.settings.use_ldap);
 		if(ldap_settings.settings.use_ldap){

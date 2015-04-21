@@ -1,8 +1,8 @@
 extends layout
 
 block script
-  script(type="text/javascript",src="/conference-submission/javascripts/apps/require-config.js")
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/Basic.js',src='/conference-submission/javascripts/bower_components/requirejs/require.js').
+  script(type="text/javascript",src="/#{top_dir}/javascripts/apps/require-config.js")
+  script(type='text/javascript',data-main='/#{top_dir}/javascripts/apps/Basic.js',src='/#{top_dir}/javascripts/bower_components/requirejs/require.js').
 
 
 block container
@@ -10,7 +10,7 @@ block container
   p
     | You have chosen to add a role to this year's Undergraduate Conference. Select the addiitonal role 
     | below. 
-  form(method='post', action='/conference-submission/add-role')
+  form(method='post', action='/#{top_dir}/add-role')
     .form-horiztonal
       .form-group
         label.checkbox-inline

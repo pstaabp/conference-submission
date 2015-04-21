@@ -1,7 +1,7 @@
 extends ../layout
 
 block script
-  script(type='text/javascript',data-main='/conference-submission/javascripts/apps/NewUserPage',src='/conference-submission/javascripts/vendor/require.js')
+  script(type='text/javascript',data-main='/#{top_dir}/javascripts/apps/NewUserPage',src='/#{top_dir}/javascripts/vendor/require.js')
 
 
 block templates
@@ -33,8 +33,8 @@ block templates
             button.btn(id='submit') Submit
         tr
           td
-            a(href="/conference-submission/forgot") I forgot my password
-    form(id='newUser',action='/conference-submission/users/add',method='post')
+            a(href="/#{top_dir}/forgot") I forgot my password
+    form(id='newUser',action='/#{top_dir}/users/add',method='post')
       input(type='hidden',name='email');
       input(type='hidden',name='password')
       input(type='hidden',name='role');

@@ -1,5 +1,5 @@
-define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Author','models/AuthorList', 'stickit','bootstrap','backbone-validation'], 
-    function(Backbone, _,FeedbackView,common,Author,AuthorList){
+define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/common','models/Author','models/AuthorList', 'stickit','bootstrap','backbone-validation'], 
+    function(Backbone, _,settings,FeedbackView,common,Author,AuthorList){
     /**
      *
      * This defines a ProposalView, which shows a single proposal
@@ -108,7 +108,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
 	    var FSUemailRE = /^(\w+)@fitchburgstate.edu$/;
 	    var match = FSUemailRE.exec(this.model.get("sponsor_email"));
 	    if(match){
-		$.ajax({url: "/conference-submission/users/"+match[1]+"/check",
+		$.ajax({url: '/' + settings.top_dir + '/users/'+match[1]+"/check",
                     type: "GET", success: this.verifySponsorEmail});
 	    } else {
 		this.verifySponsorEmail({});
@@ -154,7 +154,7 @@ define(['backbone', 'underscore','views/FeedbackView','apps/common','models/Auth
 	    var match = emailRE.exec(this.addAuthor.get("falconkey"))
 	    var falconkey = match ? match[1]: this.addAuthor.get("falconkey");
 	    if(falconkey != "") {
-		$.ajax({url: "/conference-submission/users/"+falconkey+"/check",
+		$.ajax({url: "/' + settings.top_dir + '/users/"+falconkey+"/check",
 			type: "GET", success: this.updateAuthorList});
 	    }
         },

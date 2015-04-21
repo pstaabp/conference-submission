@@ -54,7 +54,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 	});
     }
 
-    app.post('/conference-submission/email/test',function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/email/test',function(req,res){
 		var prop = {title: "The Title",sponsor_name: "Peter Staab",sponsor_dept: "Mathematics",
 			    sponsor_email: "pstaab@fitchburgstate.edu", type: "poster", 
 			    other_authors: [],other_equipment: "",content: "This is the proposal"};
@@ -70,21 +70,21 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     });
 
 
-    app.get('/conference-submission/proposals/:proposal_id',function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/proposals/:proposal_id',function(req,res){
 		Proposal.findById(req.param("proposal_id"),function(err,_proposal){
 			console.log(req.is("html"));
 			console.log(req.is());
 			if(req.is("application/json")){
 				res.json(_proposal);
 			} else {
-				res.render('show-proposal.jade',{proposal: _proposal})
+				res.render('show-proposal.jade',{proposal: _proposal,top_dir: ldap_settings.settings.top_dir})
 			    
 			}
 
 		});
     });
 
-    app.delete('/conference-submission/proposals/:proposal_id',loadUser,function(req,res){
+    app.delete('/' + ldap_settings.settings.top_dir + '/proposals/:proposal_id',loadUser,function(req,res){
   		User.findById(req.session.user_id, function(err, admin_user) {
 
   			console.log(admin_user);
@@ -105,7 +105,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
     });
 
-    app.post("/conference-submission/users/:user_id/proposals",loadUser,function(req,res){
+    app.post('/' + ldap_settings.settings.top_dir + '/users/:user_id/proposals',loadUser,function(req,res){
 		var proposal = new Proposal(req.body);
 
 		proposal.save(function (err, prop) {
@@ -134,7 +134,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     	});
     });
 
-    app.put("/conference-submission/proposals/:proposal_id",loadUser,function(req,res){
+    app.put('/' + ldap_settings.settings.top_dir + '/proposals/:proposal_id',loadUser,function(req,res){
 		Proposal.findByIdAndUpdate(req.params.proposal_id,_.omit(req.body, "_id"), function (err, prop) {
 	    	    if (err) {console.log(err);}
 		    
@@ -143,7 +143,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     });
 
 
-    app.put("/conference-submission/users/:user_id/proposals/:proposal_id",loadUser,function(req,res){
+    app.put('/' + ldap_settings.settings.top_dir + '/users/:user_id/proposals/:proposal_id',loadUser,function(req,res){
 	Proposal.findByIdAndUpdate(req.params.proposal_id,_.omit(req.body, "_id"), function (err, prop) {
     	    if (err) {console.log(err);}
 	    
@@ -151,23 +151,21 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 	});
     });
 
-    app.get("/conference-submission/posters",function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/posters',function(req,res){
     	Proposal.find({type: "Poster Presentation"},function(err,_proposals){
     		var props = _(_proposals).sortBy("session");
-    		res.render('posters.jade',{proposals: props});
+    		res.render('posters.jade',{proposals: props,top_dir: ldap_settings.settings.top_dir});
     	});
     });
 
 
-    app.get("/conference-submission/orals",function(req,res){
+    app.get('/' + ldap_settings.settings.top_dir + '/orals',function(req,res){
     	Proposal.find({type: "Oral Presentation"},function(err,_proposals){
-    		res.render('orals.jade',{proposals: _proposals});
+    		res.render('orals.jade',{proposals: _proposals,top_dir: ldap_settings.settings.top_dir});
     	});
     });
 
-    app.get("/conference-submission/schedule",function(req,res){
-
-//  var sessionRE = /OP-(\d+)-(\d+)/
+    app.get('/' + ldap_settings.settings.top_dir + '/schedule',function(req,res){
 
 
   Proposal.find({type: "Oral Presentation"}).exec(function(err,_proposals){
@@ -183,7 +181,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
       }
     }
 
-    res.render('schedule.jade',{proposals: props});
+    res.render('schedule.jade',{proposals: prop,top_dir: ldap_settings.settings.top_dirs});
   });
 
 });
