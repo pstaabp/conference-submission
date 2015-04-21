@@ -8,7 +8,7 @@ var express = require('express')
   , flash = require('connect-flash')
   , jade = require('jade')
   , session = require('express-session')
-  , _und = require('underscore')
+  , _ = require('underscore')
   , http = require('http')
   , path = require('path')
   , connect = require('connect')
@@ -81,7 +81,12 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 
 
 function routeUser(res,user){
-  res.redirect('/' + ldap_settings.settings.top_dir + '/' + (typeof(user.role[0])==="undefined"? "welcome": user.role[0]));
+  if (_(user.role).contains("judge")){
+    res.redirect('/' + ldap_settings.settings.top_dir + '/judge');
+  } else {
+    res.redirect('/' + ldap_settings.settings.top_dir + '/' + (typeof(user.role[0])==="undefined"? "welcome": user.role[0]));  
+  }
+  
 }
 
 function loadUser(req, res, next) {
