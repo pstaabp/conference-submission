@@ -81,6 +81,7 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 
 
 function routeUser(res,user){
+  console.log(user.role);
   if (_(user.role).contains("judge")){
     res.redirect('/' + ldap_settings.settings.top_dir + '/judge');
   } else {

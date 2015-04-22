@@ -3,7 +3,7 @@
   It should be loaded directly before the require.js is loaded in a page.  */
 
 var require = {
-    baseUrl: "/conf-dev/javascripts",
+    baseUrl: "/conference-submission/javascripts",
     paths: {
         "backbone":               "bower_components/backbone/backbone",
         "backbone-validation":    "bower_components/backbone-validation/dist/backbone-validation",

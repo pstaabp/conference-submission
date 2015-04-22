@@ -59,6 +59,8 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	// The main page for student views
 
 	app.get('/' + ldap_settings.settings.top_dir + '/student',loadUser, function(req,res){
+	        console.log("in GET /" + ldap_settings.settings.top_dir + "/student");	
+		console.log(ldap_settings);	
 		Proposal.find({email: req.currentUser.email}, function(err,_proposals){
 		   	res.render('student.jade',{user: req.currentUser, proposals: _proposals,top_dir: ldap_settings.settings.top_dir});			
 		});
