@@ -166,7 +166,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     });
 
     app.get('/' + ldap_settings.settings.top_dir + '/schedule',function(req,res){
-
+        console.log("in GET /"+ldap_settings.settings.top_dir + "/schedule");
 
   Proposal.find({type: "Oral Presentation"}).exec(function(err,_proposals){
     var props = [], row,col,session,theProp;
@@ -180,8 +180,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
         }
       }
     }
-
-    res.render('schedule.jade',{proposals: prop,top_dir: ldap_settings.settings.top_dirs});
+    res.render('schedule.jade',{proposals: props,top_dir: ldap_settings.settings.top_dir});
   });
 
 });
