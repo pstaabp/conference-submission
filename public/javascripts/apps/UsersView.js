@@ -4,6 +4,7 @@ define(['backbone','views/CollectionTableView','models/UserList'], function(Back
             _.bindAll(this, "render");
             this.users = options.users;
             this.proposals = options.proposals;
+			this.judges = options.judges;
             this.rowTemplate = _.template($("#user-row-template").html());
             this.users.on("remove",this.render);
             this.tableSetup();
@@ -88,11 +89,12 @@ define(['backbone','views/CollectionTableView','models/UserList'], function(Back
                                     "submitted by the user");
             if (del){
                 _user.destroy();
-                // also destroy all proposals 
+                // also destroy all proposals and judges
                 _(this.proposals.where({email: _user.get("email")})).each(function(_prop){
-                    _prop.destroy();
-                })
-
+                    _prop.destroy(); });
+			    console.log("deleting a judge");
+		_(this.judges.where({email: _user.get("email")})).each(function(_j){
+			_j.destroy();});
 
             }
         },

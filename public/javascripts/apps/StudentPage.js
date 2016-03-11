@@ -18,6 +18,8 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
                 $("#submit-main-tabs a:last").tab("show");
             }).on("sync",function(_proposal){
                 self.messagePane.addMessage({short: "Proposal Saved.", type: "success"});
+                alert("Your proposal has been submitted.  You and your sponsor will "
+			+ "receive an email about how to proceed.");
             });
             this.user.on({
                 "change": function(_user){

@@ -105,7 +105,7 @@ function loadUser(req, res, next) {
   } else {
     console.log("[loadUser]  No session data");
     console.log(ldap_settings.settings.top_dir)
-    res.redirect({user: {}, msg: ""},'/' + ldap_settings.settings.top_dir + '/login');
+    res.redirect('/' + ldap_settings.settings.top_dir + '/login',{user: {}, msg: ""});
   }
 }
 

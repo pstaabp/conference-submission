@@ -47,7 +47,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   	});
 
   	app.delete('/' + ldap_settings.settings.top_dir + '/users/:user_id',loadUser, function(req,res){
-  		User.remove({_id: req.param("user_id")},function(err,user){
+  		User.remove({_id: req.params("user_id")},function(err,user){
   			if(err){
   				console.log(err);
   			}
@@ -103,7 +103,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 			if(_judge){ // the person has already signed up
 				Proposal.find({feedback: { $elemMatch: { judge_id: _judge._id }}}).exec(function(err2,_proposals){
 					var _user = {judge_id: _judge._id};
-					_(_user).extend(_(req.currentUser).pick("falconkey","first_name","last_name","email"));
+					_(_user).extend(_(req.currentUser).pick("falconkey","first_name","last_name","email","role"));
 					res.render('submit-feedback.jade',{user:_user, proposals: _proposals,top_dir: ldap_settings.settings.top_dir});
 				});	
 			} else {
@@ -134,6 +134,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   
   		var obj = _.omit(_.clone(req.body),"_id");
 		console.log(obj);
+                console.log(req.body);
   		Judge.findByIdAndUpdate(req.params.id,obj, function(err,_judge){
     		if(err) {console.log(err);}
     		res.json(_judge);
@@ -141,7 +142,8 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	});
 
 	app.delete('/' + ldap_settings.settings.top_dir + '/judges/:id',loadUser, function(req,res){
-  		Judge.remove({_id: req.param("id")},function(err,judge){
+		console.log("deleting judge with id: " + req.param("id"));
+  		Judge.remove({_id: req.params("id")},function(err,judge){
   			if(err){
   				console.log(err);
   			}

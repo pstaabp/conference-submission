@@ -31,7 +31,8 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
                 }});
 
             this.views = {
-                usersView : new UsersView({users: this.users, proposals: this.proposals, rowTemplate: "#user-row-template", el: $("#users")}),
+                usersView : new UsersView({users: this.users, proposals: this.proposals, judges: this.judges, 
+				rowTemplate: "#user-row-template", el: $("#users")}),
                 proposalsView : new ProposalsView({users: this.users,proposals: this.proposals, 
                                    judges: this.judges, el: $("#proposals")}),
                 presentationsView: new PresentationsView({parent: this, el: $("#presentations")}),
