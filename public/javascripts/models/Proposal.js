@@ -1,4 +1,4 @@
-define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbone, FeedbackList,AuthorList){
+define(['backbone', 'models/FeedbackList','models/AuthorList','apps/settings'], function(Backbone, FeedbackList,AuthorList,settings){
     var Proposal = Backbone.Model.extend({
         defaults: {
             author: "",  // change this to main_author:  Author   then get rid of email field below. 
@@ -28,6 +28,9 @@ define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbon
             type: {required: true}
         },
         idAttribute: "_id",
+        //url: function(){
+        //    return '/' + settings.top_dir + '/proposals/' + this._id;
+        //},
         initialize: function (opts) {
             var feedback = (opts && opts.feedback) ? opts.feedback : [];
             this.attributes.feedback = new FeedbackList(feedback);

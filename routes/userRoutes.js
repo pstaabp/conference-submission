@@ -47,7 +47,7 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   	});
 
   	app.delete('/' + ldap_settings.settings.top_dir + '/users/:user_id',loadUser, function(req,res){
-  		User.remove({_id: req.params("user_id")},function(err,user){
+  		User.remove({_id: req.param("user_id")},function(err,user){
   			if(err){
   				console.log(err);
   			}
@@ -94,6 +94,8 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
   		})
   	})
 
+	// judges routes
+
 	app.get('/' + ldap_settings.settings.top_dir + '/judge',loadUser,function(req,res){
 		Judge.findOne({email: req.currentUser.email},function(err,_judge){
 			if(err){
@@ -121,8 +123,13 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 		});	
 
 	app.post('/' + ldap_settings.settings.top_dir + '/judges',function(req,res){
-	  	var pres = _(req.body.presentation).keys();
-  		var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.type, presentation: pres});
+		// the following pull out the topics the judge is willing to judge (There must be an easier way. :()
+	    var _topics = _(req.body).chain().keys().map(function(p) { return /presentation\[(.*)\]/.exec(p);})
+				.map(function(p) { if (_.isArray(p)) { return p[1].replace(/\_/g," ");}})
+				.filter(function(p) { return ! _.isUndefined(p);}).value();
+		console.log(_topics);
+
+  		var judge = new Judge({name: req.body.name, email: req.body.email, type: req.body.type, topics: _topics});
   		judge.save(function (err, _judge) {
     		if (err) {console.log(err);}
 
@@ -133,21 +140,22 @@ module.exports = function userRoutes(app,loadUser,User,Proposal,Judge){
 	app.put('/' + ldap_settings.settings.top_dir + '/judges/:id',loadUser,function(req,res){
   
   		var obj = _.omit(_.clone(req.body),"_id");
-		console.log(obj);
-                console.log(req.body);
   		Judge.findByIdAndUpdate(req.params.id,obj, function(err,_judge){
     		if(err) {console.log(err);}
     		res.json(_judge);
   		});
 	});
 
-	app.delete('/' + ldap_settings.settings.top_dir + '/judges/:id',loadUser, function(req,res){
-		console.log("deleting judge with id: " + req.param("id"));
-  		Judge.remove({_id: req.params("id")},function(err,judge){
+	app.delete('/' + ldap_settings.settings.top_dir + '/judges/:judge_id',loadUser, function(req,res){
+		console.log("deleting judge with id: " + req.params.judge_id);
+  		Judge.remove({_id: req.params.judge_id},function(err,judge){
   			if(err){
   				console.log(err);
   			}
   			User.findOne({email: judge.email},function(err2,_user){
+			    console.log("in User.findOne");
+			console.log(_user);
+
   				User.findByIdAndUpdate(_user._id,{role: _(_user.role).difference(["judge"])},function(err3,_user2){
   					if(err3){
   						console.log(err3);

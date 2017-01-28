@@ -58,14 +58,15 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
         render: function (){
         	var self = this;
             var sessionNames = "ABCDEFGHIJKL";
-
-            this.$el.html(_.template($("#schedule-template").html(),{numSessions: 12 }));
+	    	var scheduleTemplate = _.template($("#schedule-template").html());
+	    	var opTemplate = _.template($("#oral-presentation-template").html());
+            this.$el.html(scheduleTemplate({numSessions: 12 }));
             
             var re = /OP-(\d+)-(\d+)/;
 
             this.proposals.each(function(prop){
                 var matches = prop.get("session").match(re);
-                var propHTML = _.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid}));
+                var propHTML = opTemplate(_.extend(prop.attributes, {cid: prop.cid}));
                 if(matches){
                     self.$("ul#col" + matches[1]).append(propHTML);
                 } else {
@@ -118,6 +119,7 @@ var PostersView = Backbone.View.extend({
             _(this.proposals).each(function(proposal,i){
                 if(proposal.get("session")===""){
                     proposal.set({session: "P"+ (i<9?"0"+ (i+1): (i+1))});
+                    proposal.save();
                 }
             	var row = new PresentationRowView({model: proposal, rowTemplate: self.rowTemplate, reorder: true}).render();
             	row.$el.addClass("poster-row");

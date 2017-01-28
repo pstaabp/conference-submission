@@ -11,7 +11,15 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
     var smtpTransport = nodemailer.createTransport("SMTP",{
 	host: "barracuda.fitchburgstate.edu"
     });
-
+    
+    // create reusable transporter object using the default SMTP transport
+    var smtpConfig = {
+        host: 'barracuda.fitchburgstate.edu',
+        //port: 465,
+        //secure: true, // use SSL
+    };
+    var transporter = nodemailer.createTransport(smtpConfig);
+    
 
     function sendEmail(_options, callback)
     {
@@ -31,7 +39,7 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 		    if (err) {
 				console.log(err);
 		    } else {
-			smtpTransport.sendMail({
+			transporter.sendMail({
 			    from: "FSU Undergraduate Conference <ugrad-conf@fitchburgstate.edu>", // sender address
 			    subject: "Submission Received for FSU Conference", // Subject line
 			    to: _options.email,
@@ -41,6 +49,9 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 			    text: text
 			}, function(err, responseStatus) {
 			    if (err) {
+			        console.log("error sending mail");
+			        console.log(err);
+			        console.log(responseStatus);
 					return callback(err);
 				
 			    } else {
@@ -86,9 +97,6 @@ module.exports = function proposalRoutes(app,loadUser,User,Proposal){
 
     app.delete('/' + ldap_settings.settings.top_dir + '/proposals/:proposal_id',loadUser,function(req,res){
   		User.findById(req.session.user_id, function(err, admin_user) {
-
-  			console.log(admin_user);
-
 	    	if(! _(admin_user.role).contains("admin")){ 
 	      		res.json({deleted: false, message: "You do not have crendentials to do this."});
 	      		return;

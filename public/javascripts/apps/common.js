@@ -1,4 +1,4 @@
-define(['backbone','stickit','moment','backbone-validation'], function(Backbone){
+define(['backbone','moment','stickit','backbone-validation'], function(Backbone,moment){
     
     var common = {
         getParameterByName: function(name)
@@ -29,7 +29,7 @@ define(['backbone','stickit','moment','backbone-validation'], function(Backbone)
          {label: "English Studies", value: "English Studies"},
          {label: "Exercise and Sports Science", value: "Exercise and Sports Science"},
          {label: "Game Design", value: "Game Design"},
-         {label: "Geography", value: "Geography"},
+         {label: "Geographic Science and Technology", value: "Geographic Science and Technology"},
          {label: "History", value: "History"},
          {label: "Human Services", value: "Human Services"},
          {label: "Industrial Technology", value: "Industrial Technology"},
@@ -48,7 +48,19 @@ define(['backbone','stickit','moment','backbone-validation'], function(Backbone)
                                 "Business Administration",
                                 "Communications Media", "Computer Science", "Economics, History & Political Science",
                                 "Education","English Studies","Exercise & Sports Science", "Geo/Physical Science",
-                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"]
+                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"],
+         sortIcons: {
+            "string1": "fa fa-sort-alpha-asc",
+            "string-1": "fa fa-sort-alpha-desc",
+            "integer1": "fa fa-sort-numeric-asc",
+            "integer-1": "fa fa-sort-numeric-desc",
+            "number1": "fa fa-sort-numeric-asc",
+            "number-1": "fa fa-sort-numeric-desc",
+            "boolean1": "fa fa-sort-amount-asc",
+            "boolean-1": "fa fa-sort-amount-desc", 
+            "none1": "fa fa-sort-amount-asc",
+            "none-1": "fa fa-sort-amount-desc"
+        }
     }
 
   Backbone.Stickit.addHandler([{selector: "td[contenteditable='true']",events: ['blur']}
@@ -61,7 +73,7 @@ define(['backbone','stickit','moment','backbone-validation'], function(Backbone)
     _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
 
     _.extend(Backbone.Validation.patterns, {
-        gradyear: /^201\d$/,
+        gradyear: /^20[12]\d$/,
     });
 
     _.extend(Backbone.Validation.messages, {

@@ -1,7 +1,7 @@
 define(['backbone', 'models/Proposal','apps/settings'], function(Backbone,Proposal,settings){
     /**
      *
-     * This defines a User
+     * This defines a Proposal List
      * 
      * @type {*}
      */

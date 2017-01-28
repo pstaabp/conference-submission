@@ -8,10 +8,10 @@ function(module,$, Backbone, _,WebPage,ProposalList,FeedbackView) {
 			this.proposals = (module.config())? new ProposalList(module.config().proposals,{parse: true}) : new ProposalList();
             this.user = (module.config())? module.config().user : {}
             
-            this.proposals.on("sync",function(_prop){
-                self.messagePane.addMessage({short:"The proposal for " + _prop.get("author") + 
-					     " was saved.", type: "success"});
-            });
+           // this.proposals.on("sync",function(_prop){
+           //     self.messagePane.addMessage({short:"The proposal for " + _prop.get("author") + 
+		//			     " was saved.", type: "success"});
+          //  });
 
 		},
 		render: function(){

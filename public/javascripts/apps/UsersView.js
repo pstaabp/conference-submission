@@ -31,7 +31,7 @@ define(['backbone','views/CollectionTableView','models/UserList'], function(Back
             _users.on("change",function(user){
                 user.save();
             });
-            this.userTable = new CollectionTableView({columnInfo: this.cols, collection: _users, 
+            this.userTable = new CollectionTableView({columnInfo: this.cols, collection: _users, row_id_field: "email", 
                                 paginator: {page_size: 15, button_class: "btn btn-default", row_class: "btn-group"}});
             this.userTable.render().$el.addClass("table table-bordered table-condensed");
             this.$('.users-table').html(this.userTable.el);
@@ -88,7 +88,8 @@ define(['backbone','views/CollectionTableView','models/UserList'], function(Back
                                     + _user.get("last_name") +"?  This will also delete all proposals "+
                                     "submitted by the user");
             if (del){
-                _user.destroy();
+                var _u = this.users.findWhere({email: _user.get("email")});
+                _u.destroy();
                 // also destroy all proposals and judges
                 _(this.proposals.where({email: _user.get("email")})).each(function(_prop){
                     _prop.destroy(); });

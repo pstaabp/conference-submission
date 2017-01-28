@@ -169,11 +169,21 @@ block container
     .tab-pane#emails
     .tab-pane#feedback
       .row
-        .col-md-4
+        .feedback-choices.col-md-4
+          label.radio-inline.control-label
+            input(type="radio",name="feedview",value="all",checked)
+            | View All Presentations
+          label.radio-inline.control-label
+            input(type="radio",name="feedview",value="orals")
+            | View Oral Presentations
+          label.radio-inline.control-label
+            input(type="radio",name="feedview",value="posters")
+            | View Posters
+        .proposal-search.col-md-4
           .form-horizontal
             label.control-label Search
               input.search-all-feedback(type="search")
-            button.btn.btn-default.clear-search-all-feedback Clear
+            button.btn.btn-default.clear-search-user Clear
         .col-md-4.pull-right
           p.num-proposals
             
@@ -452,29 +462,19 @@ block templates
         td Verbal Presentation
         td
           input.verbal-presentation(tabindex="3")
-        td Clear Explanations
-        td
-          input.explanations(tabindex="6")
-      tr
         td Organization And Logic
         td
           input.organization-and-logic(tabindex="4")
+      tr
         td Overall Impression
         td
           input.overall(tabindex="7")
-      tr
         td Total Score 
         td.total-score
-        td
-        td
       tr
-        td Strength of Poster
+        td General Comments
         td(colspan="3")
-          textarea.strength(tabindex="8")
-      tr
-        td Suggestions for Improvement
-        td(colspan="3")
-          textarea.improvement(tabindex="9")
+          textarea.comments(tabindex="8")
       tr
         td
           button.btn.btn-default.save-feedback-button(tabindex="9") Save Feedback
@@ -517,7 +517,7 @@ block templates
     
   script#judges-schedule-row-template(type="text/template")
     li 
-      <%var popoverContent = "fields: " + presentation.join(", ") %>
+      <%var popoverContent = "fields: " + topics.join(", ") %>
       <%if (removable) { %>
       <%  popoverContent += "<br><span class='btn btn-default remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
       <% if (sessions.length == 0) {%>

@@ -73,3 +73,6 @@ label:hover {cursor: pointer}
         }
 
 tbody .checkbox {margin: 0px 15px 0px 15px;}
+
+.warn-submit {color: red; font-weight: bold}
+

@@ -43,7 +43,7 @@ define(['backbone','apps/common'], function(Backbone,common){
         bindings: {
             ".name": "name",
             ".email": "email", 
-            ".presentation": { observe: "presentation",
+            ".presentation": { observe: "topics",
                 selectOptions: {
                     collection: common.majors
                 }

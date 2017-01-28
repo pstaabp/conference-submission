@@ -25,10 +25,8 @@ function defineModels(mongoose, fn) {
     verbal_presentation: Number,
     organization_and_logic: Number,
     knowledge: Number,
-    explanations: Number,
     overall: Number,
-    strength_comment: String,
-    improvement_comment: String
+    comments: String,
   });
 
   var Person = new Schema({
@@ -107,7 +105,8 @@ function defineModels(mongoose, fn) {
 Judge = new Schema({
   name: String,
   email: String,
-  type: String
+  type: String,
+  topics: Array
 })
 
 

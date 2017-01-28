@@ -10,7 +10,7 @@ define(['backbone', 'underscore'], function(Backbone, _){
             name: "",
             email: "",
             type: "",
-            presentation: [],
+            topics: [],
             sessions: []
         },
         idAttribute: "_id",

@@ -15,8 +15,8 @@ block script
 block container
   h2 Submit Feedback
   p
-    | You have the following proposals to judge. (There is one per tab).  Please fill in all of the details and click the "Submit Feedback"
-    | button at the bottom of this page. 
+    | You have the following proposals to judge. (There is one per tab).  Please fill in all of the details and click the "Save Feedback"
+    | button to ensure your comments are saved.
   #feedback-container
 
 
@@ -30,35 +30,69 @@ block templates
       a(href!="#tab-num-<%=prop_num%>",data-toggle="tab") <%=author%>
 
   script#poster-feedback-template(type='text/template')
-    h3 Poster Feedback
+    table.table
+      tr
+        td.col-sm-03(style="font-size:200%; font-weight: bold;") Poster Presentation Feedback
+        td.col-sm-03
+          button.btn.btn-default.save-feedback-button(data-saved-text="Feedback Saved") Save Feedback
+        td.warn-submit.col-sm-04.invisible  Make sure that you Click the Save Feedback button
+
     table.table.table-bordered
       tr
-        td(colspan="2").col-sm-10
-          | Visual Design: Professional appearance of poster, appropriate amount of text, 
-          | legible text, appropriate use of figures, logical presentation of project
+        td.col-sm-2.header Category
+        td.col-sm-8.header Features of a Perfect Score
+        td.col-sm-2.header Score
+      tr
+        td.col-sm-2.header Visual Design
+        td.col-sm-8
+          ul
+            li visual materials look professional
+            li appropriate amount of text
+            li presentation is legible and easy to follow
+            li figures are used appropriately
+            li material is presented logically
         td.col-sm-2
           select.visual-design
       tr
-        td(colspan="2").col-sm-10
-          | Verbal Presentation: Description of project logical and consise, audible and clear
-          | presentation, liveliness and professional style
+        td.col-sm-2.header Verbal Presentation
+        td.col-sm-8
+          ul
+            li narrative is logical and concise
+            li speaking is clear
+            li presentation style is professional
+            li personal appearance and behavior are appropriate 
+
         td.col-sm-2
           select.verbal-presentation
       tr
-        td(colspan="2").col-sm-10 Organization And Logic: Problem/objective clearly stated, methods and results explained.
+        td.col-sm-2.header Organization and Logic
+        td.col-sm-8
+          ul
+            li objective is clearly stated
+            li methods are clear and appropriate
+            li results are explained clearly
+            li explanations are in layman's term where appropriate
+
         td.col-sm-2
           select.organization-and-logic
       tr
-        td(colspan="2").col-sm-10 Appropriate Knowledge of Field: Demonstrated understanding of project and broader context
+        td.col-sm-2.header Knowledge of the Field
+        td.col-sm-8
+          ul
+            li topic is interesting and appropriate for the field 
+            li grasp of broader context is evident
+            li answers to questions are clear and correct
         td.col-sm-2
           select.knowledge
       tr
-        td(colspan="2").col-sm-10 Clear Explanations/ability to answer questions
-        td.col-sm-2
-          select.explanations
-      tr
-        td(colspan="2").col-sm-10 
-          | Overall Impression: Impression compared to other posters.  This will not be in the poster score but may be used to break a tie. 
+        td.col-sm-2.header Overall Impression
+        td.col-sm-8
+          ul
+            li topic choice is impressive compared to others
+            li content/work is impressive compared to others
+            li presentation quality is strong compared to others
+            li conclusion was strong
+            li presentation is on par with a general undergraduate conference
         td.col-sm-2
           select.overall
       tr
@@ -68,52 +102,82 @@ block templates
       tr
         td(colspan="3").col-sm-12
           em
-            | The two fields below are free response sections.  These comments will go to the students after the conference to give them 
+            | The section below is OPTIONAL.  Comments will go to the students after the conference to give them 
             | feedback and improve their presentation skills.  They will not be used in the scoring to the contest.  
       tr
-        td.col-sm-2 Strength of Poster/Presentation
+        td.col-sm-2 General Comments
         td(colspan="2").col-sm-10
-          textarea.strength(rows="6")
-      tr
-        td.col-sm-2 Suggestions for Improvement
-        td(colspan="2").col-sm-10
-          textarea.improvement(rows="6")
+          textarea.comments(rows="6")
       tr
         td(colspan="3").col-sm-12
-          button.btn.btn-default.save-feedback-button Save Feedback
+          button.btn.btn-default.save-feedback-button(data-saved-text="Feedback Saved") Save Feedback
 
 
 
   script#oral-feedback-template(type='text/template')
-    h3 Oral Presentation Feedback
+    table.table
+      tr
+        td.col-sm-03(style="font-size:200%; font-weight: bold;") Oral Presentation Feedback
+        td.col-sm-03
+          button.btn.btn-default.save-feedback-button(data-saved-text="Feedback Saved") Save Feedback
+        td.warn-submit.col-sm-04.invisible  Make sure that you Click the Save Feedback button
+
     table.table.table-bordered
       tr
-        td(colspan="2").col-sm-10
-          | Visual design: Professional appearance of presentation, appropriate amount of text, legible text, 
-          | appropriate use of figures, logical presentation of project
+        td.col-sm-2.header Category
+        td.col-sm-8.header Features of a Perfect Score
+        td.col-sm-2.header Score
+      tr
+        td.col-sm-2.header Visual Design
+        td.col-sm-8
+          ul
+            li visual materials look professional
+            li appropriate amount of text
+            li presentation is legible and easy to follow
+            li figures are used appropriately
+            li material is presented logically
         td.col-sm-2
           select.visual-design
       tr
-        td(colspan="2").col-sm-10
-          | Verbal Presentation: Description of project logical and consise, audible and clear
-          | presentation, liveliness and professional style
+        td.col-sm-2.header Verbal Presentation
+        td.col-sm-8
+          ul
+            li narrative is logical and concise
+            li speaking is clear
+            li presentation style is professional
+            li personal appearance and behavior are appropriate 
+
         td.col-sm-2
           select.verbal-presentation
       tr
-        td(colspan="2").col-sm-10 Organization And Logic: Problem/objective clearly stated, methods and results explained.
+        td.col-sm-2.header Organization and Logic
+        td.col-sm-8
+          ul
+            li objective is clearly stated
+            li methods are clear and appropriate
+            li results are explained clearly
+            li explanations are in layman's term where appropriate
+
         td.col-sm-2
           select.organization-and-logic
       tr
-        td(colspan="2").col-sm-10 Appropriate Knowledge of Field: Demonstrated understanding of project and broader context
+        td.col-sm-2.header Knowledge of the Field
+        td.col-sm-8
+          ul
+            li topic is interesting and appropriate for the field 
+            li grasp of broader context is evident
+            li answers to questions are clear and correct
         td.col-sm-2
           select.knowledge
       tr
-        td(colspan="2").col-sm-10 Clear Explanations/ability to answer questions
-        td.col-sm-2
-          select.explanations
-      tr
-        td(colspan="2").col-sm-10 
-          | Overall Impression: Impression compared to other oral presentations.  This will not be in the poster score but may be used to break a tie. 
+        td.col-sm-2.header Overall Impression
+        td.col-sm-8
+          ul
+            li topic choice is impressive compared to others
+            li content/work is impressive compared to others
+            li presentation quality is strong compared to others
+            li conclusion was strong
+            li presentation is on par with a general undergraduate conference
         td.col-sm-2
           select.overall
       tr
@@ -123,16 +187,12 @@ block templates
       tr
         td(colspan="3").col-sm-12
           em
-            | The two fields below are free response sections.  These comments will go to the students after the conference to give them 
+            | The section below is OPTIONAL.  Comments will go to the students after the conference to give them 
             | feedback and improve their presentation skills.  They will not be used in the scoring to the contest.  
       tr
-        td.col-sm-2 Strength of Poster/Presentation
+        td.col-sm-2 General Comments
         td(colspan="2").col-sm-10
-          textarea.strength(rows="6")
-      tr
-        td.col-sm-2 Suggestions for Improvement
-        td(colspan="2").col-sm-10
-          textarea.improvement(rows="6")
+          textarea.comments(rows="6")
       tr
         td(colspan="3").col-sm-12
-          button.btn.btn-default.save-feedback-button Save Feedback
+          button.btn.btn-default.save-feedback-button(data-saved-text="Feedback Saved") Save Feedback

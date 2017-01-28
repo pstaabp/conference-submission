@@ -154,7 +154,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
 	    var match = emailRE.exec(this.addAuthor.get("falconkey"))
 	    var falconkey = match ? match[1]: this.addAuthor.get("falconkey");
 	    if(falconkey != "") {
-		$.ajax({url: "/' + settings.top_dir + '/users/"+falconkey+"/check",
+		$.ajax({url: "/" + settings.top_dir + "/users/"+falconkey+"/check",
 			type: "GET", success: this.updateAuthorList});
 	    }
         },

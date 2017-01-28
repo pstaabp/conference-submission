@@ -108,7 +108,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                     });
 
                     if(numProps>1){
-                        self.$("ul.all-judge-list li[data-judgeid='"+judge.get("_id") + "']").removeClass("no-sessions")
+                        self.$("li.judge-popover[data-judgeid='"+judge.get("_id") + "']").removeClass("no-sessions")
                     }
                 }
             });
@@ -143,6 +143,16 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                 }
             });
         },
+		getNumProposals: function(judge){
+			var numProps = 0;
+            this.proposals.each(function(prop){ 
+                prop.get("feedback").each(function(feed){ 
+                    if(feed.get("judge_id")===judge.id){
+                        numProps++;}
+                    })
+            });
+			return numProps;
+		},
         renderSession: function(sessionNumber){
             var ul = this.$("td#"+this.sessionNames[sessionNumber]+" ul").empty();
             var self = this; 
@@ -159,6 +169,9 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                     var obj = {removable: true, cid: judge.cid, sessionName: self.sessionNames[sessionNumber]};
                     _.extend(obj,judge.attributes);
                     ul.append(self.judgeTemplate(obj));
+					if(self.getNumProposals(judge)>1){
+						ul.find("[data-judgeid='"+judge.cid + "']").removeClass("no-sessions");
+					}
                 }
             });
         },
@@ -167,7 +180,8 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             var judgeListCell = this.$(".all-judge-list").empty();
             var judgeTemplate = $("#judge-template").html();
             this.judges.each(function(judge){
-                judgeListCell.append( new JudgeView({model: judge,template: judgeTemplate, proposals: self.proposals}).render().el);
+                judgeListCell.append( new JudgeView({parent: self, model: judge,template: judgeTemplate, 
+						proposals: self.proposals}).render().el);
             });
 
         }
@@ -177,6 +191,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         tagName: "li",
         className: "judge-popover",
         initialize: function(opts){
+			this.parent = opts.parent; 
             this.template = opts.template; 
             this.proposals = opts.proposals;
         },
@@ -185,17 +200,8 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             this.$el.html(this.template);
             this.$el.attr("data-judgeid",this.model.id)
                 .attr("data-html",true)
-                .attr("data-content","fields: " + this.model.get("presentation").join(", "));
-
-
-            var numProps = 0;
-            this.proposals.each(function(prop){ 
-                prop.get("feedback").each(function(feed){ 
-                    if(feed.get("judge_id")===self.model.id){
-                        numProps++;}
-                    })
-            });
-            if(numProps<2){
+                .attr("data-content","fields: " + this.model.get("topics").join(", "));
+            if(this.parent.getNumProposals(this.model)<2){
                 this.$el.addClass("no-sessions");
             }
             this.stickit();

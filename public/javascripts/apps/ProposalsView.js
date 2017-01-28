@@ -9,10 +9,9 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             this.rowTemplate = $("#proposal-template").html();
             this.proposals = options.proposals;
             this.proposals.on("remove",this.render);
-	    this.proposals.on("change:sponsor_statement change:sponsor_name change:sponsor_dept",function(model){
-		model.save();
-		console.log("saving proposal");
-	    });
+	        this.proposals.on("change:sponsor_statement change:sponsor_name change:sponsor_dept change:accepted",function(model){
+    		    model.save();
+	        });
             this.users = options.users;
 
             // this is used for the stickit select options below. 
@@ -23,7 +22,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             var self = this;
             var table = this.$(".proposals-table tbody");
             this.tableSetup();
-            this.proposalsTable = new CollectionTableView({columnInfo: this.cols, collection: this.proposals, 
+            this.proposalsTable = new CollectionTableView({columnInfo: this.cols, collection: this.proposals, row_id_field: "_id",
                                 paginator: {page_size: 15, button_class: "btn btn-default", row_class: "btn-group"}});
             this.proposalsTable.render().$el.addClass("table table-bordered table-condensed");
             this.$('.proposals-table-container').html(this.proposalsTable.el);
@@ -39,8 +38,9 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 $el.parent().siblings(".proposal-detail-row").each(function(i,v){
                     $(v).prev().children(".show-proposal").children("button").text("Show");
                     $(v).remove();
-                })
-                $el.parent().after(new ProposalDetailView({proposal: model, users: this.users, hidden: true}).render().el);
+                });
+                var _prop = this.proposals.findWhere({_id: model.get("_id")});
+                $el.parent().after(new ProposalDetailView({proposal: _prop, users: this.users, hidden: true}).render().el);
                 $el.parent().siblings(".proposal-detail-row").show("blind",250);
                 
             } else {
@@ -72,7 +72,9 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                         return names[names.length-1].toLowerCase();
                     }},
                 {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", editable: true, datatype: "string"},
-                {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"}
+                {name: "Proposal Type", key: "type", classname: "type", editable: false, datatype: "string"},      
+                {name: "Proposal Id", key: "_id", classname: "proposal-id", show_column: false},
+                {name: "Email", key: "email", classname: "email", show_column: false}                          
             ];
         },
         search: function(evt){
@@ -107,14 +109,14 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             _(attrs).extend(options.users.findWhere({email: options.proposal.get("email")}).pick("grad_year","presented_before"));
             this.model = new ExtendedProposal(attrs);
 	    this.model.on("change:sponsor_statement",function(model){
-		self.proposal.set("sponsor_statement",model.get("sponsor_statement"));
+		    self.proposal.set("sponsor_statement",model.get("sponsor_statement"));
 	    });
 	    this.model.on("change:sponsor_name",function(model){
-		self.proposal.set("sponsor_name",model.get("sponsor_name"));
+		    self.proposal.set("sponsor_name",model.get("sponsor_name"));
 	    });
 
 	    this.model.on("change:sponsor_dept",function(model){
-		self.proposal.set("sponsor_dept",model.get("sponsor_dept"));
+		    self.proposal.set("sponsor_dept",model.get("sponsor_dept"));
 	    });
 
         },
@@ -140,7 +142,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
                 ".animal-subjects-number": "animal_subjects_number",
                 ".grad-year": "grad_year",
                 ".judges": {observe: "feedback", onGet: function(feedbackList){
-                    feedbackList.map(function(feed){
+                    return feedbackList.map(function(feed){
                         return feed.get("judge_id");
                     }).join(", ");
                 }},
@@ -153,7 +155,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         deleteProposal: function (){
             var del = confirm("Do you want to delete the proposal entitled: " + this.model.get("title"));
             if(del){
-                this.proposal.destroy();
+                this.proposal.destroy({wait: true});
                 this.$el.remove();
             }
         }    

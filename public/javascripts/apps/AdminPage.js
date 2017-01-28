@@ -20,7 +20,15 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
             this.users = (module.config())? new UserList(module.config().users) : new UserList();
             this.judges = (module.config()) ? new JudgeList(module.config().judges) : new JudgeList();
             this.proposals.on("add",this.render);
-
+            //this.proposals.on("change",function(_model){ 
+            //    console.log(_model);});
+            this.proposals.on("destroy",function(_model){ 
+                self.messagePane.addMessage({type: "success", 
+                    short: "Proposal deleted.",
+                    text: "The proposal titled: " + _model.get("title") + " was deleted."});
+            });
+            this.proposals.on("sync",function(_model){ 
+                console.log(_model);});
             this.proposals.on(
                 {"sync": function(_prop){
                         self.messagePane.addMessage({short:"The proposal for " + _prop.get("author") + 

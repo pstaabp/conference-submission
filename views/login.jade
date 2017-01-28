@@ -4,6 +4,9 @@ block container
   h2 Log In
   p
     | Use your falconkey and password to login onto to the website. 
+  p(style="color:red")
+    //|  The website is currently offline.  Please check back later.   
+    
   if msg  
     .alert.alert-danger #{msg}
   form.users#login(method='post', action='/#{top_dir}/login')

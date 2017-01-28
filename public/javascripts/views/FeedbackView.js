@@ -8,7 +8,15 @@ var FeedbackView = Backbone.View.extend({
             this.proposal = opts.proposal;
             this.model.on("change",function(p){
                 self.$(".total-score").text(self.model.score());
+                self.$(".warn-submit").removeClass("invisible");
+                self.$(".save-feedback-button").button("reset").removeClass("disabled");
             })
+            this.proposal.on("sync",function(p){
+                console.log("saved"); 
+                self.$(".save-feedback-button").button("saved").addClass("disabled");
+                self.$(".warn-submit").addClass("invisible");
+            }); 
+            
             this.numberRange =  _(_.range(11)).map(function(v) { return {label: ""+v, value: v}});
         },
         render: function(){
@@ -42,8 +50,7 @@ var FeedbackView = Backbone.View.extend({
                     ".overall": {observe: "overall", selectOptions: {
                         collection: function(){ return this.numberRange;}
                     }},
-                    ".strength": "strength_comment",
-                    ".improvement": "improvement_comment",
+                    ".comments": "comments",
                     ".total-score": {observe: "score", update: function($el, val, model, options){
                         $el.text(model.score());
                     }}},
