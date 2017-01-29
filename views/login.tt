@@ -1,0 +1,19 @@
+[% IF msg  %]
+   <div style="alert alert-danger">[% msg %] </div>
+[% ELSE %]
+   <form style="users" id="login" method="post" action="/[% top_dir %]/login">
+     <div style="form-group">
+       <label>Falconkey
+         <input style="form-control" type="text" name="user[falconkey]" value=[% user.falconkey %]>
+       </label>
+    </div>
+    <div style="form-group">
+      <label>Password
+        <input style="form-control" type="password" name="user[password]">
+      </label>
+    </div>
+    <div style="form-group">
+      <button style="btn btn-default" type="submit"> Log In </button>
+    </div>
+  </form>
+[% END %]
