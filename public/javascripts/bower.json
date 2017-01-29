@@ -10,7 +10,7 @@
     "backbone": "*",
     "backbone.stickit": "*",
     "backbone-validation": "*",
-    "jquery": "1.*",
+    "jquery": "*",
     "jquery-ui": "*",
     "jquery-truncate": "*",
     "requirejs": "*",

@@ -1,6 +1,6 @@
 {
   "name": "backbone.validation",
-  "version": "0.11.3",
+  "version": "0.11.5",
   "main": "dist/backbone-validation.js",
   "dependencies": {
     "underscore": ">=1.5.0",
@@ -12,13 +12,13 @@
     ".html"
   ],
   "homepage": "https://github.com/thedersen/backbone.validation",
-  "_release": "0.11.3",
+  "_release": "0.11.5",
   "_resolution": {
     "type": "version",
-    "tag": "v0.11.3",
-    "commit": "46836a122e1e7a3dcc72cab64cded1d7824a122f"
+    "tag": "v0.11.5",
+    "commit": "1b949ca291d56f79bf035e0ba380e19c10c6758c"
   },
-  "_source": "git://github.com/thedersen/backbone.validation.git",
+  "_source": "https://github.com/thedersen/backbone.validation.git",
   "_target": "*",
   "_originalSource": "backbone-validation"
 }

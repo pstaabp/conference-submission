@@ -1,13 +1,13 @@
 {
-  "name": "jquery-truncate",
+  "name": "jquery-truncate-html",
   "homepage": "https://github.com/pathable/truncate",
-  "_release": "5da408e232",
+  "_release": "a444a5fba1",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "5da408e2325dd965e0c94c354622ad54645824b9"
+    "commit": "a444a5fba17b25bd14acea064e85520897115dab"
   },
-  "_source": "git://github.com/pathable/truncate.git",
+  "_source": "https://github.com/pathable/truncate.git",
   "_target": "*",
   "_originalSource": "jquery-truncate"
 }

@@ -8,24 +8,24 @@ block script
 block container
   h2 Hello #{user.first_name}
   p
-    | You have chosen to add a role to this year's Undergraduate Conference. Select the addiitonal role 
-    | below. 
+    | You have chosen to add a role to this year's Undergraduate Conference. Select the addiitonal role
+    | below.
   form(method='post', action='/#{top_dir}/add-role')
     .form-horiztonal
       .form-group
         label.checkbox-inline
           if _(user.role).contains("sponsor")
-            input#sponsor(type="checkbox",name="sponsor",checked,disabled) 
+            input#sponsor(type="checkbox",name="sponsor",checked,disabled)
             | Sponsor
-          else 
-            input#sponsor(type="checkbox",name="sponsor") 
+          else
+            input#sponsor(type="checkbox",name="sponsor")
             | Sponsor
         label.checkbox-inline
           if _(user.role).contains("judge")
-            input#judge(type="checkbox",name="judge",checked,disabled) 
+            input#judge(type="checkbox",name="judge",checked,disabled)
             |   Judge
           else
-            input#judge(type="checkbox",name="judge") 
+            input#judge(type="checkbox",name="judge")
             |   Judge
 
       .form-group
