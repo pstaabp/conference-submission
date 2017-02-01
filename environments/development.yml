@@ -22,4 +22,44 @@ show_errors: 1
 # print the banner
 startup_info: 1
 
+# use the template::toolkit
+
 template: "template_toolkit"
+
+# use a simple YAML session
+
+session: YAML
+engines:
+  session:
+    YAML:
+      session_dir: /tmp/dancer-sessions
+
+port: 5000
+
+plugins:
+    Auth::Extensible:
+        #login_page_handler: 'Routes::Templates::login_page'
+        no_default_pages: 1
+        # Set to 1 to use the no-redirect login functionality
+        login_without_redirect: 1
+        # Set the view name for a custom login page, defaults to 'login'
+        login_template: login
+        # After /logout: If no return_url is given: land here (no default)
+        exit_page: '/test'
+        realms:
+            config:
+                provider: Config
+                users:
+                    - user: dave
+                      pass: dave
+                      first_name: Dave
+                      last_name: Digger
+                      roles:
+                        - student
+                    - user: bob
+                      pass: bob
+                      first_name: Bob
+                      last_name: Builder
+                      roles:
+                        - admin
+                        - sponsor

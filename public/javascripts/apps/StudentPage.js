@@ -4,17 +4,18 @@ define(['module','backbone', 'underscore','models/UserList','models/User','model
 function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,Proposal,WebPage){
 
     var StudentPage = WebPage.extend({
+        el: "#content",
         initialize: function () {
             WebPage.prototype.initialize.apply(this, {el: this.el});
             _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
-            
+
             this.user = module && module.config() ? new User(module.config().user): new User();
             this.proposals = module && module.config() ? new ProposalList(ProposalList.prototype.parse(module.config().proposals))
                      : new ProposalList();
             this.proposals.user_id = this.user.get("falconkey");
             this.proposals.on("add",function (){
-                self.render(); 
+                self.render();
                 $("#submit-main-tabs a:last").tab("show");
             }).on("sync",function(_proposal){
                 self.messagePane.addMessage({short: "Proposal Saved.", type: "success"});
@@ -25,17 +26,17 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
                 },
                 "sync": function(_user){
                 _(_.keys(_user.changingAttributes||{})).each(function(key){
-                    self.messagePane.addMessage({type: "success", 
+                    self.messagePane.addMessage({type: "success",
                         short: "User Saved",
                         text: "Property " + key + " for " + _user.get("first_name") + " " + _user.get("last_name") + " has "
                             + "changed from " + _user.changingAttributes[key] + " to " + _user.get(key) + "."});
-                });  
+                });
             }});
             this.render();
         },
         render: function () {
             this.$el.html("");
-            WebPage.prototype.render.apply(this);  // Call  WebPage.render(); 
+            WebPage.prototype.render.apply(this);  // Call  WebPage.render();
             var self = this;
             this.$el.append(_.template($("#student-tabs-template").html()));
             if (this.user) {
@@ -60,5 +61,5 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
         },
     });
 
-    new StudentPage({el: $("#container")});
+    new StudentPage();
 })

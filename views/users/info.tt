@@ -1,0 +1,106 @@
+<script type='text/template' id='user-view'>
+  <div class="row">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-md-2"> First Name:</label>
+                <div class="col-md-8">
+                  <span class="form-control-static first-name"></span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-md-2">Last Name:</label>
+                <div class="col-md-8">
+                  <span class="form-control-static last-name"></span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-md-2">Major:</label>
+                <div class="col-md-4">
+                  <select class="major form-control"></select>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-md-2">Email:</label>
+                <div class="col-md-8">
+                  <span class="form-control-static email"></span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-md-2">Year of Graduation:</label>
+                <div class="col-md-2">
+                  <select class="form-control grad-year">
+                    <option></option>
+                    <option>2017</option>
+                    <option>2018</option>
+                    <option>2019</option>
+                    <option>2020</option>
+                    <option>2021</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-md-2">I Have Presented Before</label>
+                <div class="col-md-8">
+                  <input type='checkbox' class="presented-before">
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <!-- - if(moment().isBefore(moment('04/28/2015 5:00pm','MM/DD/YYYY hh:mmA'))){-->
+        [% IF 1 %]
+          <tr class="submit-proposal-row">
+            <table>
+              <tr>
+                <td>
+                  <button class="btn btn-default" id="update-info-btn">Update My Information</button>
+                </td>
+                <td>
+                  <button class="btn btn-default" id="submit-proposal">Create a New Proposal</button>
+                </td>
+              </tr>
+            </table>
+          </tr>
+        [% ELSE %]
+          <tr>
+            <td>The conference submission is closed.  You may still edit proposals you have already submitted.</td>
+          </tr>
+        [% END %]
+      </tbody>
+    </table>
+  </div>
+</script>

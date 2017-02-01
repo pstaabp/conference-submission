@@ -1,19 +1,30 @@
+
+[%- IF login_failed -%]
+   <p>LOGIN FAILED</p>
+[%- END -%]
+
+
 [% IF msg  %]
-   <div style="alert alert-danger">[% msg %] </div>
+   <div class="alert alert-danger">[% msg %] </div>
 [% ELSE %]
-   <form style="users" id="login" method="post" action="/[% top_dir %]/login">
-     <div style="form-group">
-       <label>Falconkey
-         <input style="form-control" type="text" name="user[falconkey]" value=[% user.falconkey %]>
-       </label>
+  <form class="form-horizontal" method="POST" action="/login">
+  <div class="form-group">
+    <label for="falconkey" class="col-sm-2 control-label">Falconkey</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" name="__auth_extensible_username" id="username" placeholder="falconkey">
+
     </div>
-    <div style="form-group">
-      <label>Password
-        <input style="form-control" type="password" name="user[password]">
-      </label>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" name="__auth_extensible_password" id="password"  placeholder="Password">
     </div>
-    <div style="form-group">
-      <button style="btn btn-default" type="submit"> Log In </button>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Sign in</button>
     </div>
-  </form>
+  </div>
+</form>
 [% END %]

@@ -1,0 +1,159 @@
+<script type='text/template' id="proposal-view">
+  <div class="panel-group" id="proposal-accordian">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title"
+          <a data-toggle='collapse' data-parent='proposal-accordian' href='#proposal-collapse'>Proposal</a>
+        </h2>
+      </div>
+      <div id='proposal-collapse' class="panel-collapse collapse in">
+        <div class="panel-body">
+          <table class="table table-bordered">
+            <tr class="feedback-row">
+            <tr>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-3 control-label"> Project Title</label>
+                  <span class="col-md-9">
+                     <input class="title.form-control">
+                 </span>
+               </div>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-3 control-label"> Primary Author</label>
+                  <span class="col-md-9">
+                     <input class="author-name form-control" disabled="disabled">
+                   </span>
+                 </div>
+               </td>
+            </tr>
+            <tr>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-3 control-label"> Author Email</label>
+                  <span class="col-md-9">
+                     <input class="author-email form-control" disabled="disabled">
+                   </span>
+                 </div>
+              <td>
+                <div class="form-horizontal">
+                  <div class="form-group">
+                    <label class="col-md-3 control-label"> Other Authors</label>
+                    <span class="col-md-7">
+                       <input class="other-authors form-control" disabled="disabled">
+                     </span>
+                    <span class="col-md-2">
+                      <button class="btn btn-default add-author-button">Update Authors</button>
+                    </span>
+                  </div>
+                </div>
+                <div class="other-author-info"></div>
+              </td>
+            </tr>
+            <tr>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-4 control-label"> Presentation Type</label>
+                  <span class="col-md-6">
+                    <select class="presentation-type form-control">
+                      <option></option>
+                      <option> Poster Presentation</option>
+                      <option> Oral Presentation</option>
+                      <option> Music</option>
+                      <option> Art (2D)</option>
+                      <option> Art (3D)</option>
+                      <option> Theatre</option>
+                      <option> Video</option>
+                      <option> Creative Writing</option>
+                    </select>
+                  </span>
+                </div>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-3 control-label"> Other Equipment Needed</label>
+                  <span class="col-md-1">
+                    <button class="btn.btn-default.btn-sm" id="other-equip-help"> ?</button>
+                  </span>
+                  <span class="col-md-8">
+                     <input class="other-equip form-control">
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-3 control-label"> Sponsor Email</label>
+                  <span class="col-md-9">
+                    <input class="sponsor-email form-control">
+                  </span>
+                </div>
+              </td>
+              <td>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="checkbox">
+                          <label class="control-label">
+                             <input class="human-subjects"  type="checkbox">
+                             My Research involves Human Subjects
+                          </label>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="checkbox">
+                          <label class="control-label">
+                             <input class="animal-subjects"  type="checkbox">
+                              My Research involves Animal Subjects
+                          </label>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="form-horizontal">
+                        <div class="form-group.hidden">
+                          <label class="col-md-4 control-label"> Number:</label>
+                          <div class="col-md-8">
+                             <input class="human-subjects-number" type="text">
+                         </div>
+                       </div>
+                      </td>
+                      </td>
+                      <td class="form-horizontal">
+                        <div class="form-group.hidden">
+                          <label class="col-md-4 control-label"> Number:</label>
+                          <div class="col-md-8">
+                             <input class="animal-subjects-number"  type="text">
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <div class="form-group">
+                  <label class="control-label"> Proposal Text</label>
+                  <textarea class="proposal-text form-control" rows="10"></textarea>
+                </div>
+              </td>
+            <tr class="sponsor-row hidden">
+              <td colspan="2">
+                <div class="form-group">
+                  <label class="control-label"> Sponsor Statement</label>
+                  <textarea class="sponsor-statement.form-control" rows="10"></textarea>
+                </div>
+              </td>
+            <tr>
+              <td colspan="3">
+                <button class="btn btn-default submit-proposal-button" data-saving-text="Proposal Saving"
+                    data-saved-text="Proposal Saved">Submit Proposal</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>

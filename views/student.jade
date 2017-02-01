@@ -20,14 +20,14 @@ block templates
     include tabs.jade
     .feedback-modal
 
-  
+
 
   script(type='text/template',id='add-author-template')
-    p 
+    p
       | The following are the additional authors for this proposal.  To delete an authors
-      | click the delete button next to the author&apos;s name.  To add an additional author, 
-      | enter the falconkey or FSU email address of the author and click "Add Author". 
-      
+      | click the delete button next to the author&apos;s name.  To add an additional author,
+      | enter the falconkey or FSU email address of the author and click "Add Author".
+
     ul.author-list
 
     .form-horizontal
@@ -47,22 +47,22 @@ block templates
         img(src='/images/ajax-loader-small.gif')
   script#other-equip-help-text(type="text/template")
      p
-       | If you need additional equipment, please list it here.  All oral presentations will have hookups for 
+       | If you need additional equipment, please list it here.  All oral presentations will have hookups for
        | a projector, but you may need an adapter.  If you have a poster presentation and need a power outlet
        | please list it here.  Anything else, please list it.
   script(type='text/template',id='help-text')
     p
       | This page has a set of tabs (Personal Information and Propoals.)  You can edit your personal information except your
-      | email address, create new proposals and edit existing ones.  To close this help box, click the X in the upper right 
-      | corner.  
-    p 
+      | email address, create new proposals and edit existing ones.  To close this help box, click the X in the upper right
+      | corner.
+    p
       | To edit your personal information, click the "Edit Info" button, change the information and then click "Save Info".
-    p 
+    p
       | To create a new proposal for the Conference, click the "Create a New Proposal" button.  A new tab for the page opens
-      | and you can include all of the information.  Make sure that you include information for all fields.  If there are more 
-      | than one student on a project, click the "Add Author" button to add the student and the email address. 
-    p 
-      | To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then 
+      | and you can include all of the information.  Make sure that you include information for all fields.  If there are more
+      | than one student on a project, click the "Add Author" button to add the student and the email address.
+    p
+      | To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then
       | click "Save the Proposal".
 
   script#help-template(type="text/template")
@@ -76,11 +76,11 @@ block templates
       .modal-header
         button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
         h3 Feedback on Presentation
-      .modal-body 
+      .modal-body
         table.table.table-bordered
           tr
-            td(colspan="2").span8 
-              | Visual Design: Professional appearance of poster, appropriate amount of text, 
+            td(colspan="2").span8
+              | Visual Design: Professional appearance of poster, appropriate amount of text,
               | legible text, appropriate use of figures, logical presentation of project
             td.span1.visual-design
           tr
@@ -98,7 +98,7 @@ block templates
             td(colspan="2") Clear Explanations/ability to answer questions
             td.explanations
           tr
-            td(colspan="2") 
+            td(colspan="2")
               | Overall Impression: Impression compared to other posters judges/additional comments useful for judging
             td.overall
           tr
@@ -111,8 +111,7 @@ block templates
           tr
             td.span2 Suggestions for Improvement
             td(colspan="2").span8.improvement
-          
+
 
       .modal-footer
         a.btn.btn-default(href="#",data-dismiss="modal") Close
-

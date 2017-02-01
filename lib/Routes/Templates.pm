@@ -2,6 +2,7 @@
 package Routes::Templates;
 use Dancer2;
 
+use Dancer2::Plugin::Auth::Extensible;
 use Common::Collection qw/to_hashes get_all_in_collection/;
 use Data::Dump qw/dump/;
 
@@ -9,16 +10,67 @@ use Data::Dump qw/dump/;
 set auto_page => 0;
 
 get '/' => sub {
-    template 'index';
+    redirect '/index';
 };
 
-get '/index' => sub {
-  my $user = {user=>{falconkey=>"hi"}};
-  template 'index', $user;
+get '/index' =>  require_login sub {
+  if (user_has_role('student')) {
+    redirect '/welcome-student';
+  }
+  if (user_has_role("sponsor")){
+    redirect '/welcome';
+  }
 };
 
 get '/login' => sub {
     template 'login';
+};
+
+post '/login' => sub {
+    debug params;
+    my ($success, $realm) = authenticate_user(
+        params->{username}, params->{password}
+    );
+    if ($success) {
+        # change session ID if we have a new enough D2 version with support
+        # (security best practice on privilege level change)
+        app->change_session_id if app->can('change_session_id');
+        session logged_in_user => params->{username};
+        session logged_in_user_realm => $realm;
+        # other code here
+    } else {
+        # authentication failed
+    }
+};
+
+get '/test' => sub {
+  dump config;
+  template 'test';
+};
+
+get '/welcome-student' => require_login sub {
+  debug dump config;
+  debug logged_in_user;
+  debug get_user_details(logged_in_user()->{username});
+  template 'welcome-student', {user=>get_user_details(logged_in_user->{user})};
+};
+
+get '/welcome' => require_login sub {
+  debug logged_in_user;
+  my $username = logged_in_user->{user};
+  debug $username;
+  debug get_user_details($username);
+  template 'welcome', {user=>get_user_details(logged_in_user->{user})};
+};
+
+any '/logout' => sub {
+    app->destroy_session;
+    template 'logout';
+};
+
+get '/student' => sub {
+
+    template 'basic', {top_dir=> "",header_script=>"student.tt"};
 };
 
 get '/problemsets' => sub {
@@ -59,6 +111,11 @@ get '/modules' => sub {
     my $modules = to_hashes(get_all_in_collection($client,"problemdb.modules","Model::Module"));
     template 'modules', {appname => "EditModulesView",modules=> to_json($modules)};
 };
+
+sub login_page {
+  template 'login';
+
+}
 
 sub getAllData {
     my $client = MongoDB->connect('mongodb://localhost');

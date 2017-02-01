@@ -1,0 +1,598 @@
+
+
+<script type="text/javascript" src="/javascripts/apps/require-config.js"></script>
+<script type="text/javascript">
+  require.config({ "/#{top_dir}/javascripts/apps/AdminPage.js": {
+    users: !{JSON.stringify(users)},
+    proposals: !{JSON.stringify(proposals)},
+    judges: !{JSON.stringify(judges)}
+    }
+  };
+  </script>
+
+<script type='text/javascript' data-main='/#{top_dir}/javascripts/apps/AdminPage.js' src='/#{top_dir}/javascripts/bower_components/requirejs/require.js' ></script>
+
+<ul class="nav nav-tabs" id="admin-tabs">
+  <li class="active"><a href="#users" data-toggle="tab" data-view="usersView">Users</a></li>
+  <li><a href="#proposals" data-toggle="tab" data-view="proposalsView">Proposals</a></li>
+  <li><a href="#presentations" data-toggle="tab" data-view="presentationsView">Presentations</a></li>
+  <li><a href="#judges" data-toggle="tab" data-view="judgesView">Judges</a></li>
+  <li><a href="#judge-schedule" data-toggle="tab" data-view="judgesView">Judges</a></li>
+  <li><a href="#emails" data-toggle="tab" data-view="emailView">Emails</a></li>
+  <li><a href="#feedback" data-toggle="tab" data-view="feedbackView">Feedback</a></li>
+  <li><a href="#sponsors-view" data-toggle="tab" data-view="sponsorsView">Sponsors</a></li>
+</ul>
+<div class="tab-contents">
+  <div class="tab-pane active" id="users">
+    <div class="row">
+      <div class="user-choices col-md-8">
+        <label class="radio-inline control-label">
+          <input type="radio" name="usersView" value="all" checked="checked"> View All Users
+        </label>
+        <label class="radio-inline control-label">
+          <input type="radio" name="usersView" value="all" checked="checked"> View Students
+        </label>
+        <label class="radio-inline control-label">
+          <input type="radio" name="usersView" value="all" checked="checked"> View Sponsors
+        </label>
+        <label class="radio-inline control-label">
+          <input type="radio" name="usersView" value="all" checked="checked"> View Judges
+        </label>
+      </div>
+      <div class="users-search col-md-4">
+        <div class="form-horizontal">
+          <label class="control-label">Search
+            <input type="search" class="search-user-box"> </label>
+          <button class="btn btn-default clear-search-user">Clear</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="users-table"></div>
+    </div>
+  </div>
+</div>
+
+    .tab-pane#proposals
+      .row
+        .col-md-4
+          .form-horizontal
+            label.control-label Search
+              input.search-proposals(type="search")
+            button.btn.btn-default.clear-search-proposals Clear
+        .col-md-4.pull-right
+          p.num-proposals
+
+      .proposals-table-container
+
+
+    .tab-pane#presentations
+      .radio-buttons
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="orals",checked)
+          | Oral Presentation List
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="schedule")
+          | Oral Presentation Schedule
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="posters")
+          | Posters
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="videos")
+          | Videos
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="art2d")
+          | 2D Art
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="art3d")
+          | 3D Art
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="music")
+          | Music
+        label.radio-inline.control-label
+          input(type="radio",name="presentationsview",value="theatre")
+          | Theatre
+      .presentation-content
+    .tab-pane#judges
+    .tab-pane#judge-schedule
+      label.radio-inline.control-label
+        input(type="radio",name="jsview",value="orals",checked)
+        | View Oral Presentations
+      label.radio-inline.control-label
+        input(type="radio",name="jsview",value="posters")
+        | View Poster Presentations
+      div.orals
+        table.table.table-bordered
+          thead
+            tr
+              th Judge
+              th Session A
+              th Session B
+              th Session C
+              th Session D
+              th Session E
+              th Session F
+          tbody
+            tr
+              td(rowspan="3")
+                ul.all-judge-list
+              td.session#A
+                ul
+              td.session#B
+                ul
+              td.session#C
+                ul
+              td.session#D
+                ul
+              td.session#E
+                ul
+              td.session#F
+                ul
+            tr
+              td.header Session G
+              td.header Session H
+              td.header Session I
+              td.header Session J
+              td.header Session K
+              td.header Session L
+            tr
+              td.session#G
+                ul
+              td.session#H
+                ul
+              td.session#I
+                ul
+              td.session#J
+                ul
+              td.session#K
+                ul
+              td.session#L
+                ul
+      div.posters
+        table.table.table-bordered
+          thead
+            tr
+              th All Judges
+              th Title/Author
+              th Judges
+              th Title/Author
+              th Judges
+              th Title/Author
+              th Judges
+              th Title/Author
+              th Judges
+          tbody
+
+
+    .tab-pane#emails
+    .tab-pane#feedback
+      .row
+        .col-md-4
+          .form-horizontal
+            label.control-label Search
+              input.search-all-feedback(type="search")
+            button.btn.btn-default.clear-search-all-feedback Clear
+        .col-md-4.pull-right
+          p.num-proposals
+
+      .feedback-table-container
+    .tab-pane#sponsors-view
+
+
+
+  .proposal-modal
+
+
+block templates
+  script#proposal-details-template(type='text/template')
+    td(colspan="6")
+      table.table-bordered.table
+        tbody
+          tr
+            td
+              button.btn.btn-default.btn-sm.delete-proposal
+                i.fa.fa-trash-o
+            td.header Sponsor Name
+            td.header Sponsor Email
+            td.header Sponsor Dept
+            td.header Use Human Subjects
+              input(type='checkbox',disabled='disabled').use-human-subjects
+            td.header Use Animal Subjects
+              input(type='checkbox',disabled='disabled').use-animal-subjects
+          tr
+            td
+            td(contenteditable='true').sponsor-name
+            td.sponsor-email
+            td(contenteditable='true').sponsor-dept
+            td.human-subjects-number
+            td.animal-subjects-number
+
+          tr
+            td
+            td.header Date/Time Submitted
+            td.header Year of Graduation
+            td.header Presented Before
+            td.header(colspan="2") Other Authors
+          tr
+            td
+            td.submitted-date.show-date-time
+            td.grad-year
+            td.presented-before
+            td.other-authors(colspan="2")
+          tr
+            td
+            td.header Judges
+            td(colspan="4").judges
+          tr
+            td
+            td.header Proposal Text
+            td(colspan="4").proposal-content
+          tr
+            td
+            td.header Sponsor Statement
+            td(contenteditable='true',colspan="4").sponsor-statement
+
+
+  script#user-row-template(type='text/template')
+    td
+      .btn-group
+        button.btn.btn-default.delete-user
+          i.icon-trash
+    td.first-name
+    td.last-name
+    td.role
+    td.email
+
+  script#students-template(type="text/template")
+    div.row
+      div.span4
+        h3 Students
+      div.span4.pull-right  total number of users: <%= numUsers %>
+    table.user-table.table
+      thead
+        tr
+          td
+          td First Name
+          td Last Name
+          td Major
+          td Email
+          td Proposals
+      tbody
+
+  script#student-row-template(type='text/template')
+    td
+      .btn-group
+        button.btn.btn-default.delete-user
+          i.icon-trash
+    td <%=first_name%>
+    td <%=last_name%>
+    td <%=major%>
+    td
+      a(href!="mailto:<%=email%>") <%=email%>
+    td
+      ul
+        <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title?p.attributes.title:"None")+"</a></li>")}); %>
+
+  script#sponsors-template(type="text/template")
+    div.row
+      div.span4
+        h3 Students
+      div.span4.pull-right  total number of users: <%= numUsers %>
+    table.user-table.table
+      thead
+        tr
+          td
+          td First Name
+          td Last Name
+          td Email
+          td Proposals
+      tbody
+
+  script#sponsor-row-template(type='text/template')
+    td
+      .btn-group
+        button.btn.btn-default.delete-user
+          i.icon-trash
+    td <%=first_name%>
+    td <%=last_name%>
+    td <%=email%>
+    td
+      ul
+        <% _(proposals).each(function(p) {print('<li><a href="#" class="showProposal" data-id=' + p.id + '>'+(p.attributes.title?p.attributes.title:"None")+"</a></li>")}); %>
+
+
+  script#proposals-template(type="text/template")
+    div.row
+      div.span4
+        h3 <%= propHeader %>
+      div.span4.pull-right  total number: <%= number %>
+    table#proposal-table-header.table.table-bordered.proposal-table
+      tbody
+
+  script#all-feedback-template(type="text/template")
+    div.row
+      div.span4
+        h3 <%= propHeader %>
+      div.span4.pull-right  total number: <%= number %>
+    table#proposal-table-header.table.table-bordered.proposal-table
+      tbody
+
+  script#feedback-tab-template(type="text/template")
+    li
+      a(href!="#feedback-tab-<%=tab_no%>",data-toggle="tab") <%=judge_name%>
+
+
+
+
+  script#schedule-template(type="text/template")
+    h3 Oral Presentation Schedule
+
+    ul.oral-present-col#extra-ops
+
+    table#oral-present-table.table.table-bordered
+      tbody
+        <% sessionNames = "ABCDEFGHIJKL" %>
+        <% for(i=0;i<2;i++) {print("<tr>"); for(j=0;j<6;j++) {print("<td class='header'>Session " + sessionNames.charAt(6*i+j) + "</td>");} print("</tr>");print("<tr>"); for(j=0;j<6;j++) {print("<td><ul class='oral-present-col' id='col" + (6*i+j) +"'></ul></td>");} print("</tr>");}%>
+
+  script#emails-template(type="text/template")
+    h3
+      a(href!="mailto:<%=allParticipants%>") All Participants
+    p <%=allParticipants%>
+
+    h3
+      a(href!="mailto:<%=oralPresenters%>") Oral Participants
+    p <%=oralPresenters%>
+    h3
+      a(href!="mailto:<%=oralSponsors%>") Oral Sponsors
+    p <%=oralSponsors%>
+
+    h3
+      a(href!="mailto:<%=posterPresenters%>") Poster Participants
+    p <%=posterPresenters%>
+    h3
+      a(href!="mailto:<%=posterSponsors%>") Poster Sponsors
+    p <%=posterSponsors%>
+
+    h3
+      a(href!="mailto:<%=missingNames%>") Missing Names
+    p <%=missingNames%>
+    h3
+      a(href!="mailto:<%=sponsors%>") Sponsors
+    p <%=sponsors%>
+    h3
+      a(href!="mailto:<%=missing_statements%>") Missing Statements
+    p <%=missing_statements%>
+    h3
+      a(href!="mailto:<%=acceptedPosters%>") Accepted Posters
+    p <%=acceptedPosters%>
+    h3
+      a(href!="mailto:<%=acceptedOrals%>") Accepted Orals
+    p <%=acceptedOrals%>
+    h3
+      a(href!="mailto:<%=judges%>") Judges
+    p <%=judges%>
+
+
+  script#oral-presentation-template(type="text/template")
+    li.oral-present(id!='<%=cid%>',data-original-session!='<%=session%>')
+      .op-title <%=title%>
+      .op-author <%=author%>
+
+  script#act-as-user-template(type="text/template")
+    a.btn.btn-default.dropdown-toggle(data-toggle="dropdown",href="#") Act As User
+      span.caret
+    ul.dropdown-menu
+      <% _(users).each(function(user){ print('<li><a class="user-info" href="/#{top_dir}/admin/' + user.id + '"">' + user.name + '</a></li>')}) %>
+
+  script#presentation-details-template(type="text/template")
+    table.table.table-bordered
+      tbody
+        tr
+          td.header Sess.
+          td.header Main Author
+          td.header Presentation Type
+        tr
+          td.session <%=session%>
+          td.author <%=author%>
+          td.type <%=type %>
+        tr
+          td.header Sponsor Name
+          td.header Sponsor Dept
+          td
+        tr
+          td.sponsor-name
+          td.sponsor-dept
+          td
+        tr
+          td(colspan="3").proposal-content
+
+  script#presentation-table-template(type="text/template")
+    table.table.table-bordered
+      thead
+        tr
+          th
+          th number
+          th Author
+          th Title
+          th
+      tbody
+
+  script#presentation-row-template(type="text/template")
+    td
+      <% if(reorder) {%>
+      span
+        i.fa.fa-arrows-v
+      <% } %>
+    td.session
+    td.author
+    td.title.col-md-8
+    td
+      button.showDetails.btn.btn-default Show Details
+  script#feedback-tabs(type="text/template")
+    td(colspan="4")
+      ul.nav.nav-tabs.feedback-tabs
+      .tab-content.feedback-tab-content
+
+  script#feedback-tab(type="text/template")
+    li
+      a(href!="#<%=tabID%>",data-toggle="tab") Judge #<%=judgeNum%>
+
+  script#feedback-edit-template(type="text/template")
+    table.table.table-bordered
+      tr
+        td Visual Design
+        td
+          input.visual-design(tabindex="2")
+        td Appropriate Knowledge of Fields
+        td
+          input.knowledge(tabindex="5")
+      tr
+        td Verbal Presentation
+        td
+          input.verbal-presentation(tabindex="3")
+        td Clear Explanations
+        td
+          input.explanations(tabindex="6")
+      tr
+        td Organization And Logic
+        td
+          input.organization-and-logic(tabindex="4")
+        td Overall Impression
+        td
+          input.overall(tabindex="7")
+      tr
+        td Total Score
+        td.total-score
+        td
+        td
+      tr
+        td Strength of Poster
+        td(colspan="3")
+          textarea.strength(tabindex="8")
+      tr
+        td Suggestions for Improvement
+        td(colspan="3")
+          textarea.improvement(tabindex="9")
+      tr
+        td
+          button.btn.btn-default.save-feedback-button(tabindex="9") Save Feedback
+        td
+          button.btn.btn-default.delete-feedback-button(tabindex="10") Delete Feedback
+
+  script#feedback-row-template(type="text/template")
+    td.session
+    td.title
+    td.author
+    td.feedback
+
+  script#judges-table-template(type="text/template")
+    table.judges-table.table
+      thead
+        tr
+          th
+          th Name
+          th Email
+          th Type
+          th Fields
+          th Sessions
+      tbody
+
+  script#judges-row-template(type="text/template")
+    td
+      span.btn.btn-default.delete-judge
+        i.fa.fa-trash-o
+    td.name
+    td.email
+    td
+      select.type
+    td
+      select.presentation(multiple="true")
+    td.sessions-to-judge
+
+  script#session-template(type="text/template")
+    <%=sessions.map(function(s) { return "<button class='btn btn-default' data-session='"+s+"'>" + s + "</button>"; }).join(", ") %>
+
+
+  script#judges-schedule-row-template(type="text/template")
+    li
+      <%var popoverContent = "fields: " + presentation.join(", ") %>
+      <%if (removable) { %>
+      <%  popoverContent += "<br><span class='btn btn-default remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
+      <% if (sessions.length == 0) {%>
+      span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
+      <%} else {%>
+      span.judge-popover(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="true") <%=name %>
+      <% } %>
+
+  script#judge-template(type="text/template")
+    span.name
+
+  script#judges-schedule-poster-row(type="text/template")
+      td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:blue'>" + sponsor_name + "</span>") %>
+      td.poster-judge(data-session!="<%=session%>")
+        ul
+
+  script#role-template(type="text/template")
+    <% _(["Admin","Sponsor","Student","Judge"]).each(function(role){print("<input data-role='"+role.toLowerCase()+"' type='checkbox'>"+role)}) %>
+
+  script#delete-button-template(type="text/template")
+    button.btn.btn-default
+      i.fa.fa-trash-o
+
+  script#show-button-template(type="text/template")
+    button.btn.btn-default Show
+
+
+  script#feedback-template(type="text/template")
+    .modal.hide.fade
+      .modal-header
+        button.close(type="button",data-dismiss="modal",aria-hidden="true") &times;
+        h3 Feedback on Presentation
+      .modal-body
+        table.table.table-bordered
+          tr
+            td(colspan="2").span8
+              | Visual Design: Professional appearance of poster, appropriate amount of text,
+              | legible text, appropriate use of figures, logical presentation of project
+            td.span1.visual-design
+          tr
+            td(colspan="2").span8
+              | Verbal Presentation: Description of project logical and consise, audible and clear
+              | presentation, liveliness and professional style
+            td.verbal-presentation
+          tr
+            td(colspan="2") Organization And Logic: Problem/objective clearly stated, methods and results explained.
+            td.organization-and-logic
+          tr
+            td(colspan="2") Appropriate Knowledge of Field: Demonstrated understanding of probject and boarder context
+            td.knowledge
+          tr
+            td(colspan="2") Clear Explanations/ability to answer questions
+            td.explanations
+          tr
+            td(colspan="2")
+              | Overall Impression: Impression compared to other posters judges/additional comments useful for judging
+            td.overall
+          tr
+            td
+            td(style="text-align: right") Total Score
+            td.total-score
+          tr
+            td.span2 Strength of Poster
+            td(colspan="2").span8.strength
+          tr
+            td.span2 Suggestions for Improvement
+            td(colspan="2").span8.improvement
+
+
+      .modal-footer
+        a.btn.btn-default(href="#",data-dismiss="modal") Close
+
+  script#message-pane-template(type="text/template")
+    .row
+      .pull-right
+        button.close &times;
+        ul.main-message-pane.no-bullets
+
+  script#sponsor-table-template(type="text/template")
+    h2 List of all Sponsors

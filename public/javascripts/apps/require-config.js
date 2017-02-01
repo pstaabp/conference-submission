@@ -1,9 +1,9 @@
-/*  This is the configuration for the require.js loading.  See requirejs.org for more info. 
+/*  This is the configuration for the require.js loading.  See requirejs.org for more info.
 
   It should be loaded directly before the require.js is loaded in a page.  */
 
 var require = {
-    baseUrl: "/conference-submission/javascripts",
+    baseUrl: "/javascripts",
     paths: {
         "backbone":               "bower_components/backbone/backbone",
         "backbone-validation":    "bower_components/backbone-validation/dist/backbone-validation",
@@ -26,6 +26,6 @@ var require = {
         "jquery-ui": ['jquery'],
         "jquery-truncate": ['jquery'],
         "moment": {exports: "moment"}
-        
+
     }
 };
