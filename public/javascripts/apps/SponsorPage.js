@@ -19,12 +19,12 @@ function(module,Backbone, _, UserList, User, ProposalList,WebPage,PersonalInfoVi
         },
         render: function () {
             this.$el.html("");
-            this.constructor.__super__.render.apply(this);  // Call  WebPage.render(); 
+            this.constructor.__super__.render.apply(this);  // Call  WebPage.render();
             var self = this;
             this.$el.append(_.template($("#faculty-tabs-template").html()));
             this.proposalViews = [];
             this.proposals.each(function(prop,i){
-                
+
                 $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'' data-toggle='tab'>Proposal #" + (i+1) + "</a></li>");
 
                 if (prop.get("sponsor_statement")===""){
@@ -45,5 +45,5 @@ function(module,Backbone, _, UserList, User, ProposalList,WebPage,PersonalInfoVi
         }
     });
 
-    new SponsorView({el: $("#container")});
+    new SponsorView({el: $("#content")});
 });

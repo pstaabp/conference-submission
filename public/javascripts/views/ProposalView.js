@@ -1,5 +1,5 @@
-define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/common','models/Author','models/AuthorList', 'stickit','bootstrap','backbone-validation'], 
-    function(Backbone, _,settings,FeedbackView,common,Author,AuthorList){
+define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/common','models/Student','models/AuthorList', 'stickit','bootstrap','backbone-validation'],
+    function(Backbone, _,settings,FeedbackView,common,Student,AuthorList){
     /**
      *
      * This defines a ProposalView, which shows a single proposal
@@ -14,7 +14,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
             this.model.on({"change:use_human_subjects change:use_animal_subjects": this.toggleCheckbox});
     	},
     	render: function (){
-            var self = this; 
+            var self = this;
             Backbone.Validation.bind(this, {
                 invalid: function(view, attr, error) {
                     $(_(view.bindings).invert()[attr]).closest(".form-group").addClass("has-error")
@@ -37,7 +37,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
             this.$(".submit-proposal-button").button();
             this.model.on({sync: function(){
                     self.$(".submit-proposal-button").button("saved").attr("disabled","disabled");
-                }, 
+                },
                 change: function () {
                     self.$(".submit-proposal-button").button("reset").attr("disabled",false);
                 }
@@ -55,13 +55,13 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
                     ".author-name": "author",
                     ".author-email": "email",
                     ".presentation-type": "type",
-                    ".human-subjects": {observe: "use_human_subjects", update: function($el, val, model, options) { 
+                    ".human-subjects": {observe: "use_human_subjects", update: function($el, val, model, options) {
                         $el.prop("checked",val);
                         if(val){
                             this.$(".human-subjects-number").closest(".form-group").removeClass("hidden")
                         }
                     }},
-                    ".animal-subjects": {observe: "use_animal_subjects", update: function($el, val, model, options) { 
+                    ".animal-subjects": {observe: "use_animal_subjects", update: function($el, val, model, options) {
                         $el.prop("checked",val);
                         if(val){
                             this.$(".animal-subjects-number").closest(".form-group").removeClass("hidden")
@@ -69,8 +69,8 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
                     }},
                     ".human-subjects-number": "human_subjects_number",
                     ".animal-subjects-number": "animal_subjects_number",
-                    ".other-authors": { observe: "other_authors", update: function($el, val, model, options) { 
-                        $el.val(model.get("other_authors").map(function(auth) { return auth.get("first_name") + " " + auth.get("last_name");}).join(", ")); 
+                    ".other-authors": { observe: "other_authors", update: function($el, val, model, options) {
+                        $el.val(model.get("other_authors").map(function(auth) { return auth.get("first_name") + " " + auth.get("last_name");}).join(", "));
                     }},
                     ".sponsor-name": "sponsor_name",
                     ".sponsor-email": "sponsor_email",
@@ -81,7 +81,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
         },
         toggleCheckbox: function(model){
             var type = _(model.changed).keys()[0].match(/_(\w+)_/)[1]
-            if(_(model.changed).values()[0]){ 
+            if(_(model.changed).values()[0]){
                 $("."+type+"-subjects-number").closest(".form-group").removeClass("hidden");
             } else {
                 $("."+type+"-subjects-number").closest(".form-group").addClass("hidden");
@@ -93,14 +93,14 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
         },
         submit: function (){
             this.$(".submit-proposal-button").button("saving")
-            this.model.save();    
+            this.model.save();
         },
         updateAuthors: function() {
             this.$(".other-author-info").width(this.$(".other-author-info").parent().width()-100).toggle("blind",500);
         },
         addAuthor: function (){
             this.model.save({success: function () {
-                this.model.trigger("change:other_authors",this.model);    
+                this.model.trigger("change:other_authors",this.model);
             }});
         },
         checkSponsorEmail: function (){
@@ -141,7 +141,7 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
             this.model.get("other_authors").each(function(author){
                 ul.append(new AuthorRowView({model: author, authors: self.model.get("other_authors")}).render().el);
             });
-            this.addAuthor = new Author();
+            this.addAuthor = new Student();
             this.stickit(this.addAuthor,this.bindings);
             return this;
         },
@@ -163,10 +163,10 @@ define(['backbone', 'underscore','apps/settings','views/FeedbackView','apps/comm
                 console.log("The falconkey does not exist");
 		$("input.add-author-field").closest(".form-group").addClass("has-error");
 		$("input.add-author-field").popover({content: "The falconkey does not exist"}).popover("show")
-		
+
             } else {
 		if(! this.model.get("other_authors").findWhere({email: data.email})){
-                    this.model.get("other_authors").add(new Author(data));
+                    this.model.get("other_authors").add(new Student(data));
 		}
             }
         }

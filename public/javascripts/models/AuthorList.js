@@ -1,13 +1,13 @@
-define(['backbone','models/Author'], function(Backbone,Author){
+define(['backbone','models/Student'], function(Backbone,Student){
     /**
      *
      * This defines an AuthorList
-     * 
+     *
      * @type {*}
      */
 
     var AuthorList = Backbone.Collection.extend({
-        model: Author
+        model: Student
     });
 
     return AuthorList;

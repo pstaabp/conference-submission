@@ -2,6 +2,7 @@ package Common::MongoDBable;
 
 use strictures 2;
 use Moo::Role;
+use boolean;
 use Data::Dump qw/dd dump/;
 use Data::Structure::Util qw( unbless );
 use MooX::Types::MooseLike::Base qw(Str);
@@ -16,6 +17,12 @@ around BUILDARGS => sub {
   if (ref($args{_id}) eq "MongoDB::OID") {
     $args{_id} = $args{_id}->{value};
   }
+  for my $key (keys %args){
+    if (ref($args{$key}) eq "boolean" || ref($args{$key}) eq "JSON::PP::Boolean"){
+        $args{$key} = boolean($args{$key}) ? true : false;
+    }
+  }
+
   return $class->$orig( \%args );
 };
 
@@ -30,7 +37,7 @@ sub insert_to_db_common {
 sub update_in_db {
   my ($self,$client,$collection_name) = @_;
   my $collection = $client->ns($collection_name);
-  dd $self;
+  ##dd $self;
   my $id_obj = MongoDB::OID->new(value =>$self->_id);
   my $params = $self->to_hash;
   delete $params->{_id};
@@ -44,7 +51,7 @@ sub remove_from_db_common {
   my $collection = $client->ns($collection_name);
   my $id_obj = MongoDB::OID->new(value =>$self->_id);
   $collection->delete_one({_id => $id_obj});
-  return $self->to_hash; 
+  return $self->to_hash;
 
 }
 
@@ -53,7 +60,13 @@ sub to_hash {
 
    my $hash = {};
    for my $key (keys %$self){
-       $hash->{$key} = $self->{$key}
+      #  if (ref($self->{$key}) eq "boolean") {
+      #    ##dd "HERE " . $key;
+      #    $hash->{$key} = ($self->{$key})?true:false;
+      #    ##dd $hash->{$key};
+      #  } else {
+         $hash->{$key} = $self->{$key};
+      #  }
    }
    return $hash;
 }

@@ -2,7 +2,7 @@
 
 <p>Thank you for your help in the FSU Undergraduate Conference.  You should be here if you are
 either a faculty or staff that is a sponsor or judge.  Please select your role(s) below and hit Continue.</p>
-<form method="post" action="/[% top_dir %]/user">
+<form method="post" action="[% top_dir %]/user">
   <div style="form-horizontal">
     <div style="form-group">
       <label style="checkbox-inline">
@@ -11,5 +11,7 @@ either a faculty or staff that is a sponsor or judge.  Please select your role(s
       <label style="checkbox-inline">
         <input id="judge" type="checkbox" name="judge"> Judge
       </label>
+      <button type="submit" class="btn btn-primary">Continue</button>
     </div>
+
   </form>

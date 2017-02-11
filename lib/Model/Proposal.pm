@@ -2,7 +2,7 @@ package Model::Proposal;
 
 
 use Moo;
-use MooX::Types::MooseLike::Base qw(Str ArrayRef Bool);
+use Types::Standard qw(Str ArrayRef Bool);
 with 'Common::MongoDBable';
 
 use Data::Dump qw/dd/;

@@ -3,9 +3,8 @@
   </script>
   <script type="text/javascript">
     require.config = { "[%top_dir%]/javascripts/apps/StudentPage.js": {
-      // user: !{JSON.stringify(user)},
+      student: [% student_encoded %],
       //proposals: !{JSON.stringify(proposals)}
-      user : {},
       proposals: []
       }
     };
@@ -14,11 +13,7 @@
   <script type='text/javascript' data-main='[%top_dir%]/javascripts/apps/StudentPage.js' src='[%top_dir%]/javascripts/bower_components/requirejs/require.js'></script>
 
 [% INCLUDE proposal.tt %]
-[% INCLUDE users/info.tt %]
-
-<!--block templates
-  include users/info.jade
-  include proposal.jade -->
+[% INCLUDE info.tt %]
 
 <script type='text/template' id= 'student-tabs-template'>
     <input type='hidden' id='user-id' value="user.id">

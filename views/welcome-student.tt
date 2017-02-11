@@ -4,4 +4,4 @@
     Here you will be able to submit and edit proposals for the Conference.
     You will need a faculty sponsor for each proposal that you submit and you should have talked about your proposal with your
     sponsor.  Make sure that you have your sponsor's correct FSU email address before submitting.  </p>
-  <a href="/[% top_dir %]" style="btn btn-default">Continue</a>
+  <a href="[% top_dir %]/student" style="btn btn-default">Continue</a>

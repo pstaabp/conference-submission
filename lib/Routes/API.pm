@@ -1,261 +1,228 @@
 package Routes::API;
 use Dancer2;
+
 set serializer => 'JSON';
 use MongoDB;
 use MongoDB::OID;
-# use Model::Author;
-# use Model::Module;
-# use Model::Problem;
-# use Model::ProblemSet;
-# use Model::ModuleList qw/module_collection/;
-# use Model::ProblemList qw/problem_collection get_problem_by_id update_problem_by_id/;
-use Common::Collection qw/to_hashes get_one_by_id get_all_in_collection/;
+use Model::User;
+use Model::Student;
+use Model::Judge;
+
+use Common::Collection qw/to_hashes get_one_by_id insert_to_db get_all_in_collection
+            delete_one_by_id update_one/;
 use Data::Dump qw/dump/;
 use Types::Standard qw/ArrayRef Str/;
+
+# hook before_serializer => sub {
+#   debug "in before_serializer";
+#   my $self = shift;
+#   debug dump $self;
+# #   my $hash = {};
+# #   for my $key (keys %$self){
+# #     if (ref($self->{$key}) eq "boolean") {
+# #       $hash->{$key} = ($self->{$key})?true:false;
+# #     } else {
+# #       $hash->{$key} = $self->{$key};
+# #     }
+# #   }
+# #   debug dump $hash;
+# };
+#
+# hook after_serializer => sub {
+#   debug "in after_serializer";
+#   my $serialized_content = shift;
+#   debug $serialized_content;
+# };
 
 ### User Routes
 
 get '/users' => sub { # get all users
     my $client = MongoDB->connect('mongodb://localhost');
-    my $problems = problem_collection($client);
-    return to_hashes($problems);
-
-
+    my $users = get_all_in_collection($client,config->{database_name}.".users","Model::User");
+    return to_hashes($users);
 };
 
-
-post '/users' => sub { # add a new author
-
-  my $new_user = Model::User->new(body_parameters->as_hashref);
-  my $client = MongoDB->connect('mongodb://localhost');
-  my $authors = $client->ns('problemdb.authors');
-
-  #debug $authors;
-  my $result = $authors->insert_one($new_user);
-
-  debug $result;
-
-  return {msg => "hi"};
-};
-
-### problem routes
-
-post '/problems/:problem_id/latex' => sub {
-    my $client = MongoDB->connect('mongodb://localhost');
-    my $prob = get_problem_by_id($client,route_parameters->{problem_id});
-
-    if($prob->language eq 'markdown') {
-      $prob->md_to_latex;
-    } else {
-      $prob->latex_to_md;
-    }
-
-   return {msg => "hi"};
-};
-
-get '/problems' => sub { # get an array of all modules
-    my $client = MongoDB->connect('mongodb://localhost');
-    my $problems = problem_collection($client);
-    return to_hashes($problems);
-};
 
 ###
-#  get a single problem with id :problem_id
+#  get a single user with id :user_id
 #
 #  return a hash of the problem.
 ###
 
 
-get '/problems/:problem_id' => sub {
-   debug 'in /problems/:problem_id';
+get '/users/:user_id' => sub {
+   debug dump "in get /users/:user_id";
    my $client = MongoDB->connect('mongodb://localhost');
-   my $prob = get_one_by_id($client,'problemdb.problems','Model::Problem',route_parameters->{problem_id});
-   return $prob->to_hash;
+   my $user = get_one_by_id($client,config->{database_name} . ".user",'Model::User',route_parameters->{user_id});
+   return $user->to_hash;
 };
 
-put '/problems/:problem_id' => sub {
-   my $client = MongoDB->connect('mongodb://localhost');
-   my $prob = Model::ProblemList::update_problem_by_id($client,route_parameters->{problem_id},body_parameters->as_hashref);
-   return $prob->to_hash;
-};
-
-del '/problems/:problem_id' => sub {
-   my $client = MongoDB->connect('mongodb://localhost');
-   my $prob = Model::ProblemList::remove_problem_by_id($client,route_parameters->{problem_id});
-   return $prob;
-};
-
-
-post '/problems' => sub { # add a problem.
-
-  #debug "in post /problems";
+post '/users' => sub { # add a new user
+  my $params =  body_parameters->mixed;
+  $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
+  my $new_user = Model::User->new($params);
   my $client = MongoDB->connect('mongodb://localhost');
-  debug dump body_parameters->mixed;
-  debug ref body_parameters->as_hashref_mixed->{type};
-  my $type = ArrayRef[Str];
 
-  #print "testing: " . $type->(body_parameters->mixed->{type}) . "\n";
-  my $problem = Model::ProblemList::insert_new_problem($client,body_parameters->as_hashref_mixed);
-
-  return $problem->to_hash;
-};
-
-post '/problems/latex' => sub {
-  debug "in post /problems/latex";
-  my $client = MongoDB->connect('mongodb://localhost');
-  my $problems = problem_collection($client);
-
-  my $s = "";
-
-  for my $prob (@{$problems}) {
-    $s .= "\\item " . $prob->get_latex;
+  # check if user already exists
+  my $coll = $client->ns(config->{database_name}. ".users");
+  my $u = $coll->find_one({falconkey => $new_user->{falconkey}});
+  if ($u){
+    return {success=>false,msg=>"A user with falconkey ". $new_user->{falconkey} ." already exists"};
   }
 
-  #my $output_dir= '/Users/pstaab/Transporter/peter/code/problemdb/public/output';
-  my $output_dir = config->{appdir} . "/public/output";
-
-  # some useful options (see below for full list)
-  my $config = {
-      INCLUDE_PATH => config->{appdir} . '/views',  # or list ref
-      OUTPUT_PATH  => $output_dir,
-      INTERPOLATE  => 1,               # expand "$var" in plain text
-      POST_CHOMP   => 1,               # cleanup whitespace
-     # PRE_PROCESS  => 'header',        # prefix each template
-      EVAL_PERL    => 1,               # evaluate Perl code blocks
-  };
-
-  # create Template object
-  my $template = Template->new($config);
-
-  my $input = "latex_template.tex";
-  my $out = "test.tex";
-  $template->process($input,{CONTENT=>$s},$out);
-
-  my $latex_out = system('/Library/TeX/texbin/pdflatex',"-output-directory=$output_dir","$output_dir/test.tex");
-
-  debug $!;
-
-  return {msg => $latex_out};
-
+  my $result = insert_to_db($client,config->{database_name} . ".users",$new_user);
+  return $result->to_hash;
 };
 
-### problem set routes
+## update the user by _id
 
-get '/problemsets' => sub {
+put '/users/:user_id' => sub {
+  debug "in put /users/:user_id";
+  my $params =  body_parameters->mixed;
+  $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
+  my $updated_user = Model::User->new($params);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $sets = get_all_in_collection($client,'problemdb.problemsets','Model::ProblemSet');
+  my $user = update_one($client,config->{database_name} . ".user",$updated_user);
 
-  return to_hashes($sets);
+  return $user->to_hash;
 };
 
+# delete a user using _id
 
-post '/problemsets' => sub {
-  my $newProblemSet = Model::ProblemSet->new(body_parameters->as_hashref);
-  $newProblemSet->insert_to_db(MongoDB->connect('mongodb://localhost'));
-
-  return $newProblemSet->to_hash;
-};
-
-get '/problemsets/:set_id' => sub {
-  debug "in GET /problemsets/:set_id";
+del '/users/:user_id' => sub {
+  debug "in delete /users/:user_id";
   my $client = MongoDB->connect('mongodb://localhost');
-  my $set = get_one_by_id($client,"problemdb.problemsets","Model::ProblemSet",route_parameters->{set_id});
-
-  return $set->to_hash;
+  my $deleted_user = delete_one_by_id($client,config->{database_name} . ".users",'Model::User',route_parameters->{user_id});
+  return $deleted_user->to_hash;
 };
 
+###
+#
+#  Sponsor routes
+#
+####
 
-put '/problemsets/:set_id' => sub {
-  debug "in PUT /problems/:set_id";
+get '/sponsors' => sub {
   my $client = MongoDB->connect('mongodb://localhost');
-  my $set = get_one_by_id($client,"problemdb.problemsets","Model::ProblemSet",route_parameters->{set_id});
-  my @problems =  body_parameters->get_all("problems");
-  $set->name(body_parameters->{name});
-  $set->institution(body_parameters->{institution});
-  $set->instructor(body_parameters->{instructor});
-  $set->date(body_parameters->{date});
-  $set->header(body_parameters->{header});
-  $set->course_name(body_parameters->{course_name});
-  $set->problems(\@problems);
-  $set->update_in_db($client,"problemdb.problemsets");
-
-  return $set->to_hash;
+  my $mc = $client->ns(config->{database_name} . ".user");
+  my $q = {role=> {'$in'=> ["sponsor"]}};
+  my @items = map {Model::Sponsor->new($_); } $mc->find($q)->all;
+  return to_hashes(\@items);
 };
 
-del '/problemsets/:set_id' => sub {
-   debug "in DEL /problemsets/:set_id";
+
+
+get '/sponsors/:sponsor_id' => sub {
+   debug dump "in get /sponsors/:sponsor_id";
    my $client = MongoDB->connect('mongodb://localhost');
-   my $set = get_one_by_id($client,"problemdb.problemsets","Model::ProblemSet",route_parameters->{set_id});
-   debug dump $set;
-   #my $set = Model::ProblemSet->new(route_parameters->as_hashref);
-   return $set->remove_from_db($client);
+   my $sponsor = get_one_by_id($client,config->{database_name} . ".user",'Model::Sponsor',route_parameters->{sponsor_id});
+   ## TODO:  check that this user has a sponsor role
+   return $sponsor->to_hash;
 };
 
+### Note:
 
-### latex a give problem set
+# there is not a post for a sponsor, because a sponsor is a user, post as a user instead
 
-post '/problemsets/:set_id/latex' => sub {
-  debug 'in POST /problemsets/:set_id/latex';
+put '/sponsors/:sponsor_id' => sub {
+  debug "in put /sponsor/:sponsor_id";
+  my $params =  body_parameters->mixed;
+  $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
+  my $updated_user = Model::Sponsor->new($params);
+  # dd $updated_user;
   my $client = MongoDB->connect('mongodb://localhost');
-  my $set = get_one_by_id($client,"problemdb.problemsets","Model::ProblemSet",route_parameters->{set_id});
-  return $set->latex($client,config,query_parameters->{solution});
+  my $user = update_one($client,config->{database_name} . ".user",'Model::User',$updated_user);
 
+  return $user->to_hash;
 };
 
+###
+#
+#  student routes
+#
+####
 
-### module routes
-
-get '/modules' => sub { # get an array of all modules
-    my $client = MongoDB->connect('mongodb://localhost');
-    my $modules = module_collection($client);
-    return to_hashes($modules);
-};
-
-get '/module' => sub {
+get '/students' => sub {
   my $client = MongoDB->connect('mongodb://localhost');
-  my $mc = $client->ns('problemdb.modules');
+  my $mc = $client->ns(config->{database_name} . ".users");
+  my $q = {role=> {'$in'=> ["student"]}};
+  my @items = map {Model::Student->new($_); } $mc->find($q)->all;
 
-  my $mod = $mc->find_one;
-
-  my $mod2 = Model::Module->new($mod);
-  return $mod2->to_hash;
-
-};
-
-post '/modules' => sub { # add a module
-  my $newModule = Model::Module->new(body_parameters->as_hashref);
-  $newModule->insert_to_db(MongoDB->connect('mongodb://localhost'));
-
-  return $newModule->to_hash;
+  return to_hashes(\@items);
 };
 
 
-put '/modules/:module_id' => sub {
-  debug "in put /modules/:module_id";
-  my $module_id = MongoDB::OID->new(route_parameters->{module_id});
+
+get '/students/:student_id' => sub {
+   debug "in get /students/:student_id";
+   debug route_parameters->{student_id};
+   my $client = MongoDB->connect('mongodb://localhost');
+   my $student = get_one_by_id($client,config->{database_name} . ".users",'Model::Student',route_parameters->{student_id});
+
+  #  debug dump $student;
+   ## TODO:  check that this user has a student` role
+   return $student->to_hash;
+};
+
+### Note:
+
+# there is not a post for a student, because a student is a user, post as a user instead
+
+put '/students/:student_id' => sub {
+  debug "in put /students/:student_id";
+  my $params =  body_parameters->mixed;
+  $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
+
+  my $updated_user = Model::Student->new($params);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $module_collection = $client->ns('problemdb.modules');
-  debug body_parameters;
-  my $updated_module = $module_collection->find_one_and_update({_id => $module_id},{name => body_parameters->{name}});
+  my $user = update_one($client,config->{database_name} . ".users",$updated_user);
 
-  return {name => body_parameters->{name}};
-
+  return $user->to_hash;
 };
 
-del '/modules/:module_id' => sub {
-  debug "in /modules/:module_id";
-  my $module_id = MongoDB::OID->new(route_parameters->{module_id});
+
+###
+#
+#  judges routes
+#
+####
+
+get '/judges' => sub {
   my $client = MongoDB->connect('mongodb://localhost');
-  my $module_collection = $client->ns('problemdb.modules');
-  debug route_parameters->{module_id};
-  my $module_to_delete = $module_collection->delete_one({_id => $module_id});
-
-  debug $module_to_delete;
-
-  return {success => true};
-
+  my $mc = $client->ns(config->{database_name} . ".user");
+  my $q = {role=> {'$in'=> ["judge"]}};
+  my @items = map {Model::Judge->new($_); } $mc->find($q)->all;
+  #debug dump $mc->find($q)->all;
+  return to_hashes(\@items);
+  #return \@items;
 };
 
 
+
+get '/judges/:judge_id' => sub {
+   debug dump "in get /judges/:judge_id";
+   my $client = MongoDB->connect('mongodb://localhost');
+   my $judge = get_one_by_id($client,config->{database_name} . ".user",'Model::Judge',route_parameters->{judge_id});
+
+   ## TODO:  check that this user has a student` role
+   return $judge->to_hash;
+};
+
+### Note:
+
+# there is not a post for a student, because a student is a user, post as a user instead
+
+put '/judges/:judge_id' => sub {
+  debug "in put /judges/:judge_id";
+  my $params =  body_parameters->mixed;
+  $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
+
+  my $updated_user = Model::Judge->new($params);
+  # dd $updated_user;
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $user = update_one($client,config->{database_name} . ".user",'Model::Judge',$updated_user);
+
+  return $user->to_hash;
+};
 
 true;

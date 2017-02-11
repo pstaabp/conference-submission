@@ -1,5 +1,9 @@
 # configuration file for development environment
 
+# database_name: name of the database where everything is stored
+database_name: conf-2016
+top_dir: ''
+
 # the logger engine to use
 # console: log messages to STDOUT (your console where you started the
 #          application server)
@@ -9,7 +13,7 @@ logger: "console"
 # the log level for this environment
 # core is the lowest, it shows Dancer2's core log messages as well as yours
 # (debug, info, warning and error)
-log: "core"
+log: "debug"
 
 # should Dancer2 consider warnings as critical errors?
 warnings: 1
@@ -33,6 +37,10 @@ engines:
   session:
     YAML:
       session_dir: /tmp/dancer-sessions
+  serializer:
+    JSON:
+      allow_blessed: 1
+      convert_blessed: 1
 
 port: 5000
 
@@ -41,25 +49,36 @@ plugins:
         #login_page_handler: 'Routes::Templates::login_page'
         no_default_pages: 1
         # Set to 1 to use the no-redirect login functionality
-        login_without_redirect: 1
+        no_login_handler: 1
+        #login_without_redirect: 0
         # Set the view name for a custom login page, defaults to 'login'
-        login_template: login
+        #login_template: '/login'
         # After /logout: If no return_url is given: land here (no default)
         exit_page: '/test'
         realms:
-            config:
-                provider: Config
+            local:
+                provider: Local
                 users:
                     - user: dave
                       pass: dave
                       first_name: Dave
                       last_name: Digger
-                      roles:
+                      email: dave@digger.com
+                      falconkey: dave
+                      role:
                         - student
                     - user: bob
                       pass: bob
+                      falconkey: bob
                       first_name: Bob
                       last_name: Builder
-                      roles:
+                      role:
                         - admin
                         - sponsor
+            FSULdap:
+                provider: FSULdap
+                host: ldaps://fsudc1.fsc.int:3269
+                basedn: ''
+                binddn: fscad\webworkldap
+                bindpw: MonDec211215
+                username_attribute: sAMAccountName

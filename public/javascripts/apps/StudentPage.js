@@ -1,7 +1,7 @@
 
-define(['module','backbone', 'underscore','models/UserList','models/User','models/ProposalList',
-    'views/PersonalInfoView','views/ProposalView','models/Proposal','views/WebPage'],
-function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,ProposalView,Proposal,WebPage){
+define(['module','backbone', 'underscore','models/Student','models/ProposalList',
+    'views/StudentInfoView','views/ProposalView','models/Proposal','views/WebPage'],
+function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,Proposal,WebPage){
 
     var StudentPage = WebPage.extend({
         el: "#content",
@@ -10,17 +10,17 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
             _.bindAll(this, 'render');  // include all functions that need the this object
             var self = this;
 
-            this.user = module && module.config() ? new User(module.config().user): new User();
+            this.student = module && module.config() ? new Student(module.config().student): new Student();
             this.proposals = module && module.config() ? new ProposalList(ProposalList.prototype.parse(module.config().proposals))
                      : new ProposalList();
-            this.proposals.user_id = this.user.get("falconkey");
+            this.proposals.user_id = this.student.get("falconkey");
             this.proposals.on("add",function (){
                 self.render();
                 $("#submit-main-tabs a:last").tab("show");
             }).on("sync",function(_proposal){
                 self.messagePane.addMessage({short: "Proposal Saved.", type: "success"});
             });
-            this.user.on({
+            this.student.on({
                 "change": function(_user){
                     _user.changingAttributes=_.pick(_user._previousAttributes,_.keys(_user.changed));
                 },
@@ -39,9 +39,10 @@ function(module,Backbone, _, UserList, User,ProposalList,PersonalInfoView,Propos
             WebPage.prototype.render.apply(this);  // Call  WebPage.render();
             var self = this;
             this.$el.append(_.template($("#student-tabs-template").html()));
-            if (this.user) {
-                this.personalInfoView = new PersonalInfoView({el: $("#personal"), user: this.user, proposals: this.proposals, editMode: false});
-                if (this.user.get("role")!=="student"){
+            if (this.student) {
+                this.personalInfoView = new StudentInfoView({el: $("#personal"), student: this.student,
+                  proposals: this.proposals, editMode: false});
+                if (this.student.get("role")!=="student"){
                     $("#submit-proposal-row").addClass("hidden");
                 }
             }
