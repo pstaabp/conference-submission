@@ -80,5 +80,5 @@ plugins:
                 host: ldaps://fsudc1.fsc.int:3269
                 basedn: ''
                 binddn: fscad\webworkldap
-                bindpw: MonDec211215
+                bindpw: *****
                 username_attribute: sAMAccountName
