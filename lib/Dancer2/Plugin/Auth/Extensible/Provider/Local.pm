@@ -1,4 +1,4 @@
-package Dancer2::Plugin::Auth::Extensible::Provider::Config;
+package Dancer2::Plugin::Auth::Extensible::Provider::Local;
 
 use Carp qw/croak/;
 use Dancer2::Core::Types qw/ArrayRef/;
@@ -73,14 +73,19 @@ has users => (
 
 =cut
 
+
 sub authenticate_user {
     my ($self, $username, $password) = @_;
 
     croak "username and password must be defined"
       unless defined $username && defined $password;
 
-    my $user_details = $self->get_user_details($username) or return;
-    return $self->match_password($password, $user_details->{pass});
+    my $user = first {
+        $_->{user} eq $username
+    } @{ $self->users };
+
+    #my $user_details = $self->get_user_details($username) or return;
+    return $self->match_password($password, $user->{pass});
 }
 
 =head2 get_user_details $username
@@ -97,8 +102,12 @@ sub get_user_details {
     my $user = first {
         $_->{user} eq $username
     } @{ $self->users };
-    #delete $user->{pass};
-    return $user;
+    my $details = {};
+    my @fields = qw/first_name last_name falconkey role/;
+    for my $key (@fields){
+      $details->{$key} = $user->{$key};
+    }
+    return $details;
 }
 
 =head2 get_user_roles $username
@@ -112,7 +121,7 @@ sub get_user_roles {
       unless defined $username;
 
     my $user_details = $self->get_user_details($username) or return;
-    return $user_details->{roles};
+    return $user_details->{role};
 }
 
 1;

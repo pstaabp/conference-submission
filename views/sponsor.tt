@@ -1,0 +1,122 @@
+<script type="text/javascript" src="[%top_dir%]/javascripts/apps/require-config.js">
+</script>
+<script type="text/javascript">
+  require.config = { "[%top_dir%]/javascripts/apps/StudentPage.js": {
+    user: [% user_encoded %],
+    //proposals: !{JSON.stringify(proposals)}
+    proposals: []
+    }
+  };
+</script>
+
+<script type='text/javascript' data-main='[%top_dir%]/javascripts/apps/SponsorPage.js' src='[%top_dir%]/javascripts/bower_components/requirejs/require.js'></script>
+
+
+
+[% INCLUDE proposal.tt %]
+
+<script type='text/template' id='faculty-tabs-template'>
+  <input type="hidden" id="user-id" value="[% user.id %]">
+  [% IF proposals && proposals.size>0 %]
+    <p> Below is all proposals that list you as the sponsor of a Undergraduate Conference proposal.  If you have more that one, each
+      will be present in a tab.  For each proposal, you will need to submit a sponsor statement.  If there are any changes that
+      need to be made to the proposal (i.e. typos or other errors), please let the student know that she/he should log back into
+      the website and make the changes. </p>
+  [% ELSE %]
+     <p> Currently, there are no proposals that list you as a sponsor.  If you know a student of yours has submitted a proposal with you as
+      a sponsor, check with the student to make sure that your correct email is listed on the proposal. </p>
+
+    <p> You are viewing the website as a sponsor.  To switch the view, click on "Change Role" on the
+    menu bar. </p>
+  [% END %]
+  <ul class="nav nav-tabs" id="submit-main-tabs">
+  </ul>
+    <div class="tab-content"> </div>
+</script>
+<script type='text/template' id='new-proposal-template'>
+  <div class="tab-pane">
+    <p>Creating a new Proposal.&nbsp;&nbsp;
+      <img src='/images/ajax-loader-small.gif'>
+    </p>
+  </div>
+</script>
+
+<script id="other-equip-help-text" type="text/template">
+   <p> If you need additional equipment, please list it here.  All oral presentations will have hookups for
+     a projector, but you may need an adapter.  If you have a poster presentation and need a power outlet
+     please list it here.  Anything else, please list it. </p>
+</script>
+
+<script type='text/template' id='help-text'>
+   <p>   This page has a set of tabs (Personal Information and Propoals.)  You can edit your personal information except your
+    email address, create new proposals and edit existing ones.  To close this help box, click the X in the upper right
+    corner. </p>
+  <p> To edit your personal information, click the "Edit Info" button, change the information and then click "Save Info".  </p>
+  <p> To create a new proposal for the Conference, click the "Create a New Proposal" button.  A new tab for the page opens
+    and you can include all of the information.  Make sure that you include information for all fields.  If there are more
+    than one student on a project, click the "Add Author" button to add the student and the email address.  </p>
+  <p>    To edit an existing proposal, select the desired proposal then click the "Edit Proposal" button.  change the information then
+    click "Save the Proposal".  </p>
+
+</script>
+
+<script id="feedback-template" type="text/template">
+  <div class="modal hide fade">
+
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+      <h3>Feedback on Presentation</h3>
+    </div>
+    <div class="modal-body">
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <td colspan="2" class="span8">
+              Visual Design: Professional appearance of poster, appropriate amount of text,
+              legible text, appropriate use of figures, logical presentation of project </td>
+            <td class="span1 visual-design"></td>
+          </tr>
+          <tr>
+            <td colspan="2" class="span8">
+              Verbal Presentation: Description of project logical and consise, audible and clear
+              presentation, liveliness and professional style </td>
+            <td class="verbal-presentation"></td>
+          </tr>
+          <tr>
+            <td colspan="2">Organization And Logic: Problem/objective clearly stated, methods and results explained.</td>
+            <td class="organization-and-logic"></td>
+          </tr>
+          <tr>
+            <td colspan="2">Appropriate Knowledge of Field: Demonstrated understanding of probject and boarder context</td>
+            <td class="knowledge"></td>
+          </tr>
+          <tr>
+            <td colspan="2">Clear Explanations/ability to answer questions</td>
+            <td class="explanations"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              Overall Impression: Impression compared to other posters judges/additional comments useful for judging </td>
+            <td class="overall"></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td style="text-align: right"> Total Score</td>
+            <td class="total-score"></td>
+          </tr>
+          <tr>
+            <td class="span2">Strength of Poster</td>
+            <td colspan="2" class="span8 strength"></td>
+          </tr>
+          <tr>
+            <td class="span2">Suggestions for Improvement</td>
+            <td colspan="2" class="span8 improvement"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <a class="btn btn-default" href="#" data-dismiss="modal"> Close </a>
+    </div>
+  </div>
+</script>
