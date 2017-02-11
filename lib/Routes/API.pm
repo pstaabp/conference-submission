@@ -54,7 +54,7 @@ get '/users' => sub { # get all users
 get '/users/:user_id' => sub {
    debug dump "in get /users/:user_id";
    my $client = MongoDB->connect('mongodb://localhost');
-   my $user = get_one_by_id($client,config->{database_name} . ".user",'Model::User',route_parameters->{user_id});
+   my $user = get_one_by_id($client,config->{database_name} . ".users",'Model::User',route_parameters->{user_id});
    return $user->to_hash;
 };
 
@@ -83,7 +83,7 @@ put '/users/:user_id' => sub {
   $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
   my $updated_user = Model::User->new($params);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".user",$updated_user);
+  my $user = update_one($client,config->{database_name} . ".users",$updated_user);
 
   return $user->to_hash;
 };
@@ -94,7 +94,7 @@ del '/users/:user_id' => sub {
   debug "in delete /users/:user_id";
   my $client = MongoDB->connect('mongodb://localhost');
   my $deleted_user = delete_one_by_id($client,config->{database_name} . ".users",'Model::User',route_parameters->{user_id});
-  return $deleted_user->to_hash;
+  return Model::User->new($deleted_user)->to_hash;
 };
 
 ###
@@ -249,6 +249,31 @@ get '/proposals/:proposal_id' => sub {
   #  debug dump $student;
    ## TODO:  check that this user has a student` role
    return $proposal->to_hash;
+};
+
+post '/proposals' => sub { # add a new user
+  my $new_proposal = Model::User->new(body_parameters->as_hashref);
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $result = insert_to_db($client,config->{database_name} . ".proposals",$new_proposal);
+  return $result->to_hash;
+};
+
+
+put '/proposals/:proposal_id' => sub {
+  debug "in put /proposals/:proposal_id";
+  my $updated_proposal = Model::Proposal->new(body_parameters->as_hashref);
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $user = update_one($client,config->{database_name} . ".proposals",$updated_proposal);
+
+  return $user->to_hash;
+};
+
+del '/proposals/:proposal_id' => sub {
+  debug "in delete /proposals/:proposal_id";
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $deleted_proposal = delete_one_by_id($client,config->{database_name} . ".proposals",
+            'Model::Proposal',route_parameters->{proposal_id});
+  return Model::Proposal->new($deleted_proposal)->to_hash;
 };
 
 

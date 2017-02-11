@@ -62,7 +62,7 @@ sub get_one_by_id {
   #dd $collection_name;
   my $collection = $client->ns($collection_name);
   my $id_obj = MongoDB::OID->new(value => $id);
-  # dd $id_obj;
+  #dd $id_obj;
   my $result = $collection->find_id($id_obj);
   #dd $result;
   return $class->new($result);
@@ -105,10 +105,7 @@ sub delete_one_by_id {
   say "in delete_one_by_id";
   my $collection = $client->ns($collection_name);
   my $id_obj = MongoDB::OID->new(value => $id);
-  my $obj = $collection->find_id({_id =>$id_obj});
-  $obj = $collection->find_one({falconkey=>'homer'});
-  my $result = $collection->find_one_and_delete({_id=>$id_obj});
-  return $result;
+  return $collection->find_one_and_delete({_id=>$id_obj});
 }
 
 

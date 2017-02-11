@@ -5,7 +5,7 @@ use Moo::Role;
 use boolean;
 use Data::Dump qw/dd dump/;
 use Data::Structure::Util qw( unbless );
-use MooX::Types::MooseLike::Base qw(Str);
+use Types::Standard qw(Str);
 
 has _id => (is=>'ro');
 

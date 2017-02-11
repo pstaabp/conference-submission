@@ -22,6 +22,7 @@ my $res  = $test_api->request( GET '/users' );
 ok( $res->is_success, '[GET /api/users] successful' );
 
 my $users = decode_json $res->content;
+#dd $users;
 
 is(ref($users),"ARRAY","[GET /api/users] returns an array");
 
@@ -57,6 +58,7 @@ $user_obj= Model::User->new(decode_json($res->{_content}));
 
 $user_obj->email('homer@gmail.com');
 $res = $test_api->request(PUT '/users/' . $user_obj->{_id},'Content-Type' => 'application/json', Content => encode_json($user_obj->to_hash));
+
 ok($res->is_success, '[PUT /api/users/:user_id] successful');
 
 # TODO:  check that the update went through.
@@ -71,47 +73,9 @@ cmp_deeply($user_obj,$user2,'The user was updated successfully');
 $res = $test_api->request(DELETE '/users/' . $user_obj->{_id});
 ok($res->is_success, '[DELETE /api/users/:user_id] successful');
 
+
 ## TODO: check that it was actually deleted.
 
-
-
-
-# $res = $test_api->request(GET '/problems/' . $problems->[2]->{_id});
-# ok($res->is_success, '[GET /api/problems/'. $problems->[2]->{_id} .'] successful.');
-# #dd $modules;
-#
-# ## test the templating routes:
-#
-# my $test_template = Plack::Test->create(Routes::Templates->to_app);
-#
-# $res = $test_template->request(GET '/problems/' . $problems->[2]->{_id});
-#
-# ok( $res->is_success, '[GET /problems/' . $problems->[2]->{_id} .'] successful' );
-#
-# ### test latexing
-#
-# $res = $test_api->request(POST '/problems/'. $problems->[2]->{_id} . '/latex');
-# ok( $res->is_success, '[POST /api/problems/' . $problems->[2]->{_id} .'/latex] successful' );
-# #
-#
-# #
-# ####
-# ##  Create a new problem
-# ####
-# my $params = {text_md => "This is a new problem", solution_md => "This is the solution"}; #, type=> ["qu","wr"]};
-# $res = $test_api->request(POST '/problems','Content-Type' => 'application/json', Content => encode_json($params));
-#
-# my $obj = from_json($res->content);
-#
-# ok($res->is_success, '[POST /problems] successful.');
-#
-# ###
-# #   Delete the problem just created.
-# ###
-#
-# $res = $test_api->request(DELETE '/problems/' . $obj->{_id});
-# ok($res->is_success, '[DELETE /problems/'. $obj->{_id}. '] successful');
-#
 
 
 done_testing();

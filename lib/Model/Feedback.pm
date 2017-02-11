@@ -1,7 +1,7 @@
 package Model::Feedback;
 
 use Moo;
-use MooX::Types::MooseLike::Base qw(Str);
+use Types::Standard qw(Str Int);
 with 'Common::MongoDBable';
 
 use Data::Dump qw/dd/;

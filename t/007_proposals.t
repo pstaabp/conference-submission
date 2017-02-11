@@ -5,12 +5,12 @@ use boolean;
 
 use Routes::API;
 use Routes::Templates;
-use Test::More tests => 1;
+use Test::More tests => 9;
 use Test::Deep qw/cmp_deeply/;
 use Plack::Test;
 use JSON;
 use HTTP::Request::Common qw/GET POST PUT DELETE/;
-use Model::Judge;
+use Model::User;
 
 my $json = JSON->new->allow_blessed(1)->convert_blessed(1);
 
@@ -21,89 +21,88 @@ use Data::Dump qw/dd/;
 ## test that the /problems route exists
 
 my $test_api = Plack::Test->create(Routes::API->to_app);
-#my $res  = $test_api->request( GET '/proposals' );
+my $res  = $test_api->request( GET '/proposals' );
 
-#ok( $res->is_success, '[GET /api/proposals] successful' );
+ok( $res->is_success, '[GET /api/proposals] successful' );
 
 #dd $res->{_content};
 
-# my $judges = $json->decode($res->{_content});
-# # #dd $judges;
-# # #
-# is(ref($judges),"ARRAY","[GET /api/judges] returns an array");
+my $proposals = $json->decode($res->{_content});
+# #dd $judges;
+# #
+is(ref($proposals),"ARRAY","[GET /api/proposals] returns an array of proposals");
 # #
 # # ### test to see if a single user is returned.
 # # # get the id randomly from the list of users.
-# my $user_num = int(rand(scalar(@$judges)));
-# my $rand_id = $judges->[$user_num]->{_id};
-my $rand_id = "56ef54390fe696676423c654";
+my $pr_num = int(rand(scalar(@$proposals)));
+my $rand_id = $proposals->[$pr_num]->{_id};
+#my $rand_id = "56ef54390fe696676423c654";
 #
-my $res = $test_api->request( GET '/proposals/' . $rand_id); # . $rand_id);
+$res = $test_api->request( GET '/proposals/' . $rand_id); # . $rand_id);
 
-dd $res; 
+# dd $res;
 ok( $res->is_success, '[GET /api/proposals/_id] successful' );
-#
-#
-# ### add a new user to the database;
-#
-# my $user_params = {
-#   first_name => "Homer",
-#   last_name => "Simpson",
-#   email => 'homer@msn.com',
-#   falconkey => 'homer',
-#   role => ['judge'],
-#   presented_before => true
-# };
-#
-# my $user_obj = Model::User->new($user_params);
+
+
+### add a new user/proposal to the database;
+
+my $user_params = {
+  first_name => "Homer",
+  last_name => "Simpson",
+  email => 'homer@msn.com',
+  falconkey => 'homer',
+  role => ['student'],
+  presented_before => true
+};
+
+my $user_obj = Model::User->new($user_params);
 #
 # my $out = $json->encode($user_obj->to_hash);
 #
-# $res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => $json->encode($user_obj->to_hash));
-# ok($res->is_success, '[POST /api/users] successful');
+$res = $test_api->request(POST '/users','Content-Type' => 'application/json',
+                        Content => $json->encode($user_obj->to_hash));
+ok($res->is_success, '[POST /api/users] successful (new user created)');
 #
-# # # dd decode_json($res->{_content});
+#dd decode_json($res->{_content});
+my $new_user = Model::User->new($json->decode($res->{_content}));
+
+my $prop_params = {
+  author_id => $new_user->{_id},
+  title => "This is the title",
+  content => "This is the abstract"
+};
+
+my $new_proposal = Model::Proposal->new($prop_params);
+
+$res = $test_api->request(POST '/proposals','Content-Type' => 'application/json',
+                        Content => $json->encode($new_proposal->to_hash));
+ok($res->is_success, '[POST /api/proposals] successful');
 # #
-# my $judge = Model::Judge->new($json->decode($res->{_content}));
-# #$judge->department("Mathematics");
-# # $judge->presented_before(true);
-# # $judge->major("Mathematics");
-#
-# #dd $judge;
-# #
-# ## update the user as a judge
-#
-# #dd "printing out the hash";
-# #dd $judge->to_hash;
-#
-# $res = $test_api->request(PUT '/judges/' . $judge->{_id},'Content-Type' => 'application/json',
-#                               Content => $json->encode($judge->to_hash));
-# ok($res->is_success, '[PUT /api/judges/:judges_id] successful');
-#
-#
-#
-# # my $client = MongoDB->connect('mongodb://localhost');
-# #
-# # # check if user already exists
-# # my $coll = $client->ns("conf-2016.users");
-# #
-# # my $result = $coll->insert_one({username=>'user',test=>true});
-# #
-# # dd $result;
-#
-# ## check that that database was updated correctly.
-#
-# $res = $test_api->request(GET '/judges/' . $judge->{_id});
-#
-# # # dd decode_json($res->{_content});
-# my $judge2 = Model::Judge->new(decode_json($res->{_content}));
-#
-# cmp_deeply($judge,$judge2,'The judge was updated successfully');
-# #
-# # delete the user
-#
-# $res = $test_api->request(DELETE '/users/' . $judge->{_id});
-# ok($res->is_success, '[DELETE /api/users/:user_id] successful');
+
+my $proposal2 = Model::Proposal->new($json->decode($res->{_content}));
+$proposal2->title("No this is really the title");
+$proposal2->sponsor_statement("YES!!!");
+
+$res = $test_api->request(PUT '/proposals/' . $proposal2->{_id},
+                            'Content-Type' => 'application/json',
+                            Content => $json->encode($proposal2->to_hash));
+
+ok($res->is_success, 'PUT [/api/proposal/:proposal_id] succesful');
+
+my $proposal3 = Model::Proposal->new($json->decode($res->{_content}));
+
+cmp_deeply($proposal2,$proposal3,'The update was made on the server.');
+
+#delete the proposal
+
+$res = $test_api->request(DELETE '/proposals/' . $proposal2->{_id});
+
+ok($res->is_success, 'DELETE [/api/proposals/:proposal_id] succesful');
+
+# delete the user
+
+$res = $test_api->request(DELETE '/users/' . $new_user->{_id});
+ok($res->is_success, '[DELETE /api/users/:user_id] successful');
 #
 #
 #
