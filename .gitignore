@@ -1,6 +1,7 @@
 ldap.js
 logs/
 node_modules/
+Environments/
 testldap.js
 public/javascripts/apps/settings.js
 *~

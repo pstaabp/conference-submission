@@ -7,6 +7,7 @@ use MongoDB::OID;
 use Model::User;
 use Model::Student;
 use Model::Judge;
+use Model::Proposal;
 
 use Common::Collection qw/to_hashes get_one_by_id insert_to_db get_all_in_collection
             delete_one_by_id update_one/;
@@ -224,5 +225,33 @@ put '/judges/:judge_id' => sub {
 
   return $user->to_hash;
 };
+
+###
+#
+# Proposal routes
+#
+###
+
+get '/proposals' => sub {
+  debug 'in get /proposals';
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
+  return to_hashes($proposals);
+
+};
+
+
+get '/proposals/:proposal_id' => sub {
+   debug "in get /proposal/:proposal_id";
+   my $client = MongoDB->connect('mongodb://localhost');
+   my $proposal = get_one_by_id($client,config->{database_name} . ".proposals",'Model::Proposal',route_parameters->{proposal_id});
+
+  #  debug dump $student;
+   ## TODO:  check that this user has a student` role
+   return $proposal->to_hash;
+};
+
+
+
 
 true;

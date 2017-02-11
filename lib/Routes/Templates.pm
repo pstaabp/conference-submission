@@ -6,7 +6,7 @@ use Dancer2::Plugin::Auth::Extensible;
 use Common::Collection qw/to_hashes get_all_in_collection insert_to_db update_one/;
 use Data::Dump qw/dump/;
 use List::Util qw/uniq/;
-use JSON; 
+use JSON -no_export;
 
 # This sets that if there is a template in the view direction a route is automatically generated.
 set auto_page => 0;

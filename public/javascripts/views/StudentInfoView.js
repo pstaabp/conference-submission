@@ -39,8 +39,10 @@ define(['backbone', 'underscore','apps/common','models/Proposal','bootstrap'], f
         console.log(this.model);
         this.model.save();
       },
-      events: {"click #save-info": "submit",
-      "click button#submit-proposal": "createProposal"},
+      events: {
+        "click #save-info": "submit",
+        "click button#submit-proposal": "createProposal"
+      },
       bindings: {
         ".first-name": "first_name",
         ".last-name": "last_name",
