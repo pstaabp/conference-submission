@@ -7,6 +7,8 @@ use Common::Collection qw/to_hashes get_all_in_collection insert_to_db update_on
 use Data::Dump qw/dump/;
 use List::Util qw/uniq/;
 use JSON -no_export;
+use Model::Sponsor;
+use Model::Judge; 
 
 # This sets that if there is a template in the view direction a route is automatically generated.
 set auto_page => 0;
@@ -109,18 +111,27 @@ get '/student' => require_role student => sub {
 
   debug 'in get /student';
   my $student = get_user(logged_in_user->{falconkey});
-
-  debug $student;
+  my $client = MongoDB->connect('mongodb://localhost');
   my $json  = JSON->new->convert_blessed->allow_blessed;
-
+  my $collection = $client->ns(config->{database_name}.".proposals");
+  my @proposals = map {Model::Proposal->new($_)}
+          $collection->find({author_id=>$student->{_id}})->all;
+  debug $student;
+  debug to_hashes(\@proposals);
   template 'basic', {top_dir=> config->{top_dir},header_script=>"student.tt",
-      user=>$student, student_encoded => $json->encode($student)};
+      user=>$student, student_encoded => $json->encode($student),
+      proposals_encoded => $json->encode(to_hashes(\@proposals))
+    };
 };
 
 get '/sponsor' => require_role sponsor => sub {
   my $user = get_user(logged_in_user->{falconkey});
+  # my $proposals = to_hashes(get_all_in_collection($client,config->{db_name}.".proposals","Model::Proposals"));
+  # my @props_as_json = map {encode_json } @$proposals;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"sponsor.tt",
-        user=>$user, user_encoded => encode_json($user)};
+        user=>$user, user_encoded => encode_json($user),
+        # proposals_encoded => \@props_as_json
+      };
 };
 
 ## update the user settings
@@ -138,8 +149,32 @@ post '/user' => require_login sub {
   my $client = MongoDB->connect('mongodb://localhost');
   my $result = update_one($client,config->{database_name}.".users",$user);
 
-  dd $result;
   redirect '/sponsor';
+};
+
+### Admin route_parameters
+
+get '/admin' => require_login sub {
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $user = get_user(logged_in_user->{falconkey});
+  my $json  = JSON->new->convert_blessed->allow_blessed;
+  my $users = to_hashes(get_all_in_collection($client,config->{database_name}.".users","Model::User"));
+  my $proposals = to_hashes(get_all_in_collection($client,
+          config->{database_name}.".proposals","Model::Proposal"));
+  my $mc = $client->ns(config->{database_name} . ".users");
+  my $q = {role=> {'$in'=> ["judge"]}};
+  my @items = map {Model::Judge->new($_); } $mc->find($q)->all;
+  my $judges = to_hashes(\@items);
+  $q = {role=> {'$in'=> ["sponsor"]}};
+  @items = map {Model::Sponsor->new($_); } $mc->find($q)->all;
+  my $sponsors = to_hashes(\@items);
+  template 'basic', {top_dir=> config->{top_dir},header_script=>"admin.tt",
+        user=>$user, user_encoded => $json->encode($user),
+        users=>$json->encode($users),
+        proposals => $json->encode($proposals),
+        judges => $json->encode($judges),
+        sponsors => $json->encode($sponsors)
+      };
 };
 
 sub get_user {

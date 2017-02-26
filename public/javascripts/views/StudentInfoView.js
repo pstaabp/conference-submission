@@ -30,8 +30,7 @@ define(['backbone', 'underscore','apps/common','models/Proposal','bootstrap'], f
       createProposal: function() {
         var self = this;
         this.model.save(this.model.attributes, {success: function () {
-          self.proposals.add(new Proposal({author: self.model.get("first_name")+ " " + self.model.get("last_name"),
-          email: self.model.get("email")}));
+          self.proposals.add(new Proposal({author_id: self.model.get("_id")}));
         }});
 
       },

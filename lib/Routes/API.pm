@@ -4,6 +4,7 @@ use Dancer2;
 set serializer => 'JSON';
 use MongoDB;
 use MongoDB::OID;
+use Net::LDAP;
 use Model::User;
 use Model::Student;
 use Model::Judge;
@@ -95,6 +96,33 @@ del '/users/:user_id' => sub {
   my $client = MongoDB->connect('mongodb://localhost');
   my $deleted_user = delete_one_by_id($client,config->{database_name} . ".users",'Model::User',route_parameters->{user_id});
   return Model::User->new($deleted_user)->to_hash;
+};
+
+# check if a particular user with a given falconkey exists
+
+get '/users/:falconkey/check' => sub {
+  debug "in get /users/:falconkey/check";
+  my $ldap = new Net::LDAP(config->{ldap_server});
+  my $msg = $ldap->bind(config->{ldap_bind}, password => config->{ldap_password} );
+  my $search = $ldap->search(base => '', filter => "sAMAccountName=" . route_parameters->{falconkey});
+  my $entry = $search->entry(0);
+  my $result = {};
+
+  ## check if the user exists in the database
+
+  my $client = MongoDB->connect("mongodb://localhost");
+  my $collection = $client->ns(config->{database_name} . ".users");
+  my $result = $collection->find_one({falonkey=>route_parameters->{falconkey}});
+
+  debug dump $result;
+
+  return (defined($entry))?
+     {last_name => $entry->get_value("sn") ||"",
+    first_name => $entry->get_value("givenName") ||"",
+    email =>  $entry->get_value("mail") || "",
+    other =>  $entry->get_value("description") || "",
+    department => $entry->get_value("department") ||""
+  }: {};
 };
 
 ###
@@ -190,7 +218,7 @@ put '/students/:student_id' => sub {
 
 get '/judges' => sub {
   my $client = MongoDB->connect('mongodb://localhost');
-  my $mc = $client->ns(config->{database_name} . ".user");
+  my $mc = $client->ns(config->{database_name} . ".users");
   my $q = {role=> {'$in'=> ["judge"]}};
   my @items = map {Model::Judge->new($_); } $mc->find($q)->all;
   #debug dump $mc->find($q)->all;
@@ -203,7 +231,7 @@ get '/judges' => sub {
 get '/judges/:judge_id' => sub {
    debug dump "in get /judges/:judge_id";
    my $client = MongoDB->connect('mongodb://localhost');
-   my $judge = get_one_by_id($client,config->{database_name} . ".user",'Model::Judge',route_parameters->{judge_id});
+   my $judge = get_one_by_id($client,config->{database_name} . ".users",'Model::Judge',route_parameters->{judge_id});
 
    ## TODO:  check that this user has a student` role
    return $judge->to_hash;
@@ -251,11 +279,25 @@ get '/proposals/:proposal_id' => sub {
    return $proposal->to_hash;
 };
 
-post '/proposals' => sub { # add a new user
-  my $new_proposal = Model::User->new(body_parameters->as_hashref);
+# get all proposals for student :student_id
+
+get '/students/:student_id/proposals' => sub { # add a new user
+  #my $new_proposal = Model::User->new(body_parameters->as_hashref);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $result = insert_to_db($client,config->{database_name} . ".proposals",$new_proposal);
-  return $result->to_hash;
+  my $collection = $client->ns(config->{database_name} . ".proposals");
+  my @results = map {Model::Proposal->new($_)}
+          $collection->find({author_id => route_parameters->{student_id}})->all;
+  #debug dump @results;
+  return to_hashes(\@results);
+};
+
+post '/students/:student_id/proposals' => sub {
+    debug 'in POST /students/:student_id/proposals';
+    my $new_proposal = Model::Proposal->new(body_parameters->as_hashref);
+    # dd $new_proposal;
+    my $client = MongoDB->connect('mongodb://localhost');
+    my $result = insert_to_db($client,config->{database_name} . ".proposals",$new_proposal);
+    return $result->to_hash;
 };
 
 

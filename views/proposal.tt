@@ -11,14 +11,14 @@
           <table class="table table-bordered">
             <tr class="feedback-row">
             <tr>
-              <td class="form-horizontal">
+              <td class="form-horizontal col-md-6">
                 <div class="form-group">
                   <label class="col-md-3 control-label"> Project Title</label>
                   <span class="col-md-9">
-                     <input class="title.form-control">
+                     <input class="title form-control">
                  </span>
                </div>
-              <td class="form-horizontal">
+              <td class="form-horizontal col-md-6">
                 <div class="form-group">
                   <label class="col-md-3 control-label"> Primary Author</label>
                   <span class="col-md-9">
@@ -39,15 +39,22 @@
                 <div class="form-horizontal">
                   <div class="form-group">
                     <label class="col-md-3 control-label"> Other Authors</label>
-                    <span class="col-md-7">
+                    <span class="col-md-9">
                        <input class="other-authors form-control" disabled="disabled">
                      </span>
-                    <span class="col-md-2">
+                    <!-- <span class="col-md-2">
                       <button class="btn btn-default add-author-button">Update Authors</button>
+                    </span> -->
+                  </div>
+                </div>
+                <div class="form-horizontal">
+                  <div class="form-group">
+                    <span class="col-md-4">
+                      <button class="btn btn-default add-author-button">Add/Delete Other Authors</button>
                     </span>
                   </div>
                 </div>
-                <div class="other-author-info"></div>
+                <div class="other-author-info hidden"></div>
               </td>
             </tr>
             <tr>
@@ -70,9 +77,9 @@
                 </div>
               <td class="form-horizontal">
                 <div class="form-group">
-                  <label class="col-md-3 control-label"> Other Equipment Needed</label>
+                  <label class="col-md-3 control-label">Other Equipment Needed</label>
                   <span class="col-md-1">
-                    <button class="btn.btn-default.btn-sm" id="other-equip-help"> ?</button>
+                    <button class="btn btn-default btn-sm" id="other-equip-help"> ?</button>
                   </span>
                   <span class="col-md-8">
                      <input class="other-equip form-control">
@@ -112,7 +119,7 @@
                     </tr>
                     <tr>
                       <td class="form-horizontal">
-                        <div class="form-group.hidden">
+                        <div class="form-group hidden">
                           <label class="col-md-4 control-label"> Number:</label>
                           <div class="col-md-8">
                              <input class="human-subjects-number" type="text">
@@ -121,7 +128,7 @@
                       </td>
                       </td>
                       <td class="form-horizontal">
-                        <div class="form-group.hidden">
+                        <div class="form-group hidden">
                           <label class="col-md-4 control-label"> Number:</label>
                           <div class="col-md-8">
                              <input class="animal-subjects-number"  type="text">
@@ -142,7 +149,7 @@
               <td colspan="2">
                 <div class="form-group">
                   <label class="control-label"> Sponsor Statement</label>
-                  <textarea class="sponsor-statement.form-control" rows="10"></textarea>
+                  <textarea class="sponsor-statement form-control" rows="10"></textarea>
                 </div>
               </td>
             <tr>

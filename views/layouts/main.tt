@@ -28,6 +28,7 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
      [% IF user %]
       <ul class="nav navbar-nav navbar-right">
+        <li><p class="navbar-text" id="message-pane"></p></li>
         <li><p class="navbar-text" id="signed-in">Welcome [% user.first_name%] [%user.last_name%]</p></li>
         <li><a href="/logout">Logout</a></li>
         <li class="dropdown">

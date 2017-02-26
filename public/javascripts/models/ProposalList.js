@@ -2,7 +2,7 @@ define(['backbone', 'models/Proposal','apps/settings'], function(Backbone,Propos
     /**
      *
      * This defines a User
-     * 
+     *
      * @type {*}
      */
 
@@ -12,25 +12,18 @@ define(['backbone', 'models/Proposal','apps/settings'], function(Backbone,Propos
             this.sortField = "submit_date";
             this.user_id = options ? options.user_id : null;
         },
-        comparator: function (proposal){
-            if (this.sortField==="author"){
-                return proposal.get("author").trim().split(/\s+/)[1];
-            } else {
-                return proposal.get(this.sortField);
-            }
-        },
-        parse: function(response,options){
-            return _(response).map(function(_set){
-                return new Proposal(_set);
-            });
-        },
+        // parse: function(response,options){
+        //     return _(response).map(function(_prop){
+        //         return new Proposal(_prop);
+        //     });
+        // },
         url: function(){
-            if(this.user_id){
-                return '/' + settings.top_dir + '/users/' + this.user_id + '/proposals';    
-            } else {
+            // if(this.get("author_id")){
+            //     return '/' + settings.top_dir + '/users/' + this.get("author_id") + '/proposals';
+            // } else {
                 return '/' + settings.top_dir + '/proposals';
-            }
-            
+            // }
+
         }
     });
 

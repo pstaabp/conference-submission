@@ -1,28 +1,23 @@
-define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbone, FeedbackList,AuthorList){
+define(['backbone', 'models/FeedbackList','models/UserList','apps/settings','moment'],
+  function(Backbone, FeedbackList,UserList,settings,moment){
     var Proposal = Backbone.Model.extend({
         defaults: {
-            author: "",  // change this to main_author:  Author   then get rid of email field below. 
-            email: "",
+            author_id: "",  // the student_id of the author
             session: "",
-            other_authors: new AuthorList(),
-            sponsor_email:"",
-            sponsor_name:"",
-            sponsor_dept:"",
-            // perhaps also make the sponsor information its own model as well.  
+            other_authors: new UserList(),
+            sponsor_id:"", // the _id of the sponsor.
             type: "",
             title: "",
             accepted: false,
             content: "",
             other_equipment: "",
-            submit_date: new Date(),
+            submit_date: moment().unix(),
             sponsor_statement: "",
             use_human_subjects: false,
             use_animal_subjects: false,
-            feedback: new FeedbackList()           
+            feedback: new FeedbackList()
         },
         validation: {
-            sponsor_email: {required: true},
-            email: {required: true},
             content: {required: true},
             title: {required: true},
             type: {required: true}
@@ -36,8 +31,12 @@ define(['backbone', 'models/FeedbackList','models/AuthorList'], function(Backbon
         },
         parse: function(response,options){
             this.set("feedback",new FeedbackList(response.feedback));
-            this.set("other_authors",new AuthorList(response.other_authors));
-            return _.omit(response,"feedback","other_authors"); 
+            this.set("other_authors",new UserList(response.other_authors));
+            return _(response).omit(["feedback","other_authors"]);
+        },
+        url: function(){
+          var main = settings.top_dir + '/students/' + this.get("author_id") + '/proposals';
+          return (this.get("_id"))?main+"/"+this.get("_id"):main;
         }
     });
 

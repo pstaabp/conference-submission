@@ -3,20 +3,24 @@ package Model::Proposal;
 
 use Moo;
 use Model::Feedback;
+use DateTime::Format::Strptime;
 use Types::Standard qw(Str ArrayRef Bool InstanceOf);
-use Types::XSD qw/DateTime/;
+use Types::XSD;
+use Scalar::Util qw(looks_like_number);
+
 use boolean;
 with 'Common::MongoDBable';
 
 use Data::Dump qw/dd/;
 
-has author_id => (is=>'rw',isa =>Str, default => ""); ## id of the author
+has author_id => (is=>'lazy',isa =>Str); ## id of the author
 has other_authors => (is=>'rw',isa =>ArrayRef[Str], default => sub { return [];}); ## array of Person
 has session => (is=>'rw',isa =>Str, default => "");
 has sponsor_id => (is=>'rw',isa =>Str, default => ""); ## id of the sponsor
 has title => (is=>'rw',isa =>Str, default => "");
+has type => (is=>'rw',isa =>Str, default => "");
 has accepted => (is=>'rw',isa =>Bool, default => sub {return false;});
-has submit_date => (is => 'lazy',isa =>DateTime);
+has submit_date => (is => 'lazy',isa =>Types::XSD::DateTime);
 has content => (is=>'rw',isa =>Str, default => "");
 has sponsor_statement => (is=>'rw',isa =>Str, default => "");
 has use_human_subjects => (is=>'rw',isa =>Bool, default => sub {return false;});
@@ -27,16 +31,20 @@ has other_equipment => (is=>'rw',isa =>Str, default => "");
 has feedback => (is=>'rw',isa => ArrayRef[InstanceOf['Model::Feedback']],
         builder=>'_build_feedback');## array of Feedback
 
+
+
 sub _build_feedback {
   my $self = shift;
-   dd "in _build_feedback";
-   dd $self;
-   return [];
+  return [];
 }
 
 sub _build_submit_date {
-  return DateTime->today();
+  return DateTime->now();
 }
+
+sub _build_author_id {
+  dd "in _build_author_id";
+  return "1234";}
 
 
 sub BUILDARGS {
@@ -48,8 +56,23 @@ sub BUILDARGS {
   for my $feed (@{$args{feedback}}){
     push @feedback, Model::Feedback->new($feed);
   }
+
 	$args{feedback} = \@feedback;
-	return \%args;
+
+  if (defined($args{submit_date}) && looks_like_number($args{submit_date})){
+    $args{submit_date} = DateTime->from_epoch(epoch=>$args{submit_date});
+  } elsif (defined($args{submit_date}) && $args{submit_date} =~ m/\d{4}-\d{2}-\d{2}T\d\d:\d\d:\d\d/){
+    my $strp = DateTime::Format::Strptime->new(
+        pattern   => '%FT%T',
+        time_zone => 'America/New_York',
+      );
+    $args{submit_date} = $strp->parse_datetime($args{submit_date});
+  #} elsif(not defined($args{submit_date})){
+  } else {
+    $args{submit_date} = DateTime->now;
+  }
+
+  return \%args;
 }
 
 1;

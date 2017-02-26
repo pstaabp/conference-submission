@@ -1,4 +1,4 @@
-define(['backbone','views/MessageListView','apps/settings', 'jquery-truncate','jquery-ui'], 
+define(['backbone','views/MessageListView','apps/settings', 'jquery-truncate','jquery-ui'],
 function(Backbone,MessageListView,settings){
 var WebPage = Backbone.View.extend({
 
@@ -6,12 +6,11 @@ var WebPage = Backbone.View.extend({
     	_.bindAll(this,"render","toggleMessageWindow","closeLogin");
     },
     render: function () {
-    	var self = this; 
-
-        this.$el.prepend((this.messagePane = new MessageListView()).render().el);
+    	var self = this;
+        $("#message-pane").html((this.messagePane = new MessageListView()).render().el);
         //this.loginPane = new LoginView();
         this.$el.prepend((this.helpPane = new HelpView()).render().el);
-        
+
         $("button#help-link").click(function () {
                 self.helpPane.open();});
 
@@ -24,7 +23,7 @@ var WebPage = Backbone.View.extend({
             self.loginPane.render().open();
         })
 
-        $("#logout").on("click",this.logout);   
+        $("#logout").on("click",this.logout);
 
 
     },

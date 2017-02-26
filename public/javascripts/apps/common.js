@@ -1,5 +1,5 @@
-define(['backbone','stickit','moment','backbone-validation'], function(Backbone){
-    
+define(['backbone','moment','stickit','backbone-validation'], function(Backbone,moment){
+
     var common = {
         getParameterByName: function(name)
         {
@@ -57,7 +57,7 @@ define(['backbone','stickit','moment','backbone-validation'], function(Backbone)
     }}]);
 
     // The following are Backbone Validation setup
-    
+
     _.extend(Backbone.Model.prototype, Backbone.Validation.mixin);
 
     _.extend(Backbone.Validation.patterns, {

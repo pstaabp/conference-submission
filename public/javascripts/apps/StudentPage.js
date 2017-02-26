@@ -50,7 +50,9 @@ function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,P
             this.proposals.each(function(prop,i){
                 $("#submit-main-tabs").append("<li><a href='#prop" + (i+1) +"'' data-toggle='tab'>Proposal #" + (i+1) + "</a></li>");
                 $(".tab-content").append("<div class='tab-pane' id='prop"+ (i+1)+ "'></div>")
-                self.proposalViews.push(new ProposalView({model: prop, el: $("#prop"+(i+1))}).render());
+                self.proposalViews.push(new ProposalView({model: prop,
+                      el: $("#prop"+(i+1)), student: self.student,
+                      other_authors: self.other_authors}).render());
             });
         },
         updateInfo: function(){

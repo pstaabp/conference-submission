@@ -4,8 +4,7 @@
   <script type="text/javascript">
     require.config = { "[%top_dir%]/javascripts/apps/StudentPage.js": {
       student: [% student_encoded %],
-      //proposals: !{JSON.stringify(proposals)}
-      proposals: []
+      proposals: [% proposals_encoded %]
       }
     };
   </script>

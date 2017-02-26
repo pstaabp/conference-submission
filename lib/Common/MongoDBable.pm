@@ -60,13 +60,15 @@ sub to_hash {
 
    my $hash = {};
    for my $key (keys %$self){
-      #  if (ref($self->{$key}) eq "boolean") {
-      #    ##dd "HERE " . $key;
-      #    $hash->{$key} = ($self->{$key})?true:false;
-      #    ##dd $hash->{$key};
-      #  } else {
+       if (ref($hash->{$key}) eq "DateTime"){
+         my $strp = DateTime::Format::Strptime->new(
+             pattern   => '%FT%T',
+             time_zone => 'America/New_York',
+           );
+         $hash->{$key}= $strp->format_datetime($self->{$key});
+       } else {
          $hash->{$key} = $self->{$key};
-      #  }
+       }
    }
    return $hash;
 }

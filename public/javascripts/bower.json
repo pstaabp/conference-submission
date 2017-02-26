@@ -17,6 +17,7 @@
     "underscore": "*",
     "moment": "*",
     "bootstrap": "*",
-    "font-awesome": "*"
+    "font-awesome": "*",
+    "moment": "*"
   }
 }

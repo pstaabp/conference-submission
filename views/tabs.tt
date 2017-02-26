@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs" id="#submit-main-tabs">
+<ul class="nav nav-tabs" id="submit-main-tabs">
   <li class="active">
     <a href="#personal" data-toggle="tab">Personal Info</a>
   </li>
