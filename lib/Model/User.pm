@@ -16,4 +16,7 @@ has role => (is=>'rw',isa =>ArrayRef[Str], builder => "_build_role"); ## array o
 sub _build_role {
   return ["student"];
 }
+
+sub TO_JSON { return { %{ shift() } }; }
+
 1;

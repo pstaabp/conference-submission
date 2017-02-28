@@ -4,13 +4,13 @@ use lib '../lib';
 
 use Routes::API;
 use Routes::Templates;
-use Test::More tests => 6;
+use Test::More tests => 7;
 use Test::Deep qw/cmp_deeply/;
 use Plack::Test;
-use JSON;
+use JSON -no_export;
 use HTTP::Request::Common qw/GET POST PUT DELETE/;
 use Model::Sponsor;
-
+my $json = JSON->new->allow_blessed(1)->convert_blessed(1);
 
 use Data::Dump qw/dd/;
 
@@ -22,7 +22,7 @@ my $res  = $test_api->request( GET '/sponsors' );
 
 ok( $res->is_success, '[GET /api/sponsors] successful' );
 
-my $sponsors = decode_json $res->content;
+my $sponsors = $json->decode($res->{_content});
 
 is(ref($sponsors),"ARRAY","[GET /api/sponsors] returns an array");
 
@@ -48,17 +48,18 @@ my $user_params = {
 };
 
 my $user_obj = Model::User->new($user_params);
-$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => encode_json($user_obj->to_hash));
+$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => $json->encode($user_obj));
 ok($res->is_success, '[POST /api/users] successful');
 
 # dd decode_json($res->{_content});
 
-my $sponsor = Model::Sponsor->new(decode_json($res->{_content}));
+my $sponsor = Model::Sponsor->new($json->decode($res->{_content}));
 $sponsor->department("Mathematics");
 
 ## update the user as a sponsor
 
-$res = $test_api->request(PUT '/sponsors/' . $sponsor->{_id},'Content-Type' => 'application/json', Content => encode_json($sponsor->to_hash));
+$res = $test_api->request(PUT '/sponsors/' . $sponsor->{_id},'Content-Type' => 'application/json',
+Content => $json->encode($sponsor));
 ok($res->is_success, '[PUT /api/users/:user_id] successful');
 
 ## check that that database was updated correctly.
@@ -66,47 +67,14 @@ ok($res->is_success, '[PUT /api/users/:user_id] successful');
 $res = $test_api->request(GET '/sponsors/' . $sponsor->{_id});
 
 # dd decode_json($res->{_content});
-my $sponsor2 = Model::Sponsor->new(decode_json($res->{_content}));
+my $sponsor2 = Model::Sponsor->new($json->decode($res->{_content}));
 
 cmp_deeply($sponsor,$sponsor2,'The sponsor was updated successfully');
 #
-# # delete the user
-#
-# $res = $test_api->request(DELETE '/users/' . $user_obj->{_id});
-# ok($res->is_success, '[DELETE /api/users/:user_id] successful');
-#
+# delete the user
 
-
-
-
-#
-# #dd decode_json($res->{_content});
-#
-# $user_obj= Model::User->new(decode_json($res->{_content}));
-#
-# # change the user's email and update
-#
-# $user_obj->email('homer@gmail.com');
-# $res = $test_api->request(PUT '/users/' . $user_obj->{_id},'Content-Type' => 'application/json', Content => encode_json($user_obj->to_hash));
-# ok($res->is_success, '[PUT /api/users/:user_id] successful');
-#
-# # TODO:  check that the update went through.
-#
-# $res = $test_api->request(GET '/users/' . $user_obj->{_id});
-# my $user2 = Model::User->new(decode_json($res->{_content}));
-#
-# cmp_deeply($user_obj,$user2,'The user was updated successfully');
-#
-# # delete the user
-#
-# $res = $test_api->request(DELETE '/users/' . $user_obj->{_id});
-# ok($res->is_success, '[DELETE /api/users/:user_id] successful');
-#
-# ## TODO: check that it was actually deleted.
-#
-#
-#
-#
+$res = $test_api->request(DELETE '/users/' . $sponsor->{_id});
+ok($res->is_success, '[DELETE /api/users/:user_id] successful');
 
 
 done_testing();

@@ -10,15 +10,15 @@ use Model::Student;
 use Model::Judge;
 use Model::Proposal;
 
-use Common::Collection qw/to_hashes get_one_by_id insert_to_db get_all_in_collection
+use Common::Collection qw/get_one_by_id insert_to_db get_all_in_collection
             delete_one_by_id update_one/;
 use Data::Dump qw/dump/;
 use Types::Standard qw/ArrayRef Str/;
 
 # hook before_serializer => sub {
 #   debug "in before_serializer";
-#   my $self = shift;
-#   debug dump $self;
+#   my $content = shift;
+#   debug $content;
 # #   my $hash = {};
 # #   for my $key (keys %$self){
 # #     if (ref($self->{$key}) eq "boolean") {
@@ -29,7 +29,7 @@ use Types::Standard qw/ArrayRef Str/;
 # #   }
 # #   debug dump $hash;
 # };
-#
+
 # hook after_serializer => sub {
 #   debug "in after_serializer";
 #   my $serialized_content = shift;
@@ -41,7 +41,7 @@ use Types::Standard qw/ArrayRef Str/;
 get '/users' => sub { # get all users
     my $client = MongoDB->connect('mongodb://localhost');
     my $users = get_all_in_collection($client,config->{database_name}.".users","Model::User");
-    return to_hashes($users);
+    return $users;
 };
 
 
@@ -56,7 +56,7 @@ get '/users/:user_id' => sub {
    debug dump "in get /users/:user_id";
    my $client = MongoDB->connect('mongodb://localhost');
    my $user = get_one_by_id($client,config->{database_name} . ".users",'Model::User',route_parameters->{user_id});
-   return $user->to_hash;
+   return $user->TO_JSON;
 };
 
 post '/users' => sub { # add a new user
@@ -73,7 +73,7 @@ post '/users' => sub { # add a new user
   }
 
   my $result = insert_to_db($client,config->{database_name} . ".users",$new_user);
-  return $result->to_hash;
+  return $result->TO_JSON;
 };
 
 ## update the user by _id
@@ -84,9 +84,9 @@ put '/users/:user_id' => sub {
   $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
   my $updated_user = Model::User->new($params);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".users",$updated_user);
+  my $user = update_one($client,config->{database_name} . ".users","Model::User",$updated_user);
 
-  return $user->to_hash;
+  return $user->TO_JSON;
 };
 
 # delete a user using _id
@@ -95,34 +95,53 @@ del '/users/:user_id' => sub {
   debug "in delete /users/:user_id";
   my $client = MongoDB->connect('mongodb://localhost');
   my $deleted_user = delete_one_by_id($client,config->{database_name} . ".users",'Model::User',route_parameters->{user_id});
-  return Model::User->new($deleted_user)->to_hash;
+  return Model::User->new($deleted_user)->TO_JSON;
 };
 
 # check if a particular user with a given falconkey exists
 
 get '/users/:falconkey/check' => sub {
   debug "in get /users/:falconkey/check";
+
+  # first check if the person is already in the database
+
+  my $client = MongoDB->connect("mongodb://localhost");
+  my $collection = $client->ns(config->{database_name} . ".users");
+  my $result = $collection->find_one({falconkey=>route_parameters->{falconkey}});
+
+  return Model::Sponsor->new($result)->TO_JSON if defined($result);
+
   my $ldap = new Net::LDAP(config->{ldap_server});
   my $msg = $ldap->bind(config->{ldap_bind}, password => config->{ldap_password} );
   my $search = $ldap->search(base => '', filter => "sAMAccountName=" . route_parameters->{falconkey});
   my $entry = $search->entry(0);
-  my $result = {};
 
-  ## check if the user exists in the database
+  ## need to check if the search succeeded.
 
-  my $client = MongoDB->connect("mongodb://localhost");
-  my $collection = $client->ns(config->{database_name} . ".users");
-  my $result = $collection->find_one({falonkey=>route_parameters->{falconkey}});
+  ## create a new user
 
-  debug dump $result;
-
-  return (defined($entry))?
-     {last_name => $entry->get_value("sn") ||"",
+  my $params = {
+    last_name => $entry->get_value("sn") ||"",
     first_name => $entry->get_value("givenName") ||"",
-    email =>  $entry->get_value("mail") || "",
-    other =>  $entry->get_value("description") || "",
-    department => $entry->get_value("department") ||""
-  }: {};
+    email =>  $entry->get_value("mail")
+  };
+
+  if($entry->get_value("mail") =~ /\@student\./){
+    $params->{role} = ["student"];
+    return Model::User->($params)->TO_JSON;
+  } else {
+    $params->{role} = ["sponsor"];
+    $params->{department} = $entry->get_value("department") ||"";
+    return Model::Sponsor->($params)->TO_JSON;
+  }
+
+  # return (defined($entry))?
+  #    {last_name => $entry->get_value("sn") ||"",
+  #   first_name => $entry->get_value("givenName") ||"",
+  #   email =>  $entry->get_value("mail") || "",
+  #   other =>  $entry->get_value("description") || "",
+  #
+  # }: {};
 };
 
 ###
@@ -133,10 +152,10 @@ get '/users/:falconkey/check' => sub {
 
 get '/sponsors' => sub {
   my $client = MongoDB->connect('mongodb://localhost');
-  my $mc = $client->ns(config->{database_name} . ".user");
+  my $mc = $client->ns(config->{database_name} . ".users");
   my $q = {role=> {'$in'=> ["sponsor"]}};
   my @items = map {Model::Sponsor->new($_); } $mc->find($q)->all;
-  return to_hashes(\@items);
+  return \@items;
 };
 
 
@@ -144,9 +163,9 @@ get '/sponsors' => sub {
 get '/sponsors/:sponsor_id' => sub {
    debug dump "in get /sponsors/:sponsor_id";
    my $client = MongoDB->connect('mongodb://localhost');
-   my $sponsor = get_one_by_id($client,config->{database_name} . ".user",'Model::Sponsor',route_parameters->{sponsor_id});
+   my $sponsor = get_one_by_id($client,config->{database_name} . ".users",'Model::Sponsor',route_parameters->{sponsor_id});
    ## TODO:  check that this user has a sponsor role
-   return $sponsor->to_hash;
+   return $sponsor->TO_JSON;
 };
 
 ### Note:
@@ -160,9 +179,9 @@ put '/sponsors/:sponsor_id' => sub {
   my $updated_user = Model::Sponsor->new($params);
   # dd $updated_user;
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".user",'Model::User',$updated_user);
+  my $user = update_one($client,config->{database_name} . ".users",'Model::Sponsor',$updated_user);
 
-  return $user->to_hash;
+  return $user->TO_JSON;
 };
 
 ###
@@ -177,7 +196,7 @@ get '/students' => sub {
   my $q = {role=> {'$in'=> ["student"]}};
   my @items = map {Model::Student->new($_); } $mc->find($q)->all;
 
-  return to_hashes(\@items);
+  return \@items;
 };
 
 
@@ -190,7 +209,7 @@ get '/students/:student_id' => sub {
 
   #  debug dump $student;
    ## TODO:  check that this user has a student` role
-   return $student->to_hash;
+   return $student->TO_JSON;
 };
 
 ### Note:
@@ -204,9 +223,9 @@ put '/students/:student_id' => sub {
 
   my $updated_user = Model::Student->new($params);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".users",$updated_user);
+  my $user = update_one($client,config->{database_name} . ".users","Model::User",$updated_user);
 
-  return $user->to_hash;
+  return $user->TO_JSON;
 };
 
 
@@ -222,7 +241,7 @@ get '/judges' => sub {
   my $q = {role=> {'$in'=> ["judge"]}};
   my @items = map {Model::Judge->new($_); } $mc->find($q)->all;
   #debug dump $mc->find($q)->all;
-  return to_hashes(\@items);
+  return \@items;
   #return \@items;
 };
 
@@ -234,7 +253,7 @@ get '/judges/:judge_id' => sub {
    my $judge = get_one_by_id($client,config->{database_name} . ".users",'Model::Judge',route_parameters->{judge_id});
 
    ## TODO:  check that this user has a student` role
-   return $judge->to_hash;
+   return $judge->TO_JSON;
 };
 
 ### Note:
@@ -249,9 +268,9 @@ put '/judges/:judge_id' => sub {
   my $updated_user = Model::Judge->new($params);
   # dd $updated_user;
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".user",'Model::Judge',$updated_user);
+  my $user = update_one($client,config->{database_name} . ".users",'Model::Judge',$updated_user);
 
-  return $user->to_hash;
+  return $user->TO_JSON;
 };
 
 ###
@@ -264,7 +283,7 @@ get '/proposals' => sub {
   debug 'in get /proposals';
   my $client = MongoDB->connect('mongodb://localhost');
   my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
-  return to_hashes($proposals);
+  return $proposals;
 
 };
 
@@ -276,7 +295,7 @@ get '/proposals/:proposal_id' => sub {
 
   #  debug dump $student;
    ## TODO:  check that this user has a student` role
-   return $proposal->to_hash;
+   return $proposal->TO_JSON;
 };
 
 # get all proposals for student :student_id
@@ -288,34 +307,39 @@ get '/students/:student_id/proposals' => sub { # add a new user
   my @results = map {Model::Proposal->new($_)}
           $collection->find({author_id => route_parameters->{student_id}})->all;
   #debug dump @results;
-  return to_hashes(\@results);
+  return \@results;
 };
 
 post '/students/:student_id/proposals' => sub {
     debug 'in POST /students/:student_id/proposals';
-    my $new_proposal = Model::Proposal->new(body_parameters->as_hashref);
+    my $params = body_parameters->mixed;
+    $params->{other_authors}= [$params->{other_authors}] unless ref($params->{other_authors}) eq "ARRAY";
+    my $new_proposal = Model::Proposal->new($params);
     # dd $new_proposal;
     my $client = MongoDB->connect('mongodb://localhost');
     my $result = insert_to_db($client,config->{database_name} . ".proposals",$new_proposal);
-    return $result->to_hash;
+    return $result->TO_JSON;
 };
 
 
-put '/proposals/:proposal_id' => sub {
+put '/students/:student_id/proposals/:proposal_id' => sub {
   debug "in put /proposals/:proposal_id";
-  my $updated_proposal = Model::Proposal->new(body_parameters->as_hashref);
-  my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".proposals",$updated_proposal);
+  my $params = body_parameters->mixed;
+  $params->{other_authors}= [$params->{other_authors}] unless ref($params->{other_authors}) eq "ARRAY";
 
-  return $user->to_hash;
+  my $updated_proposal = Model::Proposal->new($params);
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $user = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$updated_proposal);
+
+  return $user->TO_JSON;
 };
 
-del '/proposals/:proposal_id' => sub {
+del '/students/:student_id/proposals/:proposal_id' => sub {
   debug "in delete /proposals/:proposal_id";
   my $client = MongoDB->connect('mongodb://localhost');
   my $deleted_proposal = delete_one_by_id($client,config->{database_name} . ".proposals",
             'Model::Proposal',route_parameters->{proposal_id});
-  return Model::Proposal->new($deleted_proposal)->to_hash;
+  return Model::Proposal->new($deleted_proposal)->TO_JSON;
 };
 
 

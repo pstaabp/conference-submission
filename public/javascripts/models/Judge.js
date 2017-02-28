@@ -7,7 +7,7 @@ define(['backbone', 'underscore','models/User','apps/settings'], function(Backbo
      */
     var Judge = User.extend({
         defaults: function(){
-            var _user_defaults = User.prototype.initialize.apply(this);
+            var _user_defaults = User.prototype.defaults;
             _(_user_defaults).extend({
               judge_type: "",
               judge_topics: [],

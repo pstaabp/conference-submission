@@ -2,19 +2,17 @@
 define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,CollectionTableView){
 
     var AllFeedbackView = Backbone.View.extend({
+        rowTemplate: $("#all-feedback-template").html(),
+        tabTemplate: _.template($("#feedback-tab-template").html()),
         initialize: function(options){
             var self = this;
             _.bindAll(this, "render");
-            this.rowTemplate = $("#all-feedback-template").html();
-            this.proposals = options.proposals;
-            this.proposals.on("remove",this.render);
-            this.users = options.users;
-            this.judges = options.judges;
-            this.tabTemplate = _.template($("#feedback-tab-template").html());
-
-            this.proposals.on("sync",function(_proposal){
+            _(this).extend(_(options).pick("proposals","users","judges"));
+            this.proposals.on({
+              remove: this.render,
+              sync: function(_proposal){
                 self.render();
-            })
+            }});
         },
         render: function(){
             var self = this;
@@ -48,17 +46,24 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             var self = this;
             var roleTemplate = _.template($("#role-template").html());
             this.cols = [{name: "Show", key: "show_proposal", classname: "show-proposal",
-                stickit_options: {update: function($el, val, model, options) {
+                stickit_options: {
+                  update: function($el, val, model, options) {
                     $el.html($("#show-button-template").html());
                     $el.children(".btn").on("click",function(evt) {
                         self.showHideFeedback($el,model,$(evt.target));
                     });
                 }}},
             {name: "Session", key: "session", classname: "session", editable: false, datatype: "string"},
-            {name: "Main Author", key: "author", classname: "author", editable: false, datatype: "string",
-                sort_function: function(author){
-                    var names = author.split(" ");
-                    return names[names.length-1].toLowerCase();
+            {name: "Main Author", key: "author_id", classname: "author", editable: false, datatype: "string",
+                stickit_options: {
+                  onGet: function(auth_id){
+                    var author = self.users.get(auth_id);
+                    return author.get("first_name") + " " + author.get("last_name");
+                  }
+                },
+                sort_function: function(auth_id){
+                  var author = self.users.get(auth_id);
+                  return author.get("last_name").toLowerCase();
                 }},
             {name: "Proposal Title", key: "title", classname: "title", additionalClass: "col-md-6", datatype: "string"},
             {name: "Score (# judges)", key: "score", classname: "score", datatype: "number",

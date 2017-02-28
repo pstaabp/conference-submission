@@ -16,4 +16,6 @@ has overall => (is=>'rw',isa =>Int, default => 0);
 has strength_comment => (is=>'rw',isa =>Str, default => "");
 has improvement_comment => (is=>'rw',isa =>Str, default => "");
 
+sub TO_JSON { return { %{ shift() } }; }
+
 1;

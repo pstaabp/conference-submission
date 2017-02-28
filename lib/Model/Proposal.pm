@@ -28,10 +28,28 @@ has human_subjects_number => (is=>'rw',isa =>Str, default => "");
 has use_animal_subjects => (is=>'rw',isa =>Bool, default => sub {return false;});
 has animal_subjects_number => (is=>'rw',isa =>Str, default => "");
 has other_equipment => (is=>'rw',isa =>Str, default => "");
+has to_be_judged =>(is=>'ro',isa=>Bool,default=>sub{return false});
+has contact_phone =>(is=>'ro',isa=>Str, default=> "");
 has feedback => (is=>'rw',isa => ArrayRef[InstanceOf['Model::Feedback']],
         builder=>'_build_feedback');## array of Feedback
 
+sub TO_JSON {
+  my $self = shift;
+  my $hash = {};
+  for my $key (keys %$self){
+      if (ref($self->{$key}) eq "DateTime"){
+        my $strp = DateTime::Format::Strptime->new(
+            pattern   => '%FT%T',
+            time_zone => 'America/New_York',
+          );
+        $hash->{$key}= $strp->format_datetime($self->{$key});
+      } else {
+        $hash->{$key} = $self->{$key};
+      }
+    }
+    return $hash;
 
+}
 
 sub _build_feedback {
   my $self = shift;

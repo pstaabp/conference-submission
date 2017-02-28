@@ -39,7 +39,7 @@ my $rand_id = $proposals->[$pr_num]->{_id};
 #my $rand_id = "56ef54390fe696676423c654";
 #
 $res = $test_api->request( GET '/proposals/' . $rand_id); # . $rand_id);
-# dd $res;
+dd $res;
 ok( $res->is_success, '[GET /api/proposals/_id] successful' );
 
 

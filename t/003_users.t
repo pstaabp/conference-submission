@@ -7,12 +7,13 @@ use Routes::Templates;
 use Test::More tests => 7;
 use Test::Deep qw/cmp_deeply/;
 use Plack::Test;
-use JSON;
+use JSON -no_export;
 use HTTP::Request::Common qw/GET POST PUT DELETE/;
 use Model::User;
 
 use Data::Dump qw/dd/;
 
+my $json = JSON->new->allow_blessed(1)->convert_blessed(1);
 
 ## test that the /problems route exists
 
@@ -21,7 +22,7 @@ my $res  = $test_api->request( GET '/users' );
 
 ok( $res->is_success, '[GET /api/users] successful' );
 
-my $users = decode_json $res->content;
+my $users = $json->decode($res->content);
 #dd $users;
 
 is(ref($users),"ARRAY","[GET /api/users] returns an array");
@@ -46,25 +47,26 @@ my $user_params = {
 };
 
 my $user_obj = Model::User->new($user_params);
-$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => encode_json($user_obj->to_hash));
+$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => $json->encode($user_obj));
 
 ok($res->is_success, '[POST /api/users] successful');
 
 #dd decode_json($res->{_content});
 
-$user_obj= Model::User->new(decode_json($res->{_content}));
+$user_obj= Model::User->new($json->decode($res->{_content}));
 
 # change the user's email and update
 
 $user_obj->email('homer@gmail.com');
-$res = $test_api->request(PUT '/users/' . $user_obj->{_id},'Content-Type' => 'application/json', Content => encode_json($user_obj->to_hash));
+$res = $test_api->request(PUT '/users/' . $user_obj->{_id},'Content-Type' => 'application/json',
+    Content => $json->encode($user_obj));
 
 ok($res->is_success, '[PUT /api/users/:user_id] successful');
 
 # TODO:  check that the update went through.
 
 $res = $test_api->request(GET '/users/' . $user_obj->{_id});
-my $user2 = Model::User->new(decode_json($res->{_content}));
+my $user2 = Model::User->new($json->decode($res->{_content}));
 
 cmp_deeply($user_obj,$user2,'The user was updated successfully');
 

@@ -39,7 +39,7 @@ sub update_in_db {
   my $collection = $client->ns($collection_name);
   ##dd $self;
   my $id_obj = MongoDB::OID->new(value =>$self->_id);
-  my $params = $self->to_hash;
+  my $params = $self->TO_JSON;
   delete $params->{_id};
   my $db_resp = $collection->find_one_and_replace({_id => $id_obj},$params);
 
@@ -51,26 +51,31 @@ sub remove_from_db_common {
   my $collection = $client->ns($collection_name);
   my $id_obj = MongoDB::OID->new(value =>$self->_id);
   $collection->delete_one({_id => $id_obj});
-  return $self->to_hash;
+  return $self->TO_JSON;
 
 }
 
-sub to_hash {
-   my $self= shift;
-
-   my $hash = {};
-   for my $key (keys %$self){
-       if (ref($hash->{$key}) eq "DateTime"){
-         my $strp = DateTime::Format::Strptime->new(
-             pattern   => '%FT%T',
-             time_zone => 'America/New_York',
-           );
-         $hash->{$key}= $strp->format_datetime($self->{$key});
-       } else {
-         $hash->{$key} = $self->{$key};
-       }
-   }
-   return $hash;
-}
+# sub to_hash {
+#    my $self= shift;
+#
+#    my $hash = {};
+#    for my $key (keys %$self){
+#        dd ref($self->{$key});
+#        if (ref($self->{$key}) eq "DateTime"){
+#          my $strp = DateTime::Format::Strptime->new(
+#              pattern   => '%FT%T',
+#              time_zone => 'America/New_York',
+#            );
+#          $hash->{$key}= $strp->format_datetime($self->{$key});
+#        } elsif (ref($self->{$key}) eq "ARRAY") {
+#
+#        } elsif (ref($self->{$key}) eq "Model::Feedback"){
+#          $hash->{$key} = $self->{key}->to_hash;
+#        } else {
+#          $hash->{$key} = $self->{$key};
+#        }
+#    }
+#    return $hash;
+# }
 
 1;

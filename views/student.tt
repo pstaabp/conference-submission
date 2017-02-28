@@ -4,7 +4,8 @@
   <script type="text/javascript">
     require.config = { "[%top_dir%]/javascripts/apps/StudentPage.js": {
       student: [% student_encoded %],
-      proposals: [% proposals_encoded %]
+      proposals: [% proposals_encoded %],
+      users: [% users %]
       }
     };
   </script>
@@ -15,28 +16,41 @@
 [% INCLUDE info.tt %]
 
 <script type='text/template' id= 'student-tabs-template'>
-    <input type='hidden' id='user-id' value="user.id">
+    <input type='hidden' id='user-id' value="[% user._id %]">
       [% INCLUDE tabs.tt %]
-    <div class="feedback-modal"></div>
 </script>
 
 
-<script type='text/template' id= 'add-author-template'>
-  <p>The following are the additional authors for this proposal.  To delete an authors
-      click the delete button next to the author&apos;s name.  To add an additional author,
-      enter the falconkey or FSU email address of the author and click "Add Author".
-  </p>
-  <ul class="author-list"></ul>
-  <div class="form-horizontal">
-    <div class="form-group">
-      <label class="control-label col-md-3"> Author Email
-        <div class="col-md-5">
-          <input class="form-control add-author-field">
+<script type='text/template' id='add-author-template'>
+  <div class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add an Author</h4>
+      </div>
+      <div class="modal-body">
+        <p>The following are the additional authors for this proposal.  To delete an author
+          click the delete button next to the author&apos;s name.  To add an additional author,
+          enter the FSU email address of the author and click "Add Author".
+        </p>
+        <ul class="author-list"></ul>
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="control-label col-md-3" for="add-author-field">Author Email</label>
+            <div class="col-md-5">
+              <input class="form-control" id="add-author-field">
+            </div>
+            <button class="add-author-btn btn btn-default">Add Author</button>
+          </div>
         </div>
-      </label>
-      <button class="add-author-btn btn btn-default">Add Author</a>
-    </div>
-  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </script>
 
 <script type="text/template" id= "add-author-row-template">

@@ -32,74 +32,73 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
           },
           remove: function(_prop){
             self.messagePane.addMessage({short: "A proposal for " + _prop.get("author") + " was deleted."});
-          }});
-
-          this.views = {
-            usersView : new UsersView({users: this.users, proposals: this.proposals,
-              rowTemplate: "#user-row-template"}),
-              proposalsView : new ProposalsView({
-                users: this.users,proposals: this.proposals,
-                judges: this.judges
-              }),
-              presentationsView: new PresentationsView({parent: this,users: this.users}),
-              judgesView : new JudgesView({judges: this.judges, proposals: this.proposals}),
-              judgeScheduleView : new JudgeScheduleView({proposals: this.proposals, judges: this.judges}),
-              emailView : new EmailView({users: this.users, proposals: this.proposals, judges: this.judges}),
-              feedbackView: new AllFeedbackView({proposals: this.proposals, judges: this.judges}),
-              sponsorsView: new SponsorsView({users: this.users})
-            }
-
-          this.users.on({change: this.updateUser,sync: this.syncUser});
-          this.judges.on({change: this.updateUser,sync: this.syncUser});
-          this.render();
-        },
-        events: {
-          "shown.bs.tab #admin-tabs a[data-toggle='tab']": "changeView"
-        },
-        render: function () {
-          var self = this;
-          WebPage.prototype.render.apply(this);  // Call  WebPage.render();
-          this.$el.append(_.template($("#admin-tabs-template").html()));
-
-          _(this.tabs).chain().keys().each(function(tab){
-            self.views[tab].setElement(self.$(self.tabs[tab]));
-          });
-
-
-
-          var userNames = _(this.users.sortBy(function(user) { return user.get("last_name");}))
-          .map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
-
-          $("#act-as-user").removeAttr("style").html(_($("#act-as-user-template").html()).template({users: userNames}));
-
-          this.views.usersView.render();
-        },
-        actAsUser: function(evt){
-          console.log($(evt.target).data("id"));
-        },
-        changeView: function(evt){
-          var viewName =$(evt.target).data("view");
-          this.views[viewName].render();
-          if(viewName==="postersView"){
-            this.setSortable();
           }
-        },
-        updateUser: function(_user){
-          console.log(_user.changed);
-          _user.changingAttributes=_.pick(_user._previousAttributes,_.keys(_user.changed));
-          _user.save();
-        },
-        syncUser: function(_user){
-          var self = this;
-          _(_.keys(_user.changingAttributes||{})).each(function(key){
-            self.messagePane.addMessage({type: "success",
-            short: "User Saved",
-            text: "Property " + key + " for " + _user.get("first_name") + " " + _user.get("last_name") + " has "
-            + "changed from " + _user.changingAttributes[key] + " to " + _user.get(key) + "."});
-          });
-        }
-      });
-
-
-          new AdminPage({el: $("#content")});
         });
+
+        _all_data = {
+          users: this.users,proposals: this.proposals,
+          judges: this.judges, sponsors: this.sponsors
+        };
+
+        this.views = {
+          usersView : new UsersView(_all_data),
+          proposalsView : new ProposalsView(_all_data),
+          presentationsView: new PresentationsView(_all_data),
+          judgesView : new JudgesView(_all_data),
+          judgeScheduleView : new JudgeScheduleView(_all_data),
+          emailView : new EmailView(_all_data),
+          feedbackView: new AllFeedbackView(_all_data),
+          sponsorsView: new SponsorsView(_all_data)
+        }
+
+        this.users.on({change: this.updateUser,sync: this.syncUser});
+        this.judges.on({change: this.updateUser,sync: this.syncUser});
+        this.render();
+      },
+      events: {
+        "shown.bs.tab #admin-tabs a[data-toggle='tab']": "changeView"
+      },
+      render: function () {
+        var self = this;
+        WebPage.prototype.render.apply(this);  // Call  WebPage.render();
+        this.$el.append(_.template($("#admin-tabs-template").html()));
+
+        _(this.tabs).chain().keys().each(function(tab){
+          self.views[tab].setElement(self.$(self.tabs[tab]));
+        });
+        var userNames = _(this.users.sortBy(function(user) { return user.get("last_name");}))
+                .map(function(user) { return {id: user.get("_id"), name: user.get("first_name") + " " + user.get("last_name")}});
+
+        $("#act-as-user").removeAttr("style").html(_($("#act-as-user-template").html()).template({users: userNames}));
+
+        this.views.usersView.render();
+      },
+      actAsUser: function(evt){
+        console.log($(evt.target).data("id"));
+      },
+      changeView: function(evt){
+        var viewName =$(evt.target).data("view");
+        this.views[viewName].render();
+        if(viewName==="postersView"){
+          this.setSortable();
+        }
+      },
+      updateUser: function(_user){
+        console.log(_user.changed);
+        _user.changingAttributes=_.pick(_user._previousAttributes,_.keys(_user.changed));
+        _user.save();
+      },
+      syncUser: function(_user){
+        var self = this;
+        _(_.keys(_user.changingAttributes||{})).each(function(key){
+          self.messagePane.addMessage({type: "success",
+          short: "User Saved",
+          text: "Property " + key + " for " + _user.get("first_name") + " " + _user.get("last_name") + " has "
+          + "changed from " + _user.changingAttributes[key] + " to " + _user.get(key) + "."});
+        });
+      }
+    });
+
+
+    new AdminPage({el: $("#content")});
+  });

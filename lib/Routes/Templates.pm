@@ -3,12 +3,12 @@ package Routes::Templates;
 use Dancer2;
 
 use Dancer2::Plugin::Auth::Extensible;
-use Common::Collection qw/to_hashes get_all_in_collection insert_to_db update_one/;
+use Common::Collection qw/get_one_by_id get_all_in_collection insert_to_db update_one/;
 use Data::Dump qw/dump/;
 use List::Util qw/uniq/;
 use JSON -no_export;
 use Model::Sponsor;
-use Model::Judge; 
+use Model::Judge;
 
 # This sets that if there is a template in the view direction a route is automatically generated.
 set auto_page => 0;
@@ -107,20 +107,50 @@ any '/logout' => sub {
     template 'logout';
 };
 
+get '/submitted/:proposal_id' => require_login sub {
+  my $user = get_user(logged_in_user->{falconkey});
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $user_collection = $client->ns(config->{database_name} . ".users");
+  my $proposal = get_one_by_id($client,config->{database_name} . ".proposals",'Model::Proposal',route_parameters->{proposal_id});
+  my $json  = JSON->new->convert_blessed->allow_blessed;
+  my $sponsor = get_one_by_id($client,config->{database_name} . ".users",'Model::Sponsor',$proposal->{sponsor_id});
+  my @other_authors;
+  for my $fc (@{$proposal->{other_authors}}){
+      my $user = Model::User->new($user_collection->find_one({falconkey=>$fc}));
+      push(@other_authors,$user);
+  }
+
+  debug dump $proposal->TO_JSON;
+
+  template 'proposal-received', {top_dir => config->{top_dir},
+    user=>$user, proposal=>$proposal,sponsor=>$sponsor,
+    other_authors => \@other_authors};
+
+};
+
 get '/student' => require_role student => sub {
 
   debug 'in get /student';
   my $student = get_user(logged_in_user->{falconkey});
   my $client = MongoDB->connect('mongodb://localhost');
   my $json  = JSON->new->convert_blessed->allow_blessed;
-  my $collection = $client->ns(config->{database_name}.".proposals");
+  my $proposal_collection = $client->ns(config->{database_name}.".proposals");
+  my $user_collection = $client->ns(config->{database_name}.".users");
+
   my @proposals = map {Model::Proposal->new($_)}
-          $collection->find({author_id=>$student->{_id}})->all;
-  debug $student;
-  debug to_hashes(\@proposals);
+          $proposal_collection->find({author_id=>$student->{_id}})->all;
+  my @other_authors;
+  for my $prop (@proposals){
+      for my $fc (@{$prop->{other_authors}}){
+        debug $fc;
+        my $user = Model::User->new($user_collection->find_one({falconkey=>$fc}));
+        push(@other_authors,$user);
+      }
+  }
   template 'basic', {top_dir=> config->{top_dir},header_script=>"student.tt",
       user=>$student, student_encoded => $json->encode($student),
-      proposals_encoded => $json->encode(to_hashes(\@proposals))
+      proposals_encoded => $json->encode(\@proposals),
+      users => $json->encode(\@other_authors)
     };
 };
 
@@ -158,22 +188,19 @@ get '/admin' => require_login sub {
   my $client = MongoDB->connect('mongodb://localhost');
   my $user = get_user(logged_in_user->{falconkey});
   my $json  = JSON->new->convert_blessed->allow_blessed;
-  my $users = to_hashes(get_all_in_collection($client,config->{database_name}.".users","Model::User"));
-  my $proposals = to_hashes(get_all_in_collection($client,
-          config->{database_name}.".proposals","Model::Proposal"));
+  my $users = get_all_in_collection($client,config->{database_name}.".users","Model::User");
+  my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
   my $mc = $client->ns(config->{database_name} . ".users");
   my $q = {role=> {'$in'=> ["judge"]}};
-  my @items = map {Model::Judge->new($_); } $mc->find($q)->all;
-  my $judges = to_hashes(\@items);
+  my @judges = map {Model::Judge->new($_); } $mc->find($q)->all;
   $q = {role=> {'$in'=> ["sponsor"]}};
-  @items = map {Model::Sponsor->new($_); } $mc->find($q)->all;
-  my $sponsors = to_hashes(\@items);
+  my @sponsors = map {Model::Sponsor->new($_); } $mc->find($q)->all;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"admin.tt",
         user=>$user, user_encoded => $json->encode($user),
         users=>$json->encode($users),
         proposals => $json->encode($proposals),
-        judges => $json->encode($judges),
-        sponsors => $json->encode($sponsors)
+        judges => $json->encode(\@judges),
+        sponsors => $json->encode(\@sponsors)
       };
 };
 
@@ -191,18 +218,5 @@ sub login_page {
   template 'login';
 }
 
-sub getAllData {
-    my $client = MongoDB->connect('mongodb://localhost');
-    # print "in getAllData\n";
-    my $authors = to_hashes(get_all_in_collection($client,"problemdb.authors","Model::Author"));
-    my $modules = to_hashes(get_all_in_collection($client,"problemdb.modules","Model::Module"));
-    my $problems = to_hashes(get_all_in_collection($client,"problemdb.problems","Model::Problem"));
-    my $problem_sets = to_hashes(get_all_in_collection($client,"problemdb.problemsets","Model::ProblemSet"));
-
-    return {  authors => to_json($authors),
-              modules=> to_json($modules),
-              problems => to_json($problems),
-              problem_sets => to_json($problem_sets) };
-}
 
 true;

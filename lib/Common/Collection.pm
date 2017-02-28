@@ -16,11 +16,11 @@ our @EXPORT_OK = qw(to_hashes insert_to_db get_all_in_collection get_one_by_id
 #
 ###
 
-sub to_hashes {
-  my $modules = shift;
-  my @output = map { $_->to_hash} @{$modules};
-  return \@output;
-}
+# sub to_hashes {
+#   my $modules = shift;
+#   my @output = map { $_->to_hash} @{$modules};
+#   return \@output;
+# }
 
 ##
 #
@@ -64,8 +64,7 @@ sub get_one_by_id {
   my $id_obj = MongoDB::OID->new(value => $id);
   #dd $id_obj;
   my $result = $collection->find_id($id_obj);
-  #dd $result;
-  return $class->new($result);
+  return $class->new($result || {});
 }
 
 ###
@@ -75,20 +74,15 @@ sub get_one_by_id {
 ###
 
 sub update_one {
-  my ($client,$collection_name,$obj) = @_;
+  my ($client,$collection_name,$classname,$obj) = @_;
   say "in update_one";
   my $collection = $client->ns($collection_name);
-  # dd $obj;
   my $id_obj = MongoDB::OID->new(value => $obj->{_id});
-  # dd $id_obj;
-  my $obj_as_hash = $obj->to_hash;
+  my $obj_as_hash = $obj->TO_JSON;
   delete $obj_as_hash->{_id};
-  # dd $obj_as_hash;
-
   my $result = $collection->update_one({_id =>$id_obj},{'$set' => $obj_as_hash});
   # dd $result;
   # todo:  check that this was succesful
-
   return $obj;
 }
 

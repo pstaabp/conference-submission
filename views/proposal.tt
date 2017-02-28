@@ -9,15 +9,18 @@
       <div id='proposal-collapse' class="panel-collapse collapse in">
         <div class="panel-body">
           <table class="table table-bordered">
-            <tr class="feedback-row">
+            <tr class="feedback-row"></tr>
             <tr>
-              <td class="form-horizontal col-md-6">
+              <td class="form-horizontal col-md-6" colspan="2">
                 <div class="form-group">
-                  <label class="col-md-3 control-label"> Project Title</label>
-                  <span class="col-md-9">
+                  <label class="col-md-2 control-label"> Project Title</label>
+                  <span class="col-md-10">
                      <input class="title form-control">
                  </span>
                </div>
+             </td>
+            </tr>
+            <tr>
               <td class="form-horizontal col-md-6">
                 <div class="form-group">
                   <label class="col-md-3 control-label"> Primary Author</label>
@@ -26,15 +29,6 @@
                    </span>
                  </div>
                </td>
-            </tr>
-            <tr>
-              <td class="form-horizontal">
-                <div class="form-group">
-                  <label class="col-md-3 control-label"> Author Email</label>
-                  <span class="col-md-9">
-                     <input class="author-email form-control" disabled="disabled">
-                   </span>
-                 </div>
               <td>
                 <div class="form-horizontal">
                   <div class="form-group">
@@ -42,9 +36,6 @@
                     <span class="col-md-9">
                        <input class="other-authors form-control" disabled="disabled">
                      </span>
-                    <!-- <span class="col-md-2">
-                      <button class="btn btn-default add-author-button">Update Authors</button>
-                    </span> -->
                   </div>
                 </div>
                 <div class="form-horizontal">
@@ -62,17 +53,7 @@
                 <div class="form-group">
                   <label class="col-md-4 control-label"> Presentation Type</label>
                   <span class="col-md-6">
-                    <select class="presentation-type form-control">
-                      <option></option>
-                      <option> Poster Presentation</option>
-                      <option> Oral Presentation</option>
-                      <option> Music</option>
-                      <option> Art (2D)</option>
-                      <option> Art (3D)</option>
-                      <option> Theatre</option>
-                      <option> Video</option>
-                      <option> Creative Writing</option>
-                    </select>
+                    <select class="presentation-type form-control"></select>
                   </span>
                 </div>
               <td class="form-horizontal">
@@ -139,6 +120,24 @@
               </td>
             </tr>
             <tr>
+              <td>
+                <div class="checkbox">
+                  <label class="control-label">
+                     <input class="to-be-judged"  type="checkbox">
+                     I would like to be judged
+                  </label>
+                </div>
+              </td>
+              <td class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-md-3 control-label">Contact Phone #</label>
+                  <span class="col-md-9">
+                    <input class="contact-phone form-control">
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr>
               <td colspan="2">
                 <div class="form-group">
                   <label class="control-label"> Proposal Text</label>
@@ -163,4 +162,5 @@
       </div>
     </div>
   </div>
+  <div class="proposal-modal"></div>
 </script>

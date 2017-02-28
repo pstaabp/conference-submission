@@ -1,7 +1,7 @@
 
 define(['module','backbone', 'underscore','models/Student','models/ProposalList',
-    'views/StudentInfoView','views/ProposalView','models/Proposal','views/WebPage'],
-function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,Proposal,WebPage){
+    'views/StudentInfoView','views/ProposalView','models/Proposal','views/WebPage','models/UserList'],
+function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,Proposal,WebPage,UserList){
 
     var StudentPage = WebPage.extend({
         el: "#content",
@@ -13,6 +13,7 @@ function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,P
             this.student = module && module.config() ? new Student(module.config().student): new Student();
             this.proposals = module && module.config() ? new ProposalList(ProposalList.prototype.parse(module.config().proposals))
                      : new ProposalList();
+            this.users = module && module.config() ? new UserList(module.config().users): new UserList();
             this.proposals.user_id = this.student.get("falconkey");
             this.proposals.on("add",function (){
                 self.render();
@@ -52,7 +53,7 @@ function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,P
                 $(".tab-content").append("<div class='tab-pane' id='prop"+ (i+1)+ "'></div>")
                 self.proposalViews.push(new ProposalView({model: prop,
                       el: $("#prop"+(i+1)), student: self.student,
-                      other_authors: self.other_authors}).render());
+                      users: self.users}).render());
             });
         },
         updateInfo: function(){

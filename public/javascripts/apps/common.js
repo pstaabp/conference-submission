@@ -12,6 +12,16 @@ define(['backbone','moment','stickit','backbone-validation'], function(Backbone,
           else
             return decodeURIComponent(results[1].replace(/\+/g, " "));
         },
+        presentation_types: [
+          "Poster Presentation",
+          "Oral Presentation",
+          "Music",
+          "Art (2D)",
+          "Art (3D)",
+          "Theatre",
+          "Video",
+          "Creative Writing"
+        ],
         proposalParams : [{class: ".session", field: "session"},{class:".title",field: "title"},
           {class: ".sponsor-name", field: "sponsor_name"}, {class: ".sponsor-email", field: "sponsor_email"},
           {class: ".sponsor-dept", field: "sponsor_dept"}, {class: ".type", field: "type"}],

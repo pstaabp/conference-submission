@@ -2,43 +2,42 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
   var PresentationsView = Backbone.View.extend({
     initialize: function(options){
       _.bindAll(this, "render");
-      this.parent = options.parent;
-      this.users = options.users;
+      _(this).extend(_(options).pick("users","proposals"));
     },
     render: function() {
       var _proposals;
       var _view;
       switch($("input[type='radio'][name='presentationsview']:checked").val()){
         case "orals":
-          _proposals = this.parent.proposals.where({type: "Oral Presentation"});
+          _proposals = this.proposals.where({type: "Oral Presentation"});
           _view = new PresentationView({type: "Orals", proposals: _proposals, users: this.users});
         break;
         case "schedule":
-          _proposals = this.parent.proposals.where({type: "Oral Presentation"});
+          _proposals = this.proposals.where({type: "Oral Presentation"});
           _view = new OralPresentationScheduleView({parent: this, proposals: _proposals,users: this.users});
         break;
         case "posters":
-          _proposals = this.parent.proposals.where({type: "Poster Presentation"});
+          _proposals = this.proposals.where({type: "Poster Presentation"});
           _view = new PostersView({proposals: _proposals,users: this.users});
         break;
         case "videos":
-          _proposals = this.parent.proposals.where({type: "Video"});
+          _proposals = this.proposals.where({type: "Video"});
           _view = new PresentationView({type: "Video", proposals: _proposals,users: this.users});
         break;
         case "art2d":
-          _proposals = this.parent.proposals.where({type: "2D Art"});
+          _proposals = this.proposals.where({type: "2D Art"});
           _view = new PresentationView({type: "2D Art", proposals: _proposals, users: this.users});
         break;
         case "art3d":
-          _proposals = this.parent.proposals.where({type: "3D Art"});
+          _proposals = this.proposals.where({type: "3D Art"});
           _view = new PresentationView({type: "3D Art", proposals: _proposals, users: this.users});
         break;
         case "music":
-          _proposals = this.parent.proposals.where({type: "Music"});
+          _proposals = this.proposals.where({type: "Music"});
           _view = new PresentationView({type: "Music", proposals: _proposals, users: this.users});
         break;
         case "theatre":
-          _proposals = this.parent.proposals.where({type: "Theatre"});
+          _proposals = this.proposals.where({type: "Theatre"});
           _view = new PresentationView({type: "Theatre", proposals: _proposals,users: this.users})
         break;
       }

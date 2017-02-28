@@ -42,6 +42,7 @@
   </div><!-- /.container-fluid -->
 </nav>
    [% content %]
+   <div id="main-modal"></div>
 </body>
 [% IF header_script %]
   [% INCLUDE $header_script %]
