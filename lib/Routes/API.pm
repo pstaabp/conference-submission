@@ -118,30 +118,34 @@ get '/users/:falconkey/check' => sub {
 
   ## need to check if the search succeeded.
 
+  return {} unless defined($entry);
+
   ## create a new user
+
+  #debug dump $entry;
 
   my $params = {
     last_name => $entry->get_value("sn") ||"",
     first_name => $entry->get_value("givenName") ||"",
-    email =>  $entry->get_value("mail")
+    email =>  $entry->get_value("mail"),
+    falconkey => $entry->get_value("sAMAccountName")
   };
 
+  my $user;
   if($entry->get_value("mail") =~ /\@student\./){
     $params->{role} = ["student"];
-    return Model::User->($params)->TO_JSON;
+    $user = Model::User->new($params);
   } else {
     $params->{role} = ["sponsor"];
     $params->{department} = $entry->get_value("department") ||"";
-    return Model::Sponsor->($params)->TO_JSON;
+    $user = Model::Sponsor->new($params);
   }
 
-  # return (defined($entry))?
-  #    {last_name => $entry->get_value("sn") ||"",
-  #   first_name => $entry->get_value("givenName") ||"",
-  #   email =>  $entry->get_value("mail") || "",
-  #   other =>  $entry->get_value("description") || "",
-  #
-  # }: {};
+  # add the user to the database;
+
+  $collection->insert_one($user);
+
+  return $user->TO_JSON;
 };
 
 ###

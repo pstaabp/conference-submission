@@ -3,6 +3,7 @@ package Routes::Templates;
 use Dancer2;
 
 use Dancer2::Plugin::Auth::Extensible;
+use Dancer2::Plugin::Email;
 use Common::Collection qw/get_one_by_id get_all_in_collection insert_to_db update_one/;
 use Data::Dump qw/dump/;
 use List::Util qw/uniq/;
@@ -107,7 +108,7 @@ any '/logout' => sub {
     template 'logout';
 };
 
-get '/submitted/:proposal_id' => require_login sub {
+get '/submitted/:proposal_id' => sub {
   my $user = get_user(logged_in_user->{falconkey});
   my $client = MongoDB->connect('mongodb://localhost');
   my $user_collection = $client->ns(config->{database_name} . ".users");
@@ -120,11 +121,33 @@ get '/submitted/:proposal_id' => require_login sub {
       push(@other_authors,$user);
   }
 
-  debug dump $proposal->TO_JSON;
+  my $text = '';
+  my $tt = Template->new({
+    INCLUDE_PATH => '../../views',
+    INTERPOLATE  => 1,
+    OUTPUT => \$text
+  }) || die "$Template::ERROR\n";
 
-  template 'proposal-received', {top_dir => config->{top_dir},
+
+  my $params = {top_dir => config->{top_dir},
     user=>$user, proposal=>$proposal,sponsor=>$sponsor,
     other_authors => \@other_authors};
+
+  my $out = $tt->process('proposal-received.t',$params);
+
+  debug $Template::ERROR;
+  debug $text;
+  debug $out; 
+
+
+  # my $email = email {
+  #     from    => 'ugrad-conf@fitchburgstate.edu',
+  #     to      => $user->{email},
+  #     subject => '2017 FSU Undergraduate Conference Submission',
+  #     body    => ,
+  # };
+
+  template 'proposal-received', $params;
 
 };
 
