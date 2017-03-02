@@ -13,7 +13,6 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
       _(this).extend(_(options).pick("student","other_students","users"));
 
       this.facultyView = options.facultyView || false;
-      this.model.on({"change:use_human_subjects change:use_animal_subjects": this.toggleCheckbox});
       this.other_authors = new UserList();
       _(this.model.get("other_authors")).each(function(fc){
          self.other_authors.add(options.users.findWhere({falconkey:fc}));
@@ -22,8 +21,18 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
         // fetch the info about the sponsor.
         $.ajax({url: settings.top_dir + "/sponsors/"+this.model.get("sponsor_id"),
           type: "GET", success: this.updateSponsorInfo});
-
       }
+      this.model.on({
+        sync: function(){
+          self.$(".submit-proposal-button").button("saved").attr("disabled","disabled");
+        },
+        change: function () {
+          self.$(".submit-proposal-button").button("reset").attr("disabled",false);
+        },
+        "change:to_be_judged change:use_animal_subjects change:use_human_subjects": function(){
+            self.unstickit(this.model); self.stickit(this.model,this.bindings);
+        }
+      });
     },
     render: function (){
       var self = this;
@@ -48,14 +57,7 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
       this.stickit(this.student,this.student_bindings);
       this.stickit();
       this.$(".submit-proposal-button").button();
-      this.model.on({
-        sync: function(){
-          self.$(".submit-proposal-button").button("saved").attr("disabled","disabled");
-        },
-        change: function () {
-          self.$(".submit-proposal-button").button("reset").attr("disabled",false);
-        }
-      });
+
       if(!this.model.isNew()){
         // change the button to "Update Proposal"
         this.$("button.submit-proposal-button").html("Update Proposal");
@@ -90,19 +92,23 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
   bindings: {
     ".title": "title",
     ".presentation-type": "type",
-    ".human-subjects": {
-      observe: "use_human_subjects", update: function($el, val, model, options) {
-        $el.prop("checked",val);
-        if(val){
+    ".human-subjects": "use_human_subjects",
+    ".human-subjects-number": {
+      observe: "human_subjects_number", update: function($el, val, model, options) {
+        if(model.get("use_human_subjects")){
           this.$(".human-subjects-number").closest(".form-group").removeClass("hidden")
+        } else {
+          this.$(".human-subjects-number").closest(".form-group").addClass("hidden")
         }
       }
     },
-    ".animal-subjects": {
-      observe: "use_animal_subjects", update: function($el, val, model, options) {
-        $el.prop("checked",val);
-        if(val){
+    ".animal-subjects": "use_animal_subjects",
+    ".animal-subjects-number": {
+      observe: "animal_subjects_number", update: function($el, val, model, options) {
+        if(model.get("use_animal_subjects")){
           this.$(".animal-subjects-number").closest(".form-group").removeClass("hidden")
+        } else {
+          this.$(".animal-subjects-number").closest(".form-group").addClass("hidden")
         }
       }
     },
@@ -112,24 +118,26 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
         }
     },
     ".to-be-judged": "to_be_judged",
-    ".contact-phone": "contact_phone",
-    ".human-subjects-number": "human_subjects_number",
-    ".animal-subjects-number": "animal_subjects_number",
+    ".contact-phone": {
+      observe: "contact_phone",
+      update: function($el,val,model,option){
+        if(model.get("to_be_judged")){
+          this.$(".contact-div").removeClass("hidden")
+        } else {
+          this.$(".contact-div").addClass("hidden")
+        }
+      }
+    },
     ".proposal-text": "content",
-    ".other-equipment": "other_equipment",
     ".sponsor-statement": {observe: "sponsor_statement", events: ["blur"]},
   },
-  toggleCheckbox: function(model){
-    var type = _(model.changed).keys()[0].match(/_(\w+)_/)[1]
-    if(_(model.changed).values()[0]){
-      $("."+type+"-subjects-number").closest(".form-group").removeClass("hidden");
-    } else {
-      $("."+type+"-subjects-number").closest(".form-group").addClass("hidden");
-    }
-  },
   submit: function (){
+    var self = this;
     this.$(".submit-proposal-button").button("saving")
-    this.model.save();
+    this.model.save(this.model.attributes,{success: function(){
+      location.href=settings.template_dir +"/submitted/"+self.model.get("_id");
+//      $.ajax(settings.top_dir +"/proposals/"+self.model.get("_id"),{contentType: false});
+    }});
   },
   updateAuthors: function() {
     var self = this;
@@ -227,7 +235,7 @@ updateView: function (){
 removeAuthor: function(evt){
   var _id = $(evt.target).attr("data-id");
   this.other_authors.remove(_id)
-  this.updateView; 
+  this.updateView;
 },
 addAuthor: function (){
   var emailRE = /^(\w+)@student.fitchburgstate.edu$/;

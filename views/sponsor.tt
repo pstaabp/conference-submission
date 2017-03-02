@@ -1,10 +1,10 @@
 <script type="text/javascript" src="[%top_dir%]/javascripts/apps/require-config.js">
 </script>
 <script type="text/javascript">
-  require.config = { "[%top_dir%]/javascripts/apps/StudentPage.js": {
+  require.config = { "[%top_dir%]/javascripts/apps/SponsorPage.js": {
     user: [% user_encoded %],
-    //proposals: !{JSON.stringify(proposals)}
-    proposals: []
+    proposals: [% proposals %],
+    users: [% users %]
     }
   };
 </script>
@@ -18,13 +18,18 @@
 <script type='text/template' id='faculty-tabs-template'>
   <input type="hidden" id="user-id" value="[% user.id %]">
   [% IF proposals && proposals.size>0 %]
-    <p> Below is all proposals that list you as the sponsor of a Undergraduate Conference proposal.  If you have more that one, each
-      will be present in a tab.  For each proposal, you will need to submit a sponsor statement.  If there are any changes that
-      need to be made to the proposal (i.e. typos or other errors), please let the student know that she/he should log back into
+    <p> Below list all proposals that list you as the sponsor of a FSU Undergraduate
+    Conference proposal.  If you have more that one, each
+      will be present in a tab.  For each proposal, you will need to submit a
+      sponsor statement.  If there are any changes that
+      need to be made to the proposal (i.e. typos or other errors), please
+      let the student know that she/he should log back into
       the website and make the changes. </p>
   [% ELSE %]
-     <p> Currently, there are no proposals that list you as a sponsor.  If you know a student of yours has submitted a proposal with you as
-      a sponsor, check with the student to make sure that your correct email is listed on the proposal. </p>
+     <p> Currently, there are no proposals that list you as a sponsor.  If you
+       know a student of yours has submitted a proposal with you as
+      a sponsor, check with the student to make sure that your correct email is
+      listed on the proposal. </p>
 
     <p> You are viewing the website as a sponsor.  To switch the view, click on "Change Role" on the
     menu bar. </p>

@@ -6,8 +6,9 @@ use Dancer2::Plugin::Auth::Extensible;
 use Dancer2::Plugin::Email;
 use Common::Collection qw/get_one_by_id get_all_in_collection insert_to_db update_one/;
 use Data::Dump qw/dump/;
-use List::Util qw/uniq/;
+use List::Util qw/uniq first/;
 use JSON -no_export;
+use MongoDB::OID;
 use Model::Sponsor;
 use Model::Judge;
 
@@ -36,7 +37,8 @@ get '/index' =>  require_login sub {
 get '/returned' => require_login sub {
 
   debug logged_in_user;
-  debug get_user_details;
+  debug get_user_details(logged_in_user->{falconkey});
+  debug user_roles(logged_in_user->{falconkey});
 
   if (user_has_role('student')) {
     redirect '/student';
@@ -48,7 +50,7 @@ get '/returned' => require_login sub {
 
 get '/login' => sub {
     debug 'in get /login';
-    template 'login', {login_failed=>query_parameters->{login_failed}};
+    template 'login', {top_dir=>config->{top_dir},login_failed=>query_parameters->{login_failed}};
 };
 
 post '/login' => sub {
@@ -91,7 +93,7 @@ post '/login' => sub {
 
 get '/test' => sub {
   debug "in get /test";
-  template 'test';
+  template 'test', {top_dir=>config->{top_dir}};
 };
 
 get '/welcome-student' => require_login sub {
@@ -137,7 +139,7 @@ get '/submitted/:proposal_id' => sub {
 
   debug $Template::ERROR;
   debug $text;
-  debug $out; 
+  debug $out;
 
 
   # my $email = email {
@@ -151,7 +153,8 @@ get '/submitted/:proposal_id' => sub {
 
 };
 
-get '/student' => require_role student => sub {
+#get '/student' => require_role student => sub {
+get '/student' => sub {
 
   debug 'in get /student';
   my $student = get_user(logged_in_user->{falconkey});
@@ -178,12 +181,29 @@ get '/student' => require_role student => sub {
 };
 
 get '/sponsor' => require_role sponsor => sub {
+  my $json  = JSON->new->convert_blessed->allow_blessed;
   my $user = get_user(logged_in_user->{falconkey});
-  # my $proposals = to_hashes(get_all_in_collection($client,config->{db_name}.".proposals","Model::Proposals"));
-  # my @props_as_json = map {encode_json } @$proposals;
+  debug $user;
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $proposal_collection = $client->ns(config->{database_name}.".proposals");
+  my $user_collection = $client->ns(config->{database_name}.".users");
+  my @proposals =  map {Model::Proposal->new($_)} $proposal_collection->find({sponsor_id=>$user->{_id}})->all;
+  my @all_authors = map {
+    debug dump $_->{author_id};
+    my $id_obj = MongoDB::OID->new(value=>$_->{author_id});
+    debug dump $id_obj;
+    Model::User->new($user_collection->find_one({_id=>$id_obj}));
+  } @proposals;
+  for my $prop (@proposals){
+      for my $fc (@{$prop->{other_authors}}){
+        my $user = Model::User->new($user_collection->find_one({falconkey=>$fc}));
+        push(@all_authors,$user);
+      }
+  }
+  debug dump \@all_authors;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"sponsor.tt",
         user=>$user, user_encoded => encode_json($user),
-        # proposals_encoded => \@props_as_json
+        proposals=>$json->encode(\@proposals), users=>$json->encode(\@all_authors)
       };
 };
 
@@ -227,13 +247,24 @@ get '/admin' => require_login sub {
       };
 };
 
+### I think this should be in the Auth::Extensible package, but works okay.
+
 sub get_user {
   my $username = shift;
+
+
   my $client = MongoDB->connect('mongodb://localhost');
   my $collection = $client->ns(config->{database_name} . ".users");
   my $user = $collection->find_one({falconkey => $username});
   $user->{_id} = $user->{_id}->{value} if defined($user);
-  return $user;
+  return $user if defined($user);
+
+  ## first look for the user in the envinroment config.
+  my $users = config->{plugins}->{"Auth::Extensible"}->{realms}->{local}->{users};
+  $user = first { debug($_); $_->{falconkey} eq $username } @$users;
+  return $user if defined($user);
+
+  return {};
 }
 
 sub login_page {

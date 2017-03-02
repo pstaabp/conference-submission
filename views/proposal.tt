@@ -56,15 +56,25 @@
                     <select class="presentation-type form-control"></select>
                   </span>
                 </div>
-              <td class="form-horizontal">
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Other Equipment Needed</label>
-                  <span class="col-md-1">
-                    <button class="btn btn-default btn-sm" id="other-equip-help"> ?</button>
-                  </span>
-                  <span class="col-md-8">
-                     <input class="other-equip form-control">
-                  </span>
+              </td>
+              <td>
+                <div class="checkbox">
+                  <label class="control-label">
+                     <input class="to-be-judged"  type="checkbox">
+                     I would like my presentation to be judged
+                  </label>
+                </div>
+                <div class="hidden form-horizontal contact-div">
+                  <div class="form-group">
+                    <label class="col-md-3 control-label">Contact Phone #</label>
+                    <span class="col-md-9">
+                      <input class="contact-phone form-control">
+                    </span>
+                  </div>
+                  <p>The above contact number will be used to contact you if your
+                    presentation wins.  You will be expected to attend the
+                    Honors convocation in the afternoon of the Undergraduate
+                    Conference day. </p> 
                 </div>
               </td>
             </tr>
@@ -117,24 +127,6 @@
                     </tr>
                   </tbody>
                 </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="checkbox">
-                  <label class="control-label">
-                     <input class="to-be-judged"  type="checkbox">
-                     I would like to be judged
-                  </label>
-                </div>
-              </td>
-              <td class="form-horizontal">
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Contact Phone #</label>
-                  <span class="col-md-9">
-                    <input class="contact-phone form-control">
-                  </span>
-                </div>
               </td>
             </tr>
             <tr>

@@ -4,6 +4,8 @@ use feature 'say';
 use Moo;
 use Net::LDAP;
 use Data::Dump qw/dump/;
+use Model::User;
+use Model::Sponsor;
 
 extends 'Dancer2::Plugin::Auth::Extensible::Provider::LDAP';
 
@@ -48,37 +50,47 @@ sub get_user_details {
 
     my $ldap = new Net::LDAP('ldaps://fsudc1.fsc.int:3269');
 
-    return {} unless defined($ldap); 
+    return {} unless defined($ldap);
 
     my $msg = $ldap->bind('fscad\\webworkldap', password => 'MonDec211215' );
 
-    my $search = $ldap->search(base => '', filter => "sAMAccountName=superman");
+    my $search = $ldap->search(base => '', filter => "sAMAccountName=".$username);
 
-
-    #dd $msg->entries;
 
 
     my $entry = $search->entry(0);
-    #dd $entry->attributes;
-    return {falconkey => $username,
-            first_name => $entry->get_value("givenName"),
-            last_name => $entry->get_value("sn"),
-            other=> $entry->get_value("description")
+
+    return {} unless defined($entry);
+
+    my $params = {
+      last_name => $entry->get_value("sn") ||"",
+      first_name => $entry->get_value("givenName") ||"",
+      email =>  $entry->get_value("mail"),
+      falconkey => $entry->get_value("sAMAccountName")
     };
+
+    my $user;
+    if($entry->get_value("mail") =~ /\@student\./){
+      $params->{role} = ["student"];
+      $user = Model::User->new($params);
+    } else {
+      $params->{role} = ["sponsor"];
+      $params->{department} = $entry->get_value("department") ||"";
+      $user = Model::Sponsor->new($params);
+    }
+    return $user->TO_JSON;
 }
 #
 # =head2 get_user_roles $username
 #
 # =cut
 #
-# sub get_user_roles {
-#     my ($self, $username) = @_;
-#
-#     croak "username must be defined"
-#       unless defined $username;
-#
-#     my $user_details = $self->get_user_details($username) or return;
-#     return $user_details->{roles};
-# }
+sub get_user_roles {
+    my ($self, $username) = @_;
+    #return ["in get_user_roles",$self->get_user_details("$username")];
+    die "username must be defined" unless defined $username;
+    my $user_details = $self->get_user_details($username) or return;
+    return $user_details->{role};
+}
 
 1;
