@@ -25,10 +25,10 @@ get '/index' =>  require_login sub {
   debug session;
   debug logged_in_user;
   if (user_has_role('student')) {
-    redirect '/welcome-student';
+    redirect config->{top_dir} .'/welcome-student';
   }
   if (user_has_role("sponsor")){
-    redirect '/welcome';
+    redirect config->{top_dir} .'/welcome';
   }
 };
 
@@ -41,10 +41,10 @@ get '/returned' => require_login sub {
   debug user_roles(logged_in_user->{falconkey});
 
   if (user_has_role('student')) {
-    redirect '/student';
+    redirect config->{server_name} . config->{top_dir} .'/student';
   }
   if (user_has_role("sponsor")){
-    redirect '/sponsor';
+    redirect config->{server_name} . config->{top_dir} .'/sponsor';
   }
 };
 
@@ -83,11 +83,11 @@ post '/login' => sub {
         }
         session logged_in_user => $user->{falconkey};
 
-        redirect '/returned';
+        redirect config->{server_name} . config->{top_dir} .'/returned';
     } else {
         debug "UH OH!";
         # authentication failed
-        redirect '/login?login_failed=1';
+        redirect config->{server_name} . config->{top_dir} . '/login?login_failed=1';
     }
 };
 
@@ -107,7 +107,7 @@ get '/welcome' => require_login sub {
 
 any '/logout' => sub {
     app->destroy_session;
-    template 'logout';
+    template 'logout', {top_dir =>config->{top_dir}};
 };
 
 get '/submitted/:proposal_id' => sub {
@@ -183,7 +183,6 @@ get '/student' => sub {
 get '/sponsor' => require_role sponsor => sub {
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $user = get_user(logged_in_user->{falconkey});
-  debug $user;
   my $client = MongoDB->connect('mongodb://localhost');
   my $proposal_collection = $client->ns(config->{database_name}.".proposals");
   my $user_collection = $client->ns(config->{database_name}.".users");
@@ -191,7 +190,6 @@ get '/sponsor' => require_role sponsor => sub {
   my @all_authors = map {
     debug dump $_->{author_id};
     my $id_obj = MongoDB::OID->new(value=>$_->{author_id});
-    debug dump $id_obj;
     Model::User->new($user_collection->find_one({_id=>$id_obj}));
   } @proposals;
   for my $prop (@proposals){
@@ -200,7 +198,7 @@ get '/sponsor' => require_role sponsor => sub {
         push(@all_authors,$user);
       }
   }
-  debug dump \@all_authors;
+ 
   template 'basic', {top_dir=> config->{top_dir},header_script=>"sponsor.tt",
         user=>$user, user_encoded => encode_json($user),
         proposals=>$json->encode(\@proposals), users=>$json->encode(\@all_authors)
