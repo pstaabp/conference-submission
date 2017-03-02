@@ -252,8 +252,8 @@ addAuthor: function (){
 updateAuthorList: function (data) {
   if(_.isEqual(data,{})){ // the email address didn't exist
   console.log("The falconkey does not exist");
-  this.$("input.add-author-field").closest(".form-group").addClass("has-error");
-  this.$("input.add-author-field").popover({content: "The email does not exist"}).popover("show")
+  this.$("input#add-author-field").closest(".form-group").addClass("has-error");
+  this.$("input#add-author-field").popover({content: "The email does not exist"}).popover("show")
 
 } else {
   if(! this.other_authors.findWhere({email: data.email})){

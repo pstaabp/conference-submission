@@ -2,6 +2,7 @@
 
 <script type="text/javascript" src="[%top_dir%]/javascripts/apps/require-config.js"></script>
 <script type="text/javascript">
+  require.baseUrl= "[%top_dir%]/javascripts";
   require.config = { "[%top_dir%]/javascripts/apps/AdminPage.js": {
     users: [% users %],
     sponsors: [% sponsors %],

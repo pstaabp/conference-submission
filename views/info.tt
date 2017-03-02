@@ -90,7 +90,7 @@
                   <button class="btn btn-default" id="update-info-btn">Update My Information</button>
                 </td>
                 <td>
-                  <button class="btn btn-default" id="submit-proposal">Create a New Proposal</button>
+                  <button class="btn btn-default" id="submit-proposal">Submit a New Proposal</button>
                 </td>
               </tr>
             </table>
