@@ -268,7 +268,7 @@ put '/judges/:judge_id' => sub {
   debug "in put /judges/:judge_id";
   my $params =  body_parameters->mixed;
   $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
-
+  $params->{judge_topics} = [$params->{judge_topics}] unless ref($params->{judge_topics}) eq "ARRAY";
   my $updated_user = Model::Judge->new($params);
   # dd $updated_user;
   my $client = MongoDB->connect('mongodb://localhost');
@@ -316,24 +316,34 @@ get '/students/:student_id/proposals' => sub { # add a new user
 
 post '/students/:student_id/proposals' => sub {
     debug 'in POST /students/:student_id/proposals';
-    my $params = body_parameters->mixed;
-    $params->{other_authors}= [$params->{other_authors}] unless ref($params->{other_authors}) eq "ARRAY";
-    my $new_proposal = Model::Proposal->new($params);
-    # dd $new_proposal;
+    my $prop = parseProposal(body_parameters->mixed);
     my $client = MongoDB->connect('mongodb://localhost');
-    my $result = insert_to_db($client,config->{database_name} . ".proposals",$new_proposal);
+    my $result = insert_to_db($client,config->{database_name} . ".proposals",$prop);
     return $result->TO_JSON;
 };
 
+sub parseProposal {
+   my $params = shift;
+   my $params = body_parameters->mixed;
+   if (defined($params->{other_authors})){
+     $params->{other_authors}= [$params->{other_authors}] unless ref($params->{other_authors}) eq "ARRAY";
+   } else {
+     $params->{other_authors} = [];
+   }
+   if (defined($params->{feedback})){
+     $params->{feedback}= [$params->{feedback}] unless ref($params->{feedback}) eq "ARRAY";
+   } else {
+     $params->{feedback} = [];
+   }
+   return Model::Proposal->new($params);
+}
 
 put '/students/:student_id/proposals/:proposal_id' => sub {
   debug "in put /proposals/:proposal_id";
-  my $params = body_parameters->mixed;
-  $params->{other_authors}= [$params->{other_authors}] unless ref($params->{other_authors}) eq "ARRAY";
 
-  my $updated_proposal = Model::Proposal->new($params);
+  my $prop = parseProposal(body_parameters->mixed);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$updated_proposal);
+  my $user = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$prop);
 
   return $user->TO_JSON;
 };
