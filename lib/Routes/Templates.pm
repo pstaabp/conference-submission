@@ -79,15 +79,15 @@ post '/login' => sub {
           my $user_details = Model::User->new(get_user_details(params->{username}));
           insert_to_db($client,config->{database_name} . ".users", $user_details);
           session logged_in_user => $user_details->{falconkey};
-          redirect '/index';
+          redirect config->{top_dir} .'/index';
         }
         session logged_in_user => $user->{falconkey};
 
-        redirect '/returned';
+        redirect config->{top_dir} .'/returned';
     } else {
         debug "UH OH!";
         # authentication failed
-        redirect '/login?login_failed=1';
+        redirect config->{top_dir} .'/login?login_failed=1';
     }
 };
 

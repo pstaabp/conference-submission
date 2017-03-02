@@ -114,7 +114,8 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
     },
     ".presentation-type": { observe: "type",
         selectOptions: {
-            collection: common.presentation_types
+            collection: common.presentation_types,
+            defaultOption: {label: "Choose one...", value: null}
         }
     },
     ".to-be-judged": "to_be_judged",
