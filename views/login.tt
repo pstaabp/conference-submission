@@ -4,7 +4,7 @@
    Please try again.  </div>
 
 [% END %]
-  <form class="form-horizontal" method="POST" action="/login">
+  <form class="form-horizontal" method="POST" action="[% top_dir %]/login">
   <div class="form-group">
     <label for="falconkey" class="col-sm-2 control-label">Falconkey</label>
     <div class="col-sm-4">

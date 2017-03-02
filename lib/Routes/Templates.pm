@@ -48,7 +48,7 @@ get '/returned' => require_login sub {
 
 get '/login' => sub {
     debug 'in get /login';
-    template 'login', {login_failed=>query_parameters->{login_failed}};
+    template 'login', {top_dir=>config->{top_dir},login_failed=>query_parameters->{login_failed}};
 };
 
 post '/login' => sub {
@@ -91,11 +91,12 @@ post '/login' => sub {
 
 get '/test' => sub {
   debug "in get /test";
-  template 'test';
+  debug config;
+  template 'test', {top_dir=>config->{top_dir}};
 };
 
 get '/welcome-student' => require_login sub {
-  template 'welcome-student', {user=>get_user(logged_in_user->{user})};
+  template 'welcome-student', {top_dir=>config->{top_dir},user=>get_user(logged_in_user->{user})};
 };
 
 get '/welcome' => require_login sub {
