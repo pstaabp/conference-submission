@@ -26,16 +26,25 @@ extends 'Dancer2::Plugin::Auth::Extensible::Provider::LDAP';
 # use Data::Dump qw/dump/;
 #
 #
-# sub authenticate_user {
-#     my ($self, $username, $password) = @_;
-#
-#     debug config;
-#     croak "username and password must be defined"
-#       unless defined $username && defined $password;
-#
-#     my $user_details = $self->get_user_details($username) or return;
-#     return $self->match_password($password, $user_details->{pass});
-# }
+sub authenticate_user {
+    my ( $self, $username, $password ) = @_;
+
+    die "username and password must be defined"
+      unless defined $username && defined $password;
+
+    my $user = $self->get_user_details($username) or return;
+
+    my $ldap = $self->ldap or return;
+
+    my $mesg = $ldap->bind('fscad\\'.$username, password => $password );
+    #$self->app->log(debug=>$mesg);
+    #return $mesg;
+
+    $ldap->unbind;
+    $ldap->disconnect;
+
+    return not $mesg->is_error;
+}
 #
 # =head2 get_user_details $username
 #
@@ -44,16 +53,15 @@ extends 'Dancer2::Plugin::Auth::Extensible::Provider::LDAP';
 # # Just return the whole user definition from the config; this way any additional
 # # fields defined for users will just get passed through.
 sub get_user_details {
-    my ($self, $username,$realm) = @_;
+    my ($self, $username) = @_;
 
     die "username must be defined" unless defined $username;
 
-    my $ldap = new Net::LDAP($self->app->config->{ldap_server});
+    my $ldap = $self->ldap;
 
     return {} unless defined($ldap);
 
-    my $msg = $ldap->bind($self->app->config->{ldap_bind}, password => $self->app->config->{ldap_password});
-
+    my $mesg = $ldap->bind( $self->binddn, password => $self->bindpw );
     my $search = $ldap->search(base => '', filter => "sAMAccountName=".$username);
 
 
@@ -78,6 +86,7 @@ sub get_user_details {
       $params->{department} = $entry->get_value("department") ||"";
       $user = Model::Sponsor->new($params);
     }
+
     return $user->TO_JSON;
 }
 #

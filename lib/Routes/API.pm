@@ -277,6 +277,84 @@ put '/judges/:judge_id' => sub {
   return $user->TO_JSON;
 };
 
+###
+#
+# Proposal routes
+#
+###
+
+get '/proposals' => sub {
+  debug 'in get /proposals';
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
+  return $proposals;
+
+};
+
+
+get '/proposals/:proposal_id' => sub {
+   debug "in get /proposal/:proposal_id";
+   my $client = MongoDB->connect('mongodb://localhost');
+   my $proposal = get_one_by_id($client,config->{database_name} . ".proposals",'Model::Proposal',route_parameters->{proposal_id});
+
+  #  debug dump $student;
+   ## TODO:  check that this user has a student` role
+   return $proposal->TO_JSON;
+};
+
+# get all proposals for student :student_id
+
+get '/students/:student_id/proposals' => sub { # add a new user
+  #my $new_proposal = Model::User->new(body_parameters->as_hashref);
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $collection = $client->ns(config->{database_name} . ".proposals");
+  my @results = map {Model::Proposal->new($_)}
+          $collection->find({author_id => route_parameters->{student_id}})->all;
+  #debug dump @results;
+  return \@results;
+};
+
+post '/students/:student_id/proposals' => sub {
+    debug 'in POST /students/:student_id/proposals';
+    my $prop = parseProposal(body_parameters->mixed);
+    my $client = MongoDB->connect('mongodb://localhost');
+    my $result = insert_to_db($client,config->{database_name} . ".proposals",$prop);
+    return $result->TO_JSON;
+};
+
+sub parseProposal {
+   my $params = shift;
+   #my $params = body_parameters->mixed;
+   if (defined($params->{other_authors})){
+     $params->{other_authors}= [$params->{other_authors}] unless ref($params->{other_authors}) eq "ARRAY";
+   } else {
+     $params->{other_authors} = [];
+   }
+   if (defined($params->{feedback})){
+     $params->{feedback}= [$params->{feedback}] unless ref($params->{feedback}) eq "ARRAY";
+   } else {
+     $params->{feedback} = [];
+   }
+   return Model::Proposal->new($params);
+}
+
+put '/students/:student_id/proposals/:proposal_id' => sub {
+  debug "in put /proposals/:proposal_id";
+
+  my $prop = parseProposal(body_parameters->mixed);
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $user = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$prop);
+
+  return $user->TO_JSON;
+};
+
+del '/students/:student_id/proposals/:proposal_id' => sub {
+  debug "in delete /proposals/:proposal_id";
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $deleted_proposal = delete_one_by_id($client,config->{database_name} . ".proposals",
+            'Model::Proposal',route_parameters->{proposal_id});
+  return Model::Proposal->new($deleted_proposal)->TO_JSON;
+};
 
 
 true;
