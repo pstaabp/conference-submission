@@ -56,12 +56,12 @@ get '/login' => sub {
 
 post '/login' => sub {
     debug "in post /login";
-    my ($success, $realm) = authenticate_user(
-        params->{username}, params->{password}
-    );
+
+    my ($success, $realm) = authenticate_user(body_parameters->{username},body_parameters->{password});
+
 
     debug $success;
-    debug $realm; 
+    debug $realm;
 
     if ($success) {
         # change session ID if we have a new enough D2 version with support
@@ -109,7 +109,43 @@ get '/welcome' => require_login sub {
 
 any '/logout' => sub {
     app->destroy_session;
-    template 'logout';
+    template 'logout', {top_dir=>config->{top_dir}};
+};
+
+get '/testemail' => sub {
+  my $text = '';
+
+  my $tt = Template->new({
+    INCLUDE_PATH => config->{views},
+    INTERPOLATE  => 1,
+    OUTPUT => \$text
+  }) || die "$Template::ERROR\n";
+
+  my $client = MongoDB->connect("localhost");
+  my $user_collection = $client->ns("dev-2016.users");
+  my $proposal_collection = $client->ns("dev-2016.proposals");
+  my $user = $user_collection->find_one({falconkey=>"superman"});
+  my $author_id = $user->{_id}->{value};
+  my $proposal = $proposal_collection->find_one({author_id=>$author_id});
+  my $sponsor = $user_collection->find_one({falconkey=>"pstaab"});
+  my @other_authors=[];
+
+  my $params = {top_dir => config->{top_dir},
+    user=>$user, proposal=>$proposal,sponsor=>$sponsor,
+    other_authors => \@other_authors};
+
+  my $out = $tt->process('proposal-received.tt',$params);
+
+  my $email = email {
+      from    => 'ugrad-conf@fitchburgstate.edu',
+      to      => $user->{email},
+      cc      => $sponsor->{email},
+      subject => '2017 FSU Undergraduate Conference Submission',
+      body    => $text,
+      'Content-Type' => 'text/html'
+  };
+
+  return $out;
 };
 
 get '/submitted/:proposal_id' => sub {
@@ -125,31 +161,29 @@ get '/submitted/:proposal_id' => sub {
       push(@other_authors,$user);
   }
 
-  my $text = '';
-  my $tt = Template->new({
-    INCLUDE_PATH => '../../views',
-    INTERPOLATE  => 1,
-    OUTPUT => \$text
-  }) || die "$Template::ERROR\n";
-
-
   my $params = {top_dir => config->{top_dir},
     user=>$user, proposal=>$proposal,sponsor=>$sponsor,
     other_authors => \@other_authors};
 
-  my $out = $tt->process('proposal-received.t',$params);
+    my $text = '';
 
-  debug $Template::ERROR;
-  debug $text;
-  debug $out;
+    my $tt = Template->new({
+      INCLUDE_PATH => config->{views},
+      INTERPOLATE  => 1,
+      OUTPUT => \$text
+    }) || die "$Template::ERROR\n";
 
 
-  # my $email = email {
-  #     from    => 'ugrad-conf@fitchburgstate.edu',
-  #     to      => $user->{email},
-  #     subject => '2017 FSU Undergraduate Conference Submission',
-  #     body    => ,
-  # };
+  my $out = $tt->process('proposal-received.tt',$params);
+
+  my $email = email {
+      from    => 'ugrad-conf@fitchburgstate.edu',
+      to      => $user->{email},
+      cc      => $sponsor->{email},
+      subject => '2017 FSU Undergraduate Conference Submission',
+      body    => $text,
+      'Content-Type' => 'text/html'
+  };
 
   template 'proposal-received', $params;
 
