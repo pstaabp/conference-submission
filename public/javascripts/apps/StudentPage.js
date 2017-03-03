@@ -7,7 +7,7 @@ function(module,Backbone, _, Student,ProposalList,StudentInfoView,ProposalView,P
         el: "#content",
         initialize: function () {
             WebPage.prototype.initialize.apply(this, {el: this.el});
-            _.bindAll(this, 'render');  // include all functions that need the this object
+            _.bindAll(this, 'render','updateInfo');  // include all functions that need the this object
             var self = this;
 
             this.student = module && module.config() ? new Student(module.config().student): new Student();

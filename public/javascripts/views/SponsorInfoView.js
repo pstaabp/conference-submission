@@ -35,8 +35,9 @@ define(['backbone', 'underscore','apps/common','models/Proposal','bootstrap'], f
 
       },
       save: function (){
-        console.log(this.model);
-        this.model.save();
+        this.model.save(this.model.attributes,{success:function(){
+          alert("Your information has been saved. "); 
+        }});
       },
       events: {
         "click #save-info": "submit",
