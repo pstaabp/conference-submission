@@ -16,7 +16,7 @@ use Model::Judge;
 set auto_page => 0;
 
 get '/' => sub {
-    redirect '/index';
+    redirect config->{server_name} . config->{top_dir} .'/index';
 };
 
 ####
@@ -25,10 +25,10 @@ get '/index' =>  require_login sub {
   debug session;
   debug logged_in_user;
   if (user_has_role('student')) {
-    redirect config->{top_dir} .'/welcome-student';
+    redirect config->{server_name} . config->{top_dir} .'/welcome-student';
   }
   if (user_has_role("sponsor")){
-    redirect config->{top_dir} .'/welcome';
+    redirect config->{server_name} . config->{top_dir} .'/welcome';
   }
 };
 
@@ -36,6 +36,7 @@ get '/index' =>  require_login sub {
 
 get '/returned' => require_login sub {
 
+  debug session;
   debug logged_in_user;
   debug get_user_details(logged_in_user->{falconkey});
   debug user_roles(logged_in_user->{falconkey});
@@ -60,7 +61,7 @@ post '/login' => sub {
     );
 
     debug $success;
-    debug $realm;
+    debug $realm; 
 
     if ($success) {
         # change session ID if we have a new enough D2 version with support
@@ -79,15 +80,16 @@ post '/login' => sub {
           my $user_details = Model::User->new(get_user_details(params->{username}));
           insert_to_db($client,config->{database_name} . ".users", $user_details);
           session logged_in_user => $user_details->{falconkey};
-          redirect config->{top_dir} .'/index';
+          redirect config->{server_name} . config->{top_dir} .'/index';
         }
         session logged_in_user => $user->{falconkey};
-
+        debug session;
         redirect config->{server_name} . config->{top_dir} .'/returned';
+
     } else {
         debug "UH OH!";
         # authentication failed
-        redirect config->{server_name} . config->{top_dir} . '/login?login_failed=1';
+        redirect config->{server_name} . config->{top_dir} .'/login?login_failed=1';
     }
 };
 
@@ -97,7 +99,7 @@ get '/test' => sub {
 };
 
 get '/welcome-student' => require_login sub {
-  template 'welcome-student', {top_dir=>config->{top_dir},user=>get_user(logged_in_user->{user})};
+  template 'welcome-student', {user=>get_user(logged_in_user->{user})};
 };
 
 get '/welcome' => require_login sub {
@@ -107,7 +109,7 @@ get '/welcome' => require_login sub {
 
 any '/logout' => sub {
     app->destroy_session;
-    template 'logout', {top_dir =>config->{top_dir}};
+    template 'logout';
 };
 
 get '/submitted/:proposal_id' => sub {
@@ -153,6 +155,13 @@ get '/submitted/:proposal_id' => sub {
 
 };
 
+get '/judge' =>  require_login sub {
+  my $user = get_user(logged_in_user->{falconkey});
+  debug $user;
+  my $json  = JSON->new->convert_blessed->allow_blessed;
+  template 'judge',{top_dir=>config->{top_dir},user=>$json->encode($user)};
+};
+
 #get '/student' => require_role student => sub {
 get '/student' => sub {
 
@@ -183,6 +192,7 @@ get '/student' => sub {
 get '/sponsor' => require_role sponsor => sub {
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $user = get_user(logged_in_user->{falconkey});
+  debug $user;
   my $client = MongoDB->connect('mongodb://localhost');
   my $proposal_collection = $client->ns(config->{database_name}.".proposals");
   my $user_collection = $client->ns(config->{database_name}.".users");
@@ -190,6 +200,7 @@ get '/sponsor' => require_role sponsor => sub {
   my @all_authors = map {
     debug dump $_->{author_id};
     my $id_obj = MongoDB::OID->new(value=>$_->{author_id});
+    debug dump $id_obj;
     Model::User->new($user_collection->find_one({_id=>$id_obj}));
   } @proposals;
   for my $prop (@proposals){
@@ -198,7 +209,7 @@ get '/sponsor' => require_role sponsor => sub {
         push(@all_authors,$user);
       }
   }
- 
+  debug dump \@all_authors;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"sponsor.tt",
         user=>$user, user_encoded => encode_json($user),
         proposals=>$json->encode(\@proposals), users=>$json->encode(\@all_authors)
@@ -220,7 +231,7 @@ post '/user' => require_login sub {
   my $client = MongoDB->connect('mongodb://localhost');
   my $result = update_one($client,config->{database_name}.".users",$user);
 
-  redirect '/sponsor';
+  redirect config->{server_name} . config->{top_dir} .'/sponsor';
 };
 
 ### Admin route_parameters
@@ -249,8 +260,6 @@ get '/admin' => require_login sub {
 
 sub get_user {
   my $username = shift;
-
-
   my $client = MongoDB->connect('mongodb://localhost');
   my $collection = $client->ns(config->{database_name} . ".users");
   my $user = $collection->find_one({falconkey => $username});

@@ -44,15 +44,15 @@ extends 'Dancer2::Plugin::Auth::Extensible::Provider::LDAP';
 # # Just return the whole user definition from the config; this way any additional
 # # fields defined for users will just get passed through.
 sub get_user_details {
-    my ($self, $username) = @_;
+    my ($self, $username,$realm) = @_;
 
     die "username must be defined" unless defined $username;
 
-    my $ldap = new Net::LDAP('ldaps://fsudc1.fsc.int:3269');
+    my $ldap = new Net::LDAP($self->app->config->{ldap_server});
 
     return {} unless defined($ldap);
 
-    my $msg = $ldap->bind('fscad\\webworkldap', password => 'MonDec211215' );
+    my $msg = $ldap->bind($self->app->config->{ldap_bind}, password => $self->app->config->{ldap_password});
 
     my $search = $ldap->search(base => '', filter => "sAMAccountName=".$username);
 
