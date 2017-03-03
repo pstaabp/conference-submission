@@ -25,6 +25,10 @@ var WebPage = Backbone.View.extend({
 
         $("#logout").on("click",this.logout);
 
+        $(".change-role").on("click",function(evt){
+          location.href=settings.template_dir+"/"+$(evt.target).html();
+        });
+
 
     },
     toggleMessageWindow: function() {

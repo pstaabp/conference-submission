@@ -58,7 +58,13 @@ define(['backbone','moment','stickit','backbone-validation'], function(Backbone,
                                 "Business Administration",
                                 "Communications Media", "Computer Science", "Economics, History & Political Science",
                                 "Education","English Studies","Exercise & Sports Science", "Geo/Physical Science",
-                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"]
+                                "Humanities","Industrial Technology","Mathematics","Nursing","Other"],
+         invertBindings: function(_bindings){
+           var _bind = _(_bindings).mapObject(function(_val,_key){
+             return _.isObject(_val)?_val.observe: _val;
+           });
+           return _.invert(_bind);
+         }
     }
 
   Backbone.Stickit.addHandler([{selector: "td[contenteditable='true']",events: ['blur']}

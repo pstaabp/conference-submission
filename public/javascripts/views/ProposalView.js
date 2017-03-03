@@ -38,11 +38,13 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
       var self = this;
       Backbone.Validation.bind(this, {
         invalid: function(view, attr, error) {
-          $(_(view.bindings).invert()[attr]).closest(".form-group").addClass("has-error")
+          var _invBindings = common.invertBindings(view.bindings);
+          $(_invBindings[attr]).closest(".form-group").addClass("has-error")
           .popover({title: "Error", content: error, placement: "auto top"}).popover("show");
         },
         valid: function(view, attr, error) {
-          $(_(view.bindings).invert()[attr]).closest(".form-group").removeClass("has-error").popover("hide");
+          var _invBindings = common.invertBindings(view.bindings);
+          $(_invBindings[attr]).closest(".form-group").removeClass("has-error").popover("hide");
         }
       });
 
@@ -100,6 +102,7 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
         } else {
           this.$(".human-subjects-number").closest(".form-group").addClass("hidden")
         }
+        $el.val(val);
       }
     },
     ".animal-subjects": "use_animal_subjects",
@@ -110,6 +113,7 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
         } else {
           this.$(".animal-subjects-number").closest(".form-group").addClass("hidden")
         }
+        $el.val(val);
       }
     },
     ".presentation-type": { observe: "type",
@@ -127,6 +131,7 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
         } else {
           this.$(".contact-div").addClass("hidden")
         }
+        $el.val(val);
       }
     },
     ".proposal-text": "content",
@@ -134,7 +139,9 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
   },
   submit: function (){
     var self = this;
-    this.$(".submit-proposal-button").button("saving")
+    this.$(".submit-proposal-button").button("saving");
+    // TODO: the following line is a hack.  I'm not sure why new authors are doubled up.
+    this.model.set("other_authors",_(this.model.get("other_authors")).unique()); // to ensure that the same author isn't added twice.
     this.model.save(this.model.attributes,{success: function(){
       location.href=settings.template_dir +"/submitted/"+self.model.get("_id");
 //      $.ajax(settings.top_dir +"/proposals/"+self.model.get("_id"),{contentType: false});

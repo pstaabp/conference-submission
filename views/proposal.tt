@@ -74,14 +74,14 @@
                   <p>The above contact number will be used to contact you if your
                     presentation wins.  You will be expected to attend the
                     Honors convocation in the afternoon of the Undergraduate
-                    Conference day. </p> 
+                    Conference day. </p>
                 </div>
               </td>
             </tr>
             <tr>
               <td class="form-horizontal">
                 <div class="form-group">
-                  <label class="col-md-3 control-label"> Sponsor Email</label>
+                  <label class="col-md-3 control-label">Faculty/Staff Sponsor Email</label>
                   <span class="col-md-9">
                     <input class="sponsor-email form-control">
                   </span>
@@ -132,7 +132,7 @@
             <tr>
               <td colspan="2">
                 <div class="form-group">
-                  <label class="control-label"> Proposal Text</label>
+                  <label class="control-label">Abstract (250 words max explaining your presentation)</label>
                   <textarea class="proposal-text form-control" rows="10"></textarea>
                 </div>
               </td>

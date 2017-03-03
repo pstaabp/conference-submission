@@ -22,7 +22,12 @@ define(['backbone', 'models/FeedbackList','models/UserList','apps/settings','mom
         validation: {
             content: {required: true},
             title: {required: true},
-            type: {required: true}
+            type: {required: true},
+            contact_phone: {
+              required: function(value,attr,model){
+                return model.to_be_judged;  // this is only required if the participant wants to be judged. 
+            }
+          }
         },
         idAttribute: "_id",
         initialize: function (opts) {
