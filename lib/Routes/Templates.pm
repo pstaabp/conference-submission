@@ -227,7 +227,7 @@ get '/sponsor' => require_role sponsor => sub {
   }
   debug dump \@all_authors;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"sponsor.tt",
-        user=>$user, user_encoded => encode_json($user),
+        user=>$user, user_encoded => $json->encodeo($user),
         proposals=>$json->encode(\@proposals), users=>$json->encode(\@all_authors)
       };
 };
