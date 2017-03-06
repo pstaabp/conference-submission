@@ -21,8 +21,6 @@ get '/' => sub {
 ####
 
 get '/index' =>  require_login sub {
-  debug session;
-  debug logged_in_user;
   if (user_has_role('student')) {
     redirect config->{server_name} . config->{top_dir} .'/welcome-student';
   }
@@ -35,11 +33,6 @@ get '/index' =>  require_login sub {
 
 get '/returned' => require_login sub {
 
-  debug session;
-  debug logged_in_user;
-  debug get_user_details(logged_in_user->{falconkey});
-  debug user_roles(logged_in_user->{falconkey});
-
   if (user_has_role('student')) {
     redirect config->{server_name} . config->{top_dir} .'/student';
   }
@@ -49,7 +42,6 @@ get '/returned' => require_login sub {
 };
 
 get '/login' => sub {
-    debug 'in get /login';
     template 'login', {top_dir=>config->{top_dir},login_failed=>query_parameters->{login_failed}};
 };
 
@@ -57,10 +49,6 @@ post '/login' => sub {
     debug "in post /login";
 
     my ($success, $realm) = authenticate_user(body_parameters->{username},body_parameters->{password});
-
-
-    debug $success;
-    debug $realm;
 
     if ($success) {
         # change session ID if we have a new enough D2 version with support
@@ -72,7 +60,6 @@ post '/login' => sub {
         # check if the user is in the database
         my $user = get_user(params->{username});
 
-        debug $user;
         if(not defined($user)){
           my $client = MongoDB->connect('mongodb://localhost');
           debug get_user_details(params->{username});
@@ -82,11 +69,9 @@ post '/login' => sub {
           redirect config->{server_name} . config->{top_dir} .'/index';
         }
         session logged_in_user => $user->{falconkey};
-        debug session;
         redirect config->{server_name} . config->{top_dir} .'/returned';
 
     } else {
-        debug "UH OH!";
         # authentication failed
         redirect config->{server_name} . config->{top_dir} .'/login?login_failed=1';
     }
@@ -110,43 +95,6 @@ any '/logout' => sub {
     app->destroy_session;
     template 'logout', {top_dir=>config->{top_dir}};
 };
-
-# get '/testemail' => sub {
-#   my $text = '';
-#
-#   my $tt = Template->new({
-#     INCLUDE_PATH => config->{views},
-#     INTERPOLATE  => 1,
-#     OUTPUT => \$text
-#   }) || die "$Template::ERROR\n";
-#
-#   my $client = MongoDB->connect("localhost");
-#   my $user_collection = $client->ns("dev-2016.users");
-#   my $proposal_collection = $client->ns("dev-2016.proposals");
-#   my $user = $user_collection->find_one({falconkey=>"superman"});
-#   my $author_id = $user->{_id}->{value};
-#   my $proposal = $proposal_collection->find_one({author_id=>$author_id});
-#   my $sponsor = $user_collection->find_one({falconkey=>"pstaab"});
-#   my @other_authors=[];
-#
-#   my $params = {top_dir => config->{top_dir},
-#     user=>$user, proposal=>$proposal,sponsor=>$sponsor,
-#     other_authors => \@other_authors};
-#
-#   my $out = $tt->process('proposal-received.tt',$params);
-#
-#   my $email = email {
-#       from    => 'ugrad-conf@fitchburgstate.edu',
-#       to      => $user->{email},
-#       cc      => $sponsor->{email},
-#       subject => '2017 FSU Undergraduate Conference Submission',
-#       body    => $text,
-#       'Content-Type' => 'text/html'
-#   };
-#
-#   return $out;
-# };
- 
 
 get '/submitted/:proposal_id' => sub {
   my $user = get_user(logged_in_user->{falconkey});
@@ -173,7 +121,6 @@ get '/submitted/:proposal_id' => sub {
 
 get '/judge' =>  require_login sub {
   my $user = get_user(logged_in_user->{falconkey});
-  debug $user;
   my $json  = JSON->new->convert_blessed->allow_blessed;
   template 'judge',{top_dir=>config->{top_dir},user=>$json->encode($user)};
 };
@@ -193,7 +140,6 @@ get '/student' => sub {
   my @other_authors;
   for my $prop (@proposals){
       for my $fc (@{$prop->{other_authors}}){
-        debug $fc;
         my $user = Model::User->new($user_collection->find_one({falconkey=>$fc}));
         push(@other_authors,$user);
       }
@@ -208,15 +154,12 @@ get '/student' => sub {
 get '/sponsor' => require_role sponsor => sub {
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $user = get_user(logged_in_user->{falconkey});
-  debug $user;
   my $client = MongoDB->connect('mongodb://localhost');
   my $proposal_collection = $client->ns(config->{database_name}.".proposals");
   my $user_collection = $client->ns(config->{database_name}.".users");
   my @proposals =  map {Model::Proposal->new($_)} $proposal_collection->find({sponsor_id=>$user->{_id}})->all;
   my @all_authors = map {
-    debug dump $_->{author_id};
     my $id_obj = MongoDB::OID->new(value=>$_->{author_id});
-    debug dump $id_obj;
     Model::User->new($user_collection->find_one({_id=>$id_obj}));
   } @proposals;
   for my $prop (@proposals){
@@ -225,9 +168,8 @@ get '/sponsor' => require_role sponsor => sub {
         push(@all_authors,$user);
       }
   }
-  debug dump \@all_authors;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"sponsor.tt",
-        user=>$user, user_encoded => encode_json($user),
+        user=>$user, user_encoded => $json->encode($user),
         proposals=>$json->encode(\@proposals), users=>$json->encode(\@all_authors)
       };
 };
@@ -236,12 +178,10 @@ get '/sponsor' => require_role sponsor => sub {
 
 post '/user' => require_login sub {
   debug "in post /user";
-  debug body_parameters;
 
   my $user = Model::User->new(get_user(logged_in_user->{falconkey}));
   my @roles = body_parameters->keys;
   push @roles, @{$user->{role}};
-  debug \@roles;
   @roles = uniq @roles;
   $user->role(\@roles);
   my $client = MongoDB->connect('mongodb://localhost');
