@@ -3,7 +3,6 @@ package Routes::Templates;
 use Dancer2;
 
 use Dancer2::Plugin::Auth::Extensible;
-use Dancer2::Plugin::Email;
 use Common::Collection qw/get_one_by_id get_all_in_collection insert_to_db update_one/;
 use Data::Dump qw/dump/;
 use List::Util qw/uniq first/;
@@ -112,47 +111,49 @@ any '/logout' => sub {
     template 'logout', {top_dir=>config->{top_dir}};
 };
 
-get '/testemail' => sub {
-  my $text = '';
-
-  my $tt = Template->new({
-    INCLUDE_PATH => config->{views},
-    INTERPOLATE  => 1,
-    OUTPUT => \$text
-  }) || die "$Template::ERROR\n";
-
-  my $client = MongoDB->connect("localhost");
-  my $user_collection = $client->ns("dev-2016.users");
-  my $proposal_collection = $client->ns("dev-2016.proposals");
-  my $user = $user_collection->find_one({falconkey=>"superman"});
-  my $author_id = $user->{_id}->{value};
-  my $proposal = $proposal_collection->find_one({author_id=>$author_id});
-  my $sponsor = $user_collection->find_one({falconkey=>"pstaab"});
-  my @other_authors=[];
-
-  my $params = {top_dir => config->{top_dir},
-    user=>$user, proposal=>$proposal,sponsor=>$sponsor,
-    other_authors => \@other_authors};
-
-  my $out = $tt->process('proposal-received.tt',$params);
-
-  my $email = email {
-      from    => 'ugrad-conf@fitchburgstate.edu',
-      to      => $user->{email},
-      cc      => $sponsor->{email},
-      subject => '2017 FSU Undergraduate Conference Submission',
-      body    => $text,
-      'Content-Type' => 'text/html'
-  };
-
-  return $out;
-};
+# get '/testemail' => sub {
+#   my $text = '';
+#
+#   my $tt = Template->new({
+#     INCLUDE_PATH => config->{views},
+#     INTERPOLATE  => 1,
+#     OUTPUT => \$text
+#   }) || die "$Template::ERROR\n";
+#
+#   my $client = MongoDB->connect("localhost");
+#   my $user_collection = $client->ns("dev-2016.users");
+#   my $proposal_collection = $client->ns("dev-2016.proposals");
+#   my $user = $user_collection->find_one({falconkey=>"superman"});
+#   my $author_id = $user->{_id}->{value};
+#   my $proposal = $proposal_collection->find_one({author_id=>$author_id});
+#   my $sponsor = $user_collection->find_one({falconkey=>"pstaab"});
+#   my @other_authors=[];
+#
+#   my $params = {top_dir => config->{top_dir},
+#     user=>$user, proposal=>$proposal,sponsor=>$sponsor,
+#     other_authors => \@other_authors};
+#
+#   my $out = $tt->process('proposal-received.tt',$params);
+#
+#   my $email = email {
+#       from    => 'ugrad-conf@fitchburgstate.edu',
+#       to      => $user->{email},
+#       cc      => $sponsor->{email},
+#       subject => '2017 FSU Undergraduate Conference Submission',
+#       body    => $text,
+#       'Content-Type' => 'text/html'
+#   };
+#
+#   return $out;
+# };
 
 get '/submitted/:proposal_id' => sub {
   my $user = get_user(logged_in_user->{falconkey});
   my $client = MongoDB->connect('mongodb://localhost');
   my $user_collection = $client->ns(config->{database_name} . ".users");
-  my $proposal = get_one_by_id($client,config->{database_name} . ".proposals",'Model::Proposal',route_parameters->{proposal_id});
+
+  my $proposal = get_one_by_id($client,config->{database_name} . ".proposals",'Model::Proposal',
+    route_parameters->{proposal_id});
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $sponsor = get_one_by_id($client,config->{database_name} . ".users",'Model::Sponsor',$proposal->{sponsor_id});
   my @other_authors;
@@ -164,26 +165,6 @@ get '/submitted/:proposal_id' => sub {
   my $params = {top_dir => config->{top_dir},
     user=>$user, proposal=>$proposal,sponsor=>$sponsor,
     other_authors => \@other_authors};
-
-    my $text = '';
-
-    my $tt = Template->new({
-      INCLUDE_PATH => config->{views},
-      INTERPOLATE  => 1,
-      OUTPUT => \$text
-    }) || die "$Template::ERROR\n";
-
-
-  my $out = $tt->process('proposal-received.tt',$params);
-
-  my $email = email {
-      from    => 'ugrad-conf@fitchburgstate.edu',
-      to      => $user->{email},
-      cc      => $sponsor->{email},
-      subject => '2017 FSU Undergraduate Conference Submission',
-      body    => $text,
-      'Content-Type' => 'text/html'
-  };
 
   template 'proposal-received', $params;
 
@@ -270,7 +251,7 @@ post '/user' => require_login sub {
 
 ### Admin route_parameters
 
-get '/admin' => require_login sub {
+get '/admin' => require_role admin => sub{
   my $client = MongoDB->connect('mongodb://localhost');
   my $user = get_user(logged_in_user->{falconkey});
   my $json  = JSON->new->convert_blessed->allow_blessed;
@@ -302,7 +283,7 @@ sub get_user {
 
   ## first look for the user in the envinroment config.
   my $users = config->{plugins}->{"Auth::Extensible"}->{realms}->{local}->{users};
-  $user = first { debug($_); $_->{falconkey} eq $username } @$users;
+  $user = first {$_->{falconkey} eq $username } @$users;
   return $user if defined($user);
 
   return {};
@@ -312,6 +293,13 @@ sub login_page {
   debug "in login_page";
   template 'login';
 }
+
+sub permission_denied_page_handler {
+#get '/login/denied' => sub {
+  debug 'in permission_denied_page_handler';
+  template 'permission_denied' , {top_dir=>config->{top_dir}};
+}
+#};
 
 
 true;

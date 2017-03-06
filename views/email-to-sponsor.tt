@@ -1,0 +1,76 @@
+<div id="content">
+
+<p> A student has submitted a proposal to the 2017 FSU Undergraduate Conference
+and listed you a a sponsor.  The information submitted is that below.  If there
+are any errors here, the student can return to
+<a href="[% top_dir%]/student">this page</a>, relogin and fix the error. </p>
+
+<p>In addition, you are required to login to <a href="[% top_dir%]/sponsor">this page</a>
+and write a sponsor statement.  This will give the Undergraduate Conference committee
+help in determining if a student's proposal is of sufficient quality to
+submit to the conference.  When writing a sponsor statement, please be honest
+with the quality of the work. </p>  
+
+
+<table class="table table-condensed table-bordered">
+  <tbody>
+    <tr>
+      <td class="header col-md-2">Name</td>
+      <td> [% user.first_name %] [% user.last_name %]</td>
+    </tr>
+    <tr>
+      <td class="header col-md-2">Proposal Title</td>
+      <td> [% proposal.title %] </td>
+    </tr>
+    <tr>
+      <td class="header col-md-2">Proposal Text</td>
+      <td> [% proposal.content %]</td>
+    </tr>
+    <tr>
+      <td class="header col-md-2">Sponsor</td>
+      <td> [% sponsor.first_name %] [% sponsor.last_name %]</td>
+    </tr>
+    <tr>
+      <td class="header col-md-2">Presentation Type</td>
+      <td> [% proposal.type %]
+    </tr>
+    [% IF proposal.to_be_judged %]
+    <tr>
+      <td class="header col-md-2">Judging Info</td>
+      <td>You indicated that you wished for your presentation to be judged.
+        If you are a winner, we will contact you at [% proposal.contact_phone %]
+      </td>
+    </tr>
+    [% END %]
+    [% IF proposal.use_human_subjects %]
+    <tr>
+      <td class="header col-md-2">Human Subjects</td>
+      <td>You indicated that your presentation use human subjects.  Your proposal
+        must be passed by the IRB.  You indicated that the number received is
+        [% proposal.human_subjects_number %]
+      </td>
+    </tr>
+    [% END %]
+    [% IF proposal.use_animal_subjects %]
+    <tr>
+      <td class="header col-md-2">Human Subjects</td>
+      <td>You indicated that your presentation use animal subjects.  Your proposal
+        must be passed by the IRB.  You indicated that the number received is
+        [% proposal.animal_subjects_number %]
+      </td>
+    </tr>
+    [% END %]
+
+    [% IF other_authors.size>0 %]
+    <tr>
+      <td class="header col-md-2">Other Authors</td>
+      <td> [% FOREACH author IN other_authors %]
+          [% author.first_name  %] [% author.last_name %],
+          [% END %]
+        </td>
+    </tr>
+    [% END %]
+
+  </tbody>
+</table>
+</div>

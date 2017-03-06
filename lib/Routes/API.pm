@@ -9,6 +9,7 @@ use Model::User;
 use Model::Student;
 use Model::Judge;
 use Model::Proposal;
+use Dancer2::Plugin::Email;
 
 use Common::Collection qw/get_one_by_id insert_to_db get_all_in_collection
             delete_one_by_id update_one/;
@@ -316,11 +317,55 @@ get '/students/:student_id/proposals' => sub { # add a new user
 
 post '/students/:student_id/proposals' => sub {
     debug 'in POST /students/:student_id/proposals';
-    my $prop = parseProposal(body_parameters->mixed);
+    my $json  = JSON->new->convert_blessed->allow_blessed;
+    my $proposal = parseProposal(body_parameters->mixed);
     my $client = MongoDB->connect('mongodb://localhost');
-    my $result = insert_to_db($client,config->{database_name} . ".proposals",$prop);
+    my $result = insert_to_db($client,config->{database_name} . ".proposals",$proposal);
+    my $user_collection = $client->ns(config->{database_name} . ".users");
+    my $user = get_one_by_id($client,config->{database_name}.".users",'Model::User',$proposal->{author_id});
+
+    my $sponsor = get_one_by_id($client,config->{database_name} . ".users",'Model::Sponsor',$proposal->{sponsor_id});
+    my @other_authors;
+    for my $fc (@{$proposal->{other_authors}}){
+        my $user = Model::User->new($user_collection->find_one({falconkey=>$fc}));
+        push(@other_authors,$user);
+    }
+
+    my $params = {top_dir => config->{top_dir},
+      user=>$user, proposal=>$proposal,sponsor=>$sponsor,
+      other_authors => \@other_authors};
+
+   debug dump $params;
+   sendEmail($params,$user->{email},'proposal-received.tt');
+   sendEmail($params,$sponsor->{email},'email-to-sponsor.tt');
+
     return $result->TO_JSON;
 };
+
+sub sendEmail {
+  my ($params,$email_address,$template) = @_;
+
+    my $text = '';
+
+    my $tt = Template->new({
+      INCLUDE_PATH => config->{views},
+      INTERPOLATE  => 1,
+      OUTPUT => \$text
+    }) || die "$Template::ERROR\n";
+
+
+  my $out = $tt->process($template,$params);
+
+  my $email = email {
+      from    => 'ugrad-conf@fitchburgstate.edu',
+      to      => $email_address,
+      subject => '2017 FSU Undergraduate Conference Submission',
+      body    => $text,
+      'Content-Type' => 'text/html'
+  };
+
+
+}
 
 sub parseProposal {
    my $params = shift;

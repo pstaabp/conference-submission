@@ -28,6 +28,7 @@ define(['backbone','moment','stickit','backbone-validation'], function(Backbone,
         majors: [
          {label: "Biology", value: "Biology"},
          {label: "Business Administration", value: "Business Administration"},
+         {label: "Chemistry", value: "Chemistry"},
          {label: "Communications Media", value: "Communications Media"},
          {label: "Computer Information Systems", value: "Computer Information Systems"},
          {label: "Computer Science", value: "Computer Science"},
