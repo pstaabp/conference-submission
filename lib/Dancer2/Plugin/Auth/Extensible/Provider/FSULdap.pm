@@ -57,14 +57,19 @@ sub get_user_details {
 
     die "username must be defined" unless defined $username;
 
+
+    my $client = MongoDB->connect('mongodb://localhost');
+    my $collection = $client->ns($self->plugin->app->config->{database_name} . ".users");
+    my $user = $collection->find_one({falconkey => $username});
+    $user->{_id} = $user->{_id}->{value} if defined($user);
+    return $user if defined($user);
+
     my $ldap = $self->ldap;
 
     return {} unless defined($ldap);
 
     my $mesg = $ldap->bind( $self->binddn, password => $self->bindpw );
     my $search = $ldap->search(base => '', filter => "sAMAccountName=".$username);
-
-
 
     my $entry = $search->entry(0);
 
@@ -96,7 +101,9 @@ sub get_user_details {
 #
 sub get_user_roles {
     my ($self, $username) = @_;
-    #return ["in get_user_roles",$self->get_user_details("$username")];
+    my $provider = $self->auth_provider;
+    #$self->app->log(debug=>"hi");
+
     die "username must be defined" unless defined $username;
     my $user_details = $self->get_user_details($username) or return;
     return $user_details->{role};

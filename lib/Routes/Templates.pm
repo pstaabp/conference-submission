@@ -58,11 +58,10 @@ post '/login' => sub {
         session logged_in_user_realm => $realm;
 
         # check if the user is in the database
-        my $user = get_user(params->{username});
+        my $user = get_user_details(params->{username});
 
         if(not defined($user)){
           my $client = MongoDB->connect('mongodb://localhost');
-          debug get_user_details(params->{username});
           my $user_details = Model::User->new(get_user_details(params->{username}));
           insert_to_db($client,config->{database_name} . ".users", $user_details);
           session logged_in_user => $user_details->{falconkey};
@@ -83,7 +82,7 @@ get '/test' => sub {
 };
 
 get '/welcome-student' => require_login sub {
-  template 'welcome-student', {user=>get_user(logged_in_user->{user}),top_dir=>config->{top_dir}};
+  template 'welcome-student', {user=>get_user_details(logged_in_user->{user}),top_dir=>config->{top_dir}};
 };
 
 get '/welcome' => require_login sub {
@@ -154,6 +153,8 @@ get '/student' => sub {
 get '/sponsor' => require_role sponsor => sub {
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $user = get_user(logged_in_user->{falconkey});
+
+  debug dump $user;
   my $client = MongoDB->connect('mongodb://localhost');
   my $proposal_collection = $client->ns(config->{database_name}.".proposals");
   my $user_collection = $client->ns(config->{database_name}.".users");

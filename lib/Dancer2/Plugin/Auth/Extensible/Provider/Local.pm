@@ -99,7 +99,20 @@ sub get_user_details {
 
     croak "username must be defined" unless defined $username;
 
-    my $user = first {
+    my $config = $self->plugin->app->config;
+
+    my $client = MongoDB->connect('mongodb://localhost');
+    my $collection = $client->ns($config->{database_name} . ".users");
+    my $user = $collection->find_one({falconkey => $username});
+    $user->{_id} = $user->{_id}->{value} if defined($user);
+    return $user if defined($user);
+
+    ## first look for the user in the envinroment config.
+    my $users = $config->{plugins}->{"Auth::Extensible"}->{realms}->{local}->{users};
+    $user = first {$_->{falconkey} eq $username } @$users;
+    return $user if defined($user);
+
+    $user = first {
         $_->{user} eq $username
     } @{ $self->users };
     my $details = {};
@@ -117,9 +130,7 @@ sub get_user_details {
 sub get_user_roles {
     my ($self, $username) = @_;
 
-    croak "username must be defined"
-      unless defined $username;
-
+    croak "username must be defined" unless defined $username;
     my $user_details = $self->get_user_details($username) or return;
     return $user_details->{role};
 }
