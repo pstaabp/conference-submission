@@ -98,7 +98,7 @@ get '/test' => sub {
 };
 
 get '/welcome-student' => require_login sub {
-  template 'welcome-student', {user=>get_user(logged_in_user->{user})};
+  template 'welcome-student', {user=>get_user(logged_in_user->{user}),top_dir=>config->{top_dir}};
 };
 
 get '/welcome' => require_login sub {
@@ -146,6 +146,7 @@ any '/logout' => sub {
 #
 #   return $out;
 # };
+ 
 
 get '/submitted/:proposal_id' => sub {
   my $user = get_user(logged_in_user->{falconkey});

@@ -335,7 +335,6 @@ post '/students/:student_id/proposals' => sub {
       user=>$user, proposal=>$proposal,sponsor=>$sponsor,
       other_authors => \@other_authors};
 
-   debug dump $params;
    sendEmail($params,$user->{email},'proposal-received.tt');
    sendEmail($params,$sponsor->{email},'email-to-sponsor.tt');
 
@@ -363,6 +362,8 @@ sub sendEmail {
       body    => $text,
       'Content-Type' => 'text/html'
   };
+
+  debug dump $email; 
 
 
 }
