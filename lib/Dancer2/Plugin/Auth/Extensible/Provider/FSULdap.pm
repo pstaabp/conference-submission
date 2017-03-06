@@ -101,7 +101,7 @@ sub get_user_details {
 #
 sub get_user_roles {
     my ($self, $username) = @_;
-    my $provider = $self->auth_provider;
+    #my $provider = $self->auth_provider;
     #$self->app->log(debug=>"hi");
 
     die "username must be defined" unless defined $username;
