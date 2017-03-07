@@ -68,7 +68,7 @@ post '/login' => sub {
           session logged_in_user => $user_details->{falconkey};
           redirect config->{server_name} . config->{top_dir} .'/index';
         }
-        session logged_in_user => $user->{falconkey};
+        session logged_in_user => $result->{falconkey};
         redirect config->{server_name} . config->{top_dir} .'/returned';
 
     } else {
