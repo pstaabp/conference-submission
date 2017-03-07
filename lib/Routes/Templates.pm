@@ -20,13 +20,8 @@ get '/' => sub {
 
 ####
 
-get '/index' =>  require_login sub {
-  if (user_has_role('student')) {
-    redirect config->{server_name} . config->{top_dir} .'/welcome-student';
-  }
-  if (user_has_role("sponsor")){
-    redirect config->{server_name} . config->{top_dir} .'/welcome';
-  }
+get '/index' =>  sub {
+  template 'index', {top_dir=>config->{top_dir}};
 };
 
 #### returned users general route:
@@ -61,8 +56,8 @@ post '/login' => sub {
         my $client = MongoDB->connect('mongodb://localhost');
         my $user_collection = $client->ns(config->{database_name}.".users");
         my $result = $user_collection->find_one({falconkey=>body_parameters->{username}});
-        
-        debug $result; 
+
+        debug $result;
 
         if(not defined($result)){
           my $user_details = Model::User->new(get_user_details(params->{username}));
@@ -87,8 +82,8 @@ get '/test' => sub {
 
 get '/welcome-student' => require_login sub {
   my $user = get_user_details(logged_in_user->{falconkey});
-  debug $user; 
-  debug config; 
+  debug $user;
+  debug config;
   template 'welcome-student', {user=>$user,top_dir=>config->{top_dir}};
 };
 
@@ -196,7 +191,7 @@ post '/user' => require_login sub {
   push @roles, @{$user->{role}};
   @roles = uniq @roles;
   $user->role(\@roles);
-    debug $user; 
+    debug $user;
   my $client = MongoDB->connect('mongodb://localhost');
   my $result = update_one($client,config->{database_name}.".users",'Model::User',$user);
 
