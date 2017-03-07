@@ -59,7 +59,7 @@ post '/login' => sub {
 
         # check if the user is in the database
         my $client = MongoDB->connect('mongodb://localhost');
-        my $user_collection = $client->ns(config->{database_name}."users");
+        my $user_collection = $client->ns(config->{database_name}.".users");
         my $result = $user_collection->find_one({falconkey=>body_parameters->{username}});
 
         if(not defined($result)){
