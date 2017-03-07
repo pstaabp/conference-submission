@@ -12,13 +12,15 @@ use Data::Dump qw/dd/;
 use Model::User;
 use Model::Judge;
 use Model::Sponsor;
+use Model::Proposal;
+use MongoDB::OID;
 
 use List::Util qw/first/;
 
 my $client = MongoDB->connect('mongodb://localhost');
-my $judges_collection = $client->ns("conf-2016.judges");
-my $user_collection = $client->ns("conf-2016.users");
-my $proposal_collection = $client->ns("conf-2016.proposals");
+my $judges_collection = $client->ns("dev-2016.judges");
+my $user_collection = $client->ns("dev-2016.users");
+my $proposal_collection = $client->ns("dev-2016.proposals");
 #my @judges = $judges_collection->find->all;
 my @proposals = $proposal_collection->find->all;
 
@@ -38,15 +40,32 @@ my @proposals = $proposal_collection->find->all;
 ## update the user database to include deparments for sponsors
 
 for my $proposal (@proposals){
-  my @fields = split /\@/, $proposal->{sponsor_email};
-  my $falconkey = $fields[0];
+  my $prop = Model::Proposal->new($proposal);
+  dd $proposal->{title};
 
-  #look for the user with this falconkey
+  my ($sponsor,$falconkey);
+  if (defined $proposal->{sponsor_email}){
+    my @fields = split /\@/, $proposal->{sponsor_email};
+    $falconkey = $fields[0];
+    #look for the user with this falconkey
+    $sponsor = Model::Sponsor->new($user_collection->find_one({falconkey => $falconkey}));
+  } else {
+    dd $prop->{sponsor_id};
+    # my $obj_id = MongoDB::OID->new()
+    $sponsor = Model::Sponsor->new($user_collection->find_one({_id=>MongoDB::OID->new(value=>$prop->{sponsor_id})}));
+  }
+  if (not defined $sponsor->{department}){
+      $sponsor->department($proposal->{sponsor_dept});
+      $user_collection->find_one_and_update({falconkey=>$falconkey},
+          {'$set'=>{department=>$sponsor->{department}}});
+  }
 
-  my $res = $user_collection->find_one({falconkey => $falconkey});
-  $res->{department} = $proposal->{sponsor_dept};
-  my $sponsor = Model::Sponsor->new($res);
-  $res = $user_collection->find_one_and_update({falconkey=>$falconkey},
-      {'$set'=>{department=>$sponsor->{department}}});
-    dd $res;
+  dd $prop->{sponsor_id};
+  if (not $prop->sponsor_id){
+      $prop->sponsor_id($sponsor->{_id});
+      my $prop_id = MongoDB::OID->new(value=>$prop->{_id});
+      $proposal_collection->find_one_and_update({_id=>$prop_id},{'$set'=>{sponsor_id=>$prop->{sponsor_id}}});
+  }
+
+
 }

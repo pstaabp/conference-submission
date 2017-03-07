@@ -25,9 +25,10 @@ define(['backbone', 'models/FeedbackList','models/UserList','apps/settings','mom
             type: {required: true},
             contact_phone: {
               required: function(value,attr,model){
-                return model.to_be_judged;  // this is only required if the participant wants to be judged. 
+                return model.to_be_judged;  // this is only required if the participant wants to be judged.
             }
-          }
+          },
+          sponsor_id: {  required: true }
         },
         idAttribute: "_id",
         initialize: function (opts) {

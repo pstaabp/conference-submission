@@ -2,26 +2,36 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
 
   var ProposalsView = Backbone.View.extend({
     initialize: function(options){
+      var self = this;
       _.bindAll(this, "render");
       this.rowTemplate = $("#proposal-template").html();
       this.proposals = options.proposals;
       this.proposals.on("remove",this.render);
       this.proposals.on("change:sponsor_statement change:sponsor_name change:sponsor_dept",function(model){
         model.save();
-        console.log("saving proposal");
       });
       this.users = options.users;
+      this.extended_proposals = new Backbone.Collection();
+      this.proposals.each(function(_prop){
+        var _author = self.users.findWhere({_id: _prop.get("author_id")});
+        var extended_prop = _prop.clone();
+        console.log(_prop.get("title"));
+        extended_prop.set("author",_author.get("first_name")+ " " + _author.get("last_name"));
+        self.extended_proposals.add(extended_prop);
+      });
+      // probably need to track changes to the original proposal.
 
       // this is used for the stickit select options below.
-      this.judgeList = options.judges.chain().sortBy(function(judge){ return judge.get("name");}).
-      map(function(judge){ return {name: judge.get("name"), id: judge.id};}).value();
+      this.judgeList = options.judges.chain()
+        .sortBy(function(judge){ return judge.get("name");})
+        .map(function(judge){ return {name: judge.get("name"), id: judge.id};}).value();
     },
     render: function(){
       var self = this;
       this.$el.html($("#proposals-tab-template").html());
       var table = this.$(".proposals-table tbody");
       this.tableSetup();
-      this.proposalsTable = new CollectionTableView({columnInfo: this.cols, collection: this.proposals,
+      this.proposalsTable = new CollectionTableView({columnInfo: this.cols, collection: this.extended_proposals,
         paginator: {page_size: 15, button_class: "btn btn-default", row_class: "btn-group"}});
         this.proposalsTable.render().$el.addClass("table table-bordered table-condensed");
         this.$('.proposals-table-container').html(this.proposalsTable.el);

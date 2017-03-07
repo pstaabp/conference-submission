@@ -139,13 +139,18 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
   },
   submit: function (){
     var self = this;
-    this.$(".submit-proposal-button").button("saving");
-    // TODO: the following line is a hack.  I'm not sure why new authors are doubled up.
-    this.model.set("other_authors",_(this.model.get("other_authors")).unique()); // to ensure that the same author isn't added twice.
-    this.model.save(this.model.attributes,{success: function(){
-      location.href=settings.template_dir +"/submitted/"+self.model.get("_id");
-//      $.ajax(settings.top_dir +"/proposals/"+self.model.get("_id"),{contentType: false});
-    }});
+    if(this.model.isValid(true)){
+      this.$(".submit-proposal-button").button("saving");
+      // TODO: the following line is a hack.  I'm not sure why new authors are doubled up.
+      this.model.set("other_authors",_(this.model.get("other_authors")).unique()); // to ensure that the same author isn't added twice.
+      this.model.save(this.model.attributes,{success: function(){
+        location.href=settings.template_dir +"/submitted/"+self.model.get("_id");
+  //      $.ajax(settings.top_dir +"/proposals/"+self.model.get("_id"),{contentType: false});
+      }});
+    } else if (! this.model.isValid("sponsor_id")){
+      this.$(".sponsor-email").closest(".form-group").addClass("has-error");
+      this.$(".sponsor-email").popover({placement: "top",content: "Email address was not found."}).popover("show");
+    }
   },
   updateAuthors: function() {
     var self = this;
