@@ -58,10 +58,11 @@ post '/login' => sub {
         session logged_in_user_realm => $realm;
 
         # check if the user is in the database
-        my $user = get_user_details(params->{username});
+        my $client = MongoDB->connect('mongodb://localhost');
+        my $user_collection = $client->ns(config->{database_name}."users");
+        my $result = $user_collection->find_one({falconkey=>body_parameters->{username}});
 
-        if(not defined($user)){
-          my $client = MongoDB->connect('mongodb://localhost');
+        if(not defined($result)){
           my $user_details = Model::User->new(get_user_details(params->{username}));
           insert_to_db($client,config->{database_name} . ".users", $user_details);
           session logged_in_user => $user_details->{falconkey};
@@ -86,7 +87,7 @@ get '/welcome-student' => require_login sub {
 };
 
 get '/welcome' => require_login sub {
-  my $user = get_user(logged_in_user->{falconkey});
+  my $user = get_user_details(logged_in_user->{falconkey});
   template 'welcome', {top_dir=>config->{top_dir},user=>$user};
 };
 
@@ -96,7 +97,7 @@ any '/logout' => sub {
 };
 
 get '/submitted/:proposal_id' => sub {
-  my $user = get_user(logged_in_user->{falconkey});
+  my $user = get_user_details(logged_in_user->{falconkey});
   my $client = MongoDB->connect('mongodb://localhost');
   my $user_collection = $client->ns(config->{database_name} . ".users");
 
@@ -119,7 +120,7 @@ get '/submitted/:proposal_id' => sub {
 };
 
 get '/judge' =>  require_login sub {
-  my $user = get_user(logged_in_user->{falconkey});
+  my $user = get_user_details(logged_in_user->{falconkey});
   my $json  = JSON->new->convert_blessed->allow_blessed;
   template 'judge',{top_dir=>config->{top_dir},user=>$json->encode($user)};
 };
@@ -128,7 +129,7 @@ get '/judge' =>  require_login sub {
 get '/student' => sub {
 
   debug 'in get /student';
-  my $student = get_user(logged_in_user->{falconkey});
+  my $student = get_user_details(logged_in_user->{falconkey});
   my $client = MongoDB->connect('mongodb://localhost');
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $proposal_collection = $client->ns(config->{database_name}.".proposals");
@@ -152,7 +153,7 @@ get '/student' => sub {
 
 get '/sponsor' => require_role sponsor => sub {
   my $json  = JSON->new->convert_blessed->allow_blessed;
-  my $user = get_user(logged_in_user->{falconkey});
+  my $user = get_user_details(logged_in_user->{falconkey});
 
   debug dump $user;
   my $client = MongoDB->connect('mongodb://localhost');
@@ -180,7 +181,7 @@ get '/sponsor' => require_role sponsor => sub {
 post '/user' => require_login sub {
   debug "in post /user";
 
-  my $user = Model::User->new(get_user(logged_in_user->{falconkey}));
+  my $user = Model::User->new(get_user_details(logged_in_user->{falconkey}));
   my @roles = body_parameters->keys;
   push @roles, @{$user->{role}};
   @roles = uniq @roles;
@@ -195,7 +196,7 @@ post '/user' => require_login sub {
 
 get '/admin' => require_role admin => sub{
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = get_user(logged_in_user->{falconkey});
+  my $user = get_user_details(logged_in_user->{falconkey});
   my $json  = JSON->new->convert_blessed->allow_blessed;
   my $users = get_all_in_collection($client,config->{database_name}.".users","Model::User");
   my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
@@ -215,21 +216,21 @@ get '/admin' => require_role admin => sub{
 
 ### I think this should be in the Auth::Extensible package, but works okay.
 
-sub get_user {
-  my $username = shift;
-  my $client = MongoDB->connect('mongodb://localhost');
-  my $collection = $client->ns(config->{database_name} . ".users");
-  my $user = $collection->find_one({falconkey => $username});
-  $user->{_id} = $user->{_id}->{value} if defined($user);
-  return $user if defined($user);
-
-  ## first look for the user in the envinroment config.
-  my $users = config->{plugins}->{"Auth::Extensible"}->{realms}->{local}->{users};
-  $user = first {$_->{falconkey} eq $username } @$users;
-  return $user if defined($user);
-
-  return {};
-}
+# sub get_user {
+#   my $username = shift;
+#   my $client = MongoDB->connect('mongodb://localhost');
+#   my $collection = $client->ns(config->{database_name} . ".users");
+#   my $user = $collection->find_one({falconkey => $username});
+#   $user->{_id} = $user->{_id}->{value} if defined($user);
+#   return $user if defined($user);
+#
+#   ## first look for the user in the envinroment config.
+#   my $users = config->{plugins}->{"Auth::Extensible"}->{realms}->{local}->{users};
+#   $user = first {$_->{falconkey} eq $username } @$users;
+#   return $user if defined($user);
+#
+#   return {};
+# }
 
 sub login_page {
   debug "in login_page";
