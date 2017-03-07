@@ -103,6 +103,7 @@ del '/users/:user_id' => sub {
 
 get '/users/:falconkey/check' => sub {
   debug "in get /users/:falconkey/check";
+  my $json  = JSON->new->convert_blessed->allow_blessed;
 
   # first check if the person is already in the database
 
@@ -111,6 +112,8 @@ get '/users/:falconkey/check' => sub {
   my $result = $collection->find_one({falconkey=>route_parameters->{falconkey}});
 
   return Model::Sponsor->new($result)->TO_JSON if defined($result);
+  
+  ## if the user isn't in the database, look up the user on the AD
 
   my $ldap = new Net::LDAP(config->{ldap_server});
   my $msg = $ldap->bind(config->{ldap_bind}, password => config->{ldap_password} );
@@ -145,8 +148,10 @@ get '/users/:falconkey/check' => sub {
   # add the user to the database;
 
   $collection->insert_one($user);
+  
+  my $new_user = Model::User->new($collection->find_one({falconkey=>$user->{falconkey}})); 
 
-  return $user->TO_JSON;
+  return $json->encode($new_user);
 };
 
 ###

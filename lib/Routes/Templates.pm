@@ -61,9 +61,12 @@ post '/login' => sub {
         my $client = MongoDB->connect('mongodb://localhost');
         my $user_collection = $client->ns(config->{database_name}.".users");
         my $result = $user_collection->find_one({falconkey=>body_parameters->{username}});
+        
+        debug $result; 
 
         if(not defined($result)){
           my $user_details = Model::User->new(get_user_details(params->{username}));
+          debug $user_details;
           insert_to_db($client,config->{database_name} . ".users", $user_details);
           session logged_in_user => $user_details->{falconkey};
           redirect config->{server_name} . config->{top_dir} .'/index';
@@ -83,7 +86,10 @@ get '/test' => sub {
 };
 
 get '/welcome-student' => require_login sub {
-  template 'welcome-student', {user=>get_user_details(logged_in_user->{user}),top_dir=>config->{top_dir}};
+  my $user = get_user_details(logged_in_user->{falconkey});
+  debug $user; 
+  debug config; 
+  template 'welcome-student', {user=>$user,top_dir=>config->{top_dir}};
 };
 
 get '/welcome' => require_login sub {
@@ -111,12 +117,16 @@ get '/submitted/:proposal_id' => sub {
       push(@other_authors,$user);
   }
 
+  if($proposal->{sponsor_statement}){
+    template 'sponsor-statement', {top_dir => config->{top_dir}};
+  } else {
+
   my $params = {top_dir => config->{top_dir},
     user=>$user, proposal=>$proposal,sponsor=>$sponsor,
     other_authors => \@other_authors};
 
   template 'proposal-received', $params;
-
+    }
 };
 
 get '/judge' =>  require_login sub {
@@ -186,8 +196,9 @@ post '/user' => require_login sub {
   push @roles, @{$user->{role}};
   @roles = uniq @roles;
   $user->role(\@roles);
+    debug $user; 
   my $client = MongoDB->connect('mongodb://localhost');
-  my $result = update_one($client,config->{database_name}.".users",$user);
+  my $result = update_one($client,config->{database_name}.".users",'Model::User',$user);
 
   redirect config->{server_name} . config->{top_dir} .'/sponsor';
 };
