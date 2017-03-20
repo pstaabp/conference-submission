@@ -79,7 +79,8 @@ post '/login' => sub {
 
 get '/test' => sub {
   debug "in get /test";
-  template 'test', {top_dir=>config->{top_dir}};
+  debug config;
+  template 'test', {top_dir=>config->{top_dir},server_name=>config->{server_name}};
 };
 
 get '/welcome-student' => require_login sub {
