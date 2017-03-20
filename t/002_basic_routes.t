@@ -26,8 +26,11 @@ ok( $res->is_success, '[GET /login] successful' );
 
 ## test login as student
 
-my $params = {__auth_extensible_username => "dave", __auth_extensible_password => "dave"}; #, type=> ["qu","wr"]};
-ok($res = $test->request(POST '/login','Content-Type' => 'application/json', Content => encode_json($params)));
+#my $params = {password => "dave",  password=> "dave"}; #, type=> ["qu","wr"]};
+#ok($res = $test->request(POST '/login','Content-Type' => 'application/html', Content => encode_json($params)));
+$res = $test->request(POST '/login?username=dave&password=dave');
+dd $res;
+ok($res->is_success, '[POST /login] successful');
 $jar->extract_cookies($res);
 
 dd $jar;
@@ -43,16 +46,3 @@ dd $req;
 
 my $res = $test->request($req);
 ok($res->is_success,'Session is working');
-
-
-# $res = $test->request(GET '/problems');
-# ok($res->is_success, '[GET /problems] successful');
-#
-# $res = $test->request(GET '/problemsets');
-# ok($res->is_success, '[GET /problemsets] successful');
-#
-# $res = $test->request(GET '/problem');
-# ok($res->is_success, '[GET /problem] successful');
-#
-# $res = $test->request(GET '/modules');
-# ok($res->is_success, '[GET /modules] successful');

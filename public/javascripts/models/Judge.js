@@ -16,7 +16,7 @@ define(['backbone', 'underscore','models/User','apps/settings'], function(Backbo
             return _user_defaults;
         },
         url : function() {
-          console.log(settings.top_dir + '/judges/' + this.get("_id"));
+          //console.log(settings.top_dir + '/judges/' + this.get("_id"));
           return settings.top_dir + '/judges/' + this.get("_id");
         },
 

@@ -59,9 +59,9 @@ define(['backbone','apps/common'], function(Backbone,common){
                 }
             },
             ".sessions-to-judge": {
-                observe: "sessions",
+                observe: "judge_sessions",
                 update: function($el, val, model, options) {
-                    $el.html(this.sessionTemplate({sessions: val}));
+                    $el.html(this.sessionTemplate({judge_sessions: val}));
                     $el.children("button").on("click",function(evt){
                         model.set("sessions",_(model.get("session")).without($(evt.target).data("session")));
                         model.save();

@@ -37,17 +37,20 @@ sub TO_JSON {
   my $self = shift;
   my $hash = {};
   for my $key (keys %$self){
-      if (ref($self->{$key}) eq "DateTime"){
-        my $strp = DateTime::Format::Strptime->new(
-            pattern   => '%FT%T',
-            time_zone => 'America/New_York',
-          );
-        $hash->{$key}= $strp->format_datetime($self->{$key});
-      } else {
-        $hash->{$key} = $self->{$key};
-      }
+    if ($key eq "feedback"){
+      my @feedback =  map {$_->TO_JSON} @{$self->{$key}};
+      $hash->{$key} = \@feedback;
+    } elsif (ref($self->{$key}) eq "DateTime"){
+      my $strp = DateTime::Format::Strptime->new(
+      pattern   => '%FT%T',
+      time_zone => 'America/New_York',
+      );
+      $hash->{$key}= $strp->format_datetime($self->{$key});
+    } else {
+      $hash->{$key} = $self->{$key};
     }
-    return $hash;
+  }
+  return $hash;
 
 }
 

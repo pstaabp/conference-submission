@@ -82,7 +82,6 @@ sub get_user_details {
       falconkey => $entry->get_value("sAMAccountName")
     };
 
-    my $user;
     if($entry->get_value("mail") =~ /\@student\./){
       $params->{role} = ["student"];
       $user = Model::User->new($params);

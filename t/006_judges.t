@@ -54,9 +54,9 @@ my $user_params = {
 
 my $user_obj = Model::User->new($user_params);
 
-my $out = $json->encode($user_obj->to_hash);
 
-$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => $json->encode($user_obj->to_hash));
+$res = $test_api->request(POST '/users','Content-Type' => 'application/json',
+  Content => $json->encode($user_obj->TO_JSON));
 ok($res->is_success, '[POST /api/users] successful');
 
 # # dd decode_json($res->{_content});
@@ -71,10 +71,9 @@ my $judge = Model::Judge->new($json->decode($res->{_content}));
 ## update the user as a judge
 
 #dd "printing out the hash";
-#dd $judge->to_hash;
 
 $res = $test_api->request(PUT '/judges/' . $judge->{_id},'Content-Type' => 'application/json',
-                              Content => $json->encode($judge->to_hash));
+                              Content => $json->encode($judge->TO_JSON));
 ok($res->is_success, '[PUT /api/judges/:judges_id] successful');
 
 

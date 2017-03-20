@@ -14,6 +14,7 @@ use Model::Judge;
 use Model::Sponsor;
 use Model::Proposal;
 use MongoDB::OID;
+use Common::Collection qw/update_one/;
 
 use List::Util qw/first/;
 
@@ -41,7 +42,6 @@ my @proposals = $proposal_collection->find->all;
 
 for my $proposal (@proposals){
   my $prop = Model::Proposal->new($proposal);
-  dd $proposal->{title};
 
   my ($sponsor,$falconkey);
   if (defined $proposal->{sponsor_email}){
@@ -50,22 +50,40 @@ for my $proposal (@proposals){
     #look for the user with this falconkey
     $sponsor = Model::Sponsor->new($user_collection->find_one({falconkey => $falconkey}));
   } else {
-    dd $prop->{sponsor_id};
     # my $obj_id = MongoDB::OID->new()
     $sponsor = Model::Sponsor->new($user_collection->find_one({_id=>MongoDB::OID->new(value=>$prop->{sponsor_id})}));
   }
-  if (not defined $sponsor->{department}){
-      $sponsor->department($proposal->{sponsor_dept});
-      $user_collection->find_one_and_update({falconkey=>$falconkey},
-          {'$set'=>{department=>$sponsor->{department}}});
+  # if (not defined $sponsor->{department}){
+  #     $sponsor->department($proposal->{sponsor_dept});
+  #     $user_collection->find_one_and_update({falconkey=>$falconkey},
+  #         {'$set'=>{department=>$sponsor->{department}}});
+  # }
+
+  # if (not $prop->sponsor_id){
+  #     $prop->sponsor_id($sponsor->{_id});
+  #     my $prop_id = MongoDB::OID->new(value=>$prop->{_id});
+  #     $proposal_collection->find_one_and_update({_id=>$prop_id},{'$set'=>{sponsor_id=>$prop->{sponsor_id}}});
+  # }
+  my $q = {role=> {'$in'=> ["judge"]}};
+  my @all_judges =  map {Model::Judge->new($_); } $user_collection->find($q)->all;
+
+
+  my $feedback = $prop->{feedback};
+  for my $feed (@$feedback){
+    my $judge_id = $feed->{judge_id};
+    my $jid_obj = MongoDB::OID->new(value=>$judge_id);
+    my $user = $user_collection->find_one({_id=>$jid_obj});
+    if(not defined($user)){
+      my $judge_num = int(rand(scalar(@all_judges)));
+      my $rand_id = $all_judges[$judge_num]->{_id};
+      $feed->{judge_id} = $rand_id;
+      dd "new judge_id";
+      dd $rand_id;
+    }
   }
-
-  dd $prop->{sponsor_id};
-  if (not $prop->sponsor_id){
-      $prop->sponsor_id($sponsor->{_id});
-      my $prop_id = MongoDB::OID->new(value=>$prop->{_id});
-      $proposal_collection->find_one_and_update({_id=>$prop_id},{'$set'=>{sponsor_id=>$prop->{sponsor_id}}});
-  }
-
-
+  my $obj_as_hash = $prop->TO_JSON;
+  delete $obj_as_hash->{_id};
+  my $res = $proposal_collection->update_one({_id=>MongoDB::OID->new(value=>$prop->{_id})},
+      {'$set'=>$obj_as_hash});
+  dd $res;
 }

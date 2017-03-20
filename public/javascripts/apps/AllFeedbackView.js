@@ -119,7 +119,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
             var hi = "hi";
             this.$el.html($("#feedback-tabs").html());
             this.model.get("feedback").each(function(feedback,i){
-		var judgeName =   self.judges.get(feedback.get("judge_id")) ? self.judges.get(feedback.get("judge_id")).get("name") : "OOPS";
+		           var judgeName = self.judges.get(feedback.get("judge_id")) ?
+                  self.judges.get(feedback.get("judge_id")).get("first_name") + " "
+                  + self.judges.get(feedback.get("judge_id")).get("last_name")
+                  : "OOPS";
 
                 var obj = {
                     judge_name:  (feedback.get("judge_id")=="") ? "NONE": judgeName,                tab_no: (i+1)};

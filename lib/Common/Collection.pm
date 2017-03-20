@@ -76,12 +76,14 @@ sub get_one_by_id {
 sub update_one {
   my ($client,$collection_name,$classname,$obj) = @_;
   say "in update_one";
+  say $classname;
   my $collection = $client->ns($collection_name);
   my $id_obj = MongoDB::OID->new(value => $obj->{_id});
   my $obj_as_hash = $obj->TO_JSON;
   delete $obj_as_hash->{_id};
+  #dd $obj_as_hash;
   my $result = $collection->update_one({_id =>$id_obj},{'$set' => $obj_as_hash});
-  # dd $result;
+  #dd $result;
   # todo:  check that this was succesful
   return $obj;
 }

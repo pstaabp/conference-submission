@@ -53,9 +53,7 @@ my $user_params = {
 
 my $user_obj = Model::User->new($user_params);
 
-my $out = $json->encode($user_obj->to_hash);
-
-$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => $json->encode($user_obj->to_hash));
+$res = $test_api->request(POST '/users','Content-Type' => 'application/json', Content => $json->encode($user_obj->TO_JSON));
 
 # dd $res;
 ok($res->is_success, '[POST /api/users] successful');
@@ -77,7 +75,7 @@ $student->major("Mathematics");
 #dd $student->to_hash;
 
 $res = $test_api->request(PUT '/students/' . $student->{_id},'Content-Type' => 'application/json',
-                              Content => $json->encode($student->to_hash));
+                              Content => $json->encode($student->TO_JSON));
 ok($res->is_success, '[PUT /api/students/:students_id] successful');
 
 
@@ -94,9 +92,6 @@ my $coll = $client->ns("conf-2016.users");
 $res = $test_api->request(GET '/students/' . $student->{_id});
 
 my $student2 = Model::Student->new(decode_json($res->{_content}));
-
-dd $student2; 
-
 cmp_deeply($student,$student2,'The student was updated successfully');
 # #
 # # delete the user

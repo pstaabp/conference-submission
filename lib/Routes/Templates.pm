@@ -43,6 +43,8 @@ get '/login' => sub {
 post '/login' => sub {
     debug "in post /login";
 
+    debug body_parameters; 
+
     my ($success, $realm) = authenticate_user(body_parameters->{username},body_parameters->{password});
 
     if ($success) {

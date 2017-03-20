@@ -23,7 +23,6 @@ my $res  = $test_api->request( GET '/users' );
 ok( $res->is_success, '[GET /api/users] successful' );
 
 my $users = $json->decode($res->content);
-#dd $users;
 
 is(ref($users),"ARRAY","[GET /api/users] returns an array");
 

@@ -40,6 +40,7 @@ use Types::Standard qw/ArrayRef Str/;
 ### User Routes
 
 get '/users' => sub { # get all users
+    debug "in get /users";
     my $client = MongoDB->connect('mongodb://localhost');
     my $users = get_all_in_collection($client,config->{database_name}.".users","Model::User");
     return $users;
@@ -112,7 +113,7 @@ get '/users/:falconkey/check' => sub {
   my $result = $collection->find_one({falconkey=>route_parameters->{falconkey}});
 
   return Model::Sponsor->new($result)->TO_JSON if defined($result);
-  
+
   ## if the user isn't in the database, look up the user on the AD
 
   my $ldap = new Net::LDAP(config->{ldap_server});
@@ -148,8 +149,8 @@ get '/users/:falconkey/check' => sub {
   # add the user to the database;
 
   $collection->insert_one($user);
-  
-  my $new_user = Model::User->new($collection->find_one({falconkey=>$user->{falconkey}})); 
+
+  my $new_user = Model::User->new($collection->find_one({falconkey=>$user->{falconkey}}));
 
   return $json->encode($new_user);
 };
@@ -273,8 +274,16 @@ get '/judges/:judge_id' => sub {
 put '/judges/:judge_id' => sub {
   debug "in put /judges/:judge_id";
   my $params =  body_parameters->mixed;
-  $params->{role}= [$params->{role}] unless ref($params->{role}) eq "ARRAY";
-  $params->{judge_topics} = [$params->{judge_topics}] unless ref($params->{judge_topics}) eq "ARRAY";
+  if(not defined($params->{role})){
+    $params->{role} = [];
+  } elsif (ref($params->{role}) ne "ARRAY"){
+      $params->{role}= [$params->{role}];
+  }
+  if(not defined($params->{judge_topics})){
+    $params->{judge_topics} = [];
+  } elsif (ref($params->{judge_topics}) ne "ARRAY"){
+      $params->{judge_topics}= [$params->{judge_topics}];
+  }
   my $updated_user = Model::Judge->new($params);
   # dd $updated_user;
   my $client = MongoDB->connect('mongodb://localhost');
@@ -336,7 +345,7 @@ post '/students/:student_id/proposals' => sub {
         push(@other_authors,$user);
     }
 
-    my $params = {top_dir => config->{top_dir},
+    my $params = {top_dir => config->{top_dir}, server_name => config->{server_name},
       user=>$user, proposal=>$proposal,sponsor=>$sponsor,
       other_authors => \@other_authors};
 
@@ -368,7 +377,7 @@ sub sendEmail {
       'Content-Type' => 'text/html'
   };
 
-  debug dump $email; 
+  debug dump $email;
 
 
 }
@@ -390,13 +399,13 @@ sub parseProposal {
 }
 
 put '/students/:student_id/proposals/:proposal_id' => sub {
-  debug "in put /proposals/:proposal_id";
+  debug "in put /students/:student_id/proposals/:proposal_id";
 
-  my $prop = parseProposal(body_parameters->mixed);
+  my $params = parseProposal(body_parameters->mixed);
   my $client = MongoDB->connect('mongodb://localhost');
-  my $user = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$prop);
-
-  return $user->TO_JSON;
+  my $proposal = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$params);
+  debug $proposal;
+  return $proposal->TO_JSON;
 };
 
 del '/students/:student_id/proposals/:proposal_id' => sub {

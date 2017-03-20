@@ -84,7 +84,6 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
         }
       },
       updateUser: function(_user){
-        console.log(_user.changed);
         _user.changingAttributes=_.pick(_user._previousAttributes,_.keys(_user.changed));
         _user.save();
       },

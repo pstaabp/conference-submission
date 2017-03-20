@@ -15,7 +15,6 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
       this.proposals.each(function(_prop){
         var _author = self.users.findWhere({_id: _prop.get("author_id")});
         var extended_prop = _prop.clone();
-        console.log(_prop.get("title"));
         extended_prop.set("author",_author.get("first_name")+ " " + _author.get("last_name"));
         self.extended_proposals.add(extended_prop);
       });

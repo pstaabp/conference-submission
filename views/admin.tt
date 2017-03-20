@@ -20,7 +20,7 @@
     <li><a href="#proposals" data-toggle="tab" data-view="proposalsView">Proposals</a></li>
     <li><a href="#presentations" data-toggle="tab" data-view="presentationsView">Presentations</a></li>
     <li><a href="#judges" data-toggle="tab" data-view="judgesView">Judges</a></li>
-    <li><a href="#judge-schedule" data-toggle="tab" data-view="judgesView">Judges Schedule</a></li>
+    <li><a href="#judge-schedule" data-toggle="tab" data-view="judgeScheduleView">Judges Schedule</a></li>
     <li><a href="#emails" data-toggle="tab" data-view="emailView">Emails</a></li>
     <li><a href="#feedback" data-toggle="tab" data-view="feedbackView">Feedback</a></li>
     <li><a href="#sponsors" data-toggle="tab" data-view="sponsorsView">Sponsors</a></li>
@@ -640,18 +640,18 @@
 </script>
 
 <script id="session-template" type="text/template">
-  <%=sessions.map(function(s) { return "<button class='btn btn-default' data-session='"+s+"'>" + s + "</button>"; }).join(", ") %>
+  <%=judge_sessions.map(function(s) { return "<button class='btn btn-default' data-session='"+s+"'>" + s + "</button>"; }).join(", ") %>
 </script>
 
 <script id="judges-schedule-row-template" type="text/template">
   <li>
-    <%var popoverContent = "fields: " + presentation.join(", ") %>
+    <%var popoverContent = "fields: " + judge_topics.join(", ") %>
     <%if (removable) { %>
     <%  popoverContent += "<br><span class='btn btn-default remove-judge' data-judgeid='" + cid + "' + data-session='" + sessionName + "'>Remove</span>";} %>
-    <% if (sessions.length == 0) {%>
-    span.judge-popover.no-sessions(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="<tr>ue") <%=name %>
+    <% if (judge_sessions.length == 0) {%>
+      <span class="judge-popover no-sessions" data-content="<%=popoverContent%>" data-judgeid ="<%=cid%>" data-html="true"> <%=first_name %> <%=last_name%></span>
     <%} else {%>
-    span.judge-popover(data-content!="<%=popoverContent%>",data-judgeid!="<%=cid%>",data-html="<tr>ue") <%=name %>
+      <span class="judge-popover" data-content="<%=popoverContent%>" data-judgeid ="<%=cid%>" data-html="true") <%=first_name %> <%=last_name %>span>
     <% } %>
   </li>
 </script>

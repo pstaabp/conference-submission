@@ -1,14 +1,15 @@
 define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
 
     var JudgeScheduleView = Backbone.View.extend({
+        judgeTemplate: _.template($("#judges-schedule-row-template").html()),
+        sessionNames: "ABCDEFGHIJKL",
+        template: _.template($("#judge-schedule-template").html()),
         initialize: function(options){
             _.bindAll(this,"render","showPosters","showOrals");
-            this.proposals = options.proposals;
-            this.judges = options.judges; 
-            this.sessionNames = "ABCDEFGHIJKL";
-            this.judgeTemplate = _.template($("#judges-schedule-row-template").html());
+            _(this).extend(_(options).pick("proposals","judges","users"));
         },
         render: function () {
+            this.$el.html(this.template());
             this.$(".posters,.orals").css("display","none");
             var viewType =  $("input[name='jsview']:checked").val();
             this.$("."+viewType).css("display","block");
@@ -16,10 +17,11 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             if(viewType==="orals") {this.showOrals();}
             else if (viewType==="posters"){this.showPosters();}
         },
-        events: {"change input[name='jsview']": "render",
-                "click .remove-judge": "removeJudgeFromSession"},
+        events: {
+          "change input[name='jsview']": "render",
+          "click .remove-judge": "removeJudgeFromSession"
+        },
         removeJudgeFromSession: function(evt){
-            
             var judgeID = $(evt.target).data("judgeid");
             var judge= this.judges.get(judgeID);
             var sessionName = $(evt.target).data("session");
@@ -31,21 +33,21 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                 props.push(this.proposals.findWhere({session: sessionName}));
             }
             _(props).each(function(_proposal){
-                var feedback = _proposal.get("feedback").findWhere({judge_id: judge.id});    
+                var feedback = _proposal.get("feedback").findWhere({judge_id: judge.id});
                 _proposal.get("feedback").remove(feedback);
                 _proposal.save();
             });
-            
+
             this.render();
         },
         showPosters: function () {
             var self = this;
 
             var posterTemplate = _.template($("#judges-schedule-poster-row").html());
-            
+
             this.$(".posters tbody").html("<tr><td><ul class='all-judge-list'></ul></td><td colspan='8'></td></tr>");
 
-            var judges = this.judges.filter(function(judge){ 
+            var judges = this.judges.filter(function(judge){
                     return (judge.get("type")==="poster") || (judge.get("type")==="either"); });
 
             var posters = _(this.proposals.filter(function(prop) { return prop.get("type")==="Poster Presentation";}))
@@ -70,7 +72,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                     if(judge){
                         var obj = {};
                         _.extend(obj,judge.attributes,{cid: judge.cid, removable: true, sessionName: _sessionName});
-                        $(".poster-judge[data-session='" + _sessionName + "'] ul").append(self.judgeTemplate(obj));    
+                        $(".poster-judge[data-session='" + _sessionName + "'] ul").append(self.judgeTemplate(obj));
                     }
                });
 
@@ -84,7 +86,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                 hoverClass: "ui-session-highlight",
                 scroll: true,
                 helper: "clone",
-                drop: function( event, ui ) {  
+                drop: function( event, ui ) {
                     var _sessionName = $(event.target).data("session");
                     var judge = self.judges.get($(ui.draggable).data("judgeid"));
                     var _proposal = self.proposals.findWhere({session: _sessionName});
@@ -98,10 +100,10 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                     _.extend(obj,judge.attributes,{cid: judge.cid,removable: true, sessionName: _sessionName});
                     $(event.target).children("ul").append(self.judgeTemplate(obj));
                     $(ui.draggable).popover("disable");
-                    // determine the number of sessions the judge has 
+                    // determine the number of sessions the judge has
                     var numProps = 0;
-                    self.proposals.each(function(prop){ 
-                        prop.get("feedback").each(function(feed){ 
+                    self.proposals.each(function(prop){
+                        prop.get("feedback").each(function(feed){
                             if(feed.get("judge_id")===judge.id){
                                 numProps++;}
                             })
@@ -117,7 +119,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         },
         showOrals: function (){
             var self = this;
-            // Need to empty all of the ul's in the table. 
+            // Need to empty all of the ul's in the table.
             this.$("ul").html("");
             for(var i =0; i<this.sessionNames.length;i++){
                 this.renderSession(i);
@@ -127,12 +129,12 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             this.$(".judge-popover").popover().draggable({revert: true});
             this.$(".session").droppable({
                 hoverClass: "ui-session-highlight",
-                drop: function( evt, ui ) { 
-                    var sessionNumber = $(evt.target).attr("id").charCodeAt(0)-65; 
+                drop: function( evt, ui ) {
+                    var sessionNumber = $(evt.target).attr("id").charCodeAt(0)-65;
                     var sessionRE = new RegExp("OP\-"+sessionNumber+"\-");
                     var props = self.proposals.filter(function(prop){ return sessionRE.test(prop.get("session"));});
                     var judge = self.judges.get($(ui.draggable).data("judgeid"));
-                    
+
                     _(props).each(function(_proposal){
                         _proposal.get("feedback").add(new Feedback({judge_id: judge.id}));
                         _proposal.save();
@@ -145,7 +147,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         },
         renderSession: function(sessionNumber){
             var ul = this.$("td#"+this.sessionNames[sessionNumber]+" ul").empty();
-            var self = this; 
+            var self = this;
             var sessionRE = new RegExp("OP\-"+sessionNumber+"\-");
             var props = self.proposals.filter(function(prop){ return sessionRE.test(prop.get("session"));});
             var judges = [];
@@ -163,7 +165,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             });
         },
         listAllJudges: function(){
-            var self = this; 
+            var self = this;
             var judgeListCell = this.$(".all-judge-list").empty();
             var judgeTemplate = $("#judge-template").html();
             this.judges.each(function(judge){
@@ -177,7 +179,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         tagName: "li",
         className: "judge-popover",
         initialize: function(opts){
-            this.template = opts.template; 
+            this.template = opts.template;
             this.proposals = opts.proposals;
         },
         render: function(){
@@ -185,12 +187,12 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             this.$el.html(this.template);
             this.$el.attr("data-judgeid",this.model.id)
                 .attr("data-html",true)
-                .attr("data-content","fields: " + this.model.get("presentation").join(", "));
+                .attr("data-content","fields: " + this.model.get("judge_topics").join(", "));
 
 
             var numProps = 0;
-            this.proposals.each(function(prop){ 
-                prop.get("feedback").each(function(feed){ 
+            this.proposals.each(function(prop){
+                prop.get("feedback").each(function(feed){
                     if(feed.get("judge_id")===self.model.id){
                         numProps++;}
                     })
@@ -202,7 +204,10 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             return this;
         },
         bindings: {
-            ".name": "name"
+            ".name": {observe: ["first_name","last_name"],
+          onGet: function(vals){
+            return vals[0] + " " +vals[1];
+          }}
         }
     })
 
