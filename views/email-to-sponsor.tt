@@ -3,9 +3,9 @@
 <p> A student has submitted a proposal to the 2017 FSU Undergraduate Conference
 and listed you a a sponsor.  The information submitted is that below.  If there
 are any errors here, the student can return to
-<a href="[%server_name%][% top_dir%]/student">this page</a>, relogin and fix the error. </p>
+<a href="[%server_name%][% top_dir%]/login">this page</a>, relogin and fix the error. </p>
 
-<p>In addition, you are required to login to <a href="[%server_name%][% top_dir%]/sponsor">this page</a>
+<p>In addition, you are required to login to <a href="[%server_name%][% top_dir%]/login">this page</a>
 and write a sponsor statement.  This will give the Undergraduate Conference committee
 help in determining if a student's proposal is of sufficient quality to
 submit to the conference.  When writing a sponsor statement, please be honest

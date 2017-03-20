@@ -2,7 +2,7 @@
 
 <p>Your proposal is listed below and has been successfully submitted.  You will receive an email shortly
   with additional information.  If there are any errors here, you can return to
-<a href="[%server_name%][% top_dir%]/student">this page</a> and fix them.  You may also
+<a href="[%server_name%][% top_dir%]/login">this page</a> and fix them.  You may also
 return to the same page and submit another proposal.  </p>
 
 
