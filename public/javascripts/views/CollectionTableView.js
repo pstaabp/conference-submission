@@ -1,23 +1,23 @@
 /**
- * 
+ *
  *  A backbone view replacement for editable grid
  *
- *  A collection must be passed into the constructor. Also with an array of Column names. 
+ *  A collection must be passed into the constructor. Also with an array of Column names.
  * The following must also be passed into the View:
- *  
+ *
  * columnInfo:  An array of {name: _name, key: _key, editable: boolean, classnames: _classnames,
- 		datatype: _datatype, binding: _binding} where 
+ 		datatype: _datatype, binding: _binding} where
  	-  _name will be the header of the column
- 	-  _key is the field name of the model 
+ 	-  _key is the field name of the model
  	-  _editable is a boolean for whether or not the column is editable
  	-  _classnames will assign the td element in the table those classnames.  It can be either a string or an
  			array of strings.
  	-  _datatype will be the type of data for the column.  This is important for sorting.
- 	-  _use_contenteditable: boolean  (this uses the contenteditable attribute whenever a column is editable. Set to 
+ 	-  _use_contenteditable: boolean  (this uses the contenteditable attribute whenever a column is editable. Set to
  	         false if you don't want to use this or true or nothing to use it.)
- 	-  _stickit_options: is an stickit bindings object.  You don't need to define observe because the classname will 
+ 	-  _stickit_options: is an stickit bindings object.  You don't need to define observe because the classname will
  	        be passed in.
- 	-  _sortFxn: is a function that returns a value to be sorted on.   
+ 	-  _sortFxn: is a function that returns a value to be sorted on.
 
  */
 
@@ -35,10 +35,10 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 			this.columnInfo = options.columnInfo;
 			this.paginatorProp = options.paginator;
 			this.bindings = {};
-			_(this.columnInfo).each(function(col){ 
+			_(this.columnInfo).each(function(col){
 				var obj = {};
 				obj["."+col.classname] = {observe: col.key}; // set it up for stickit format
-				
+
 				if(typeof col.use_contenteditable == 'undefined'){ col.use_contenteditable=true;}
 				if(typeof col.stickit_options != 'undefined'){
 					_.extend(obj["."+col.classname],col.stickit_options);
@@ -56,9 +56,9 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 				_.extend(self.bindings, obj);
 			});
 
-			// setup the paginator 
+			// setup the paginator
 
-			this.pageSize =  (this.paginatorProp && this.paginatorProp.page_size)? this.paginatorProp.page_size: 
+			this.pageSize =  (this.paginatorProp && this.paginatorProp.page_size)? this.paginatorProp.page_size:
 				this.collection.size();
 			this.pageRange = _.range(this.pageSize);
 			this.currentPage = 0;
@@ -116,7 +116,7 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 				, i
 				, start =0,
                 stop = this.maxPages;
-            
+
             if(this.maxPages>15){
                 start = (this.currentPage-7 <0)?0:this.currentPage-7;
                 stop = start+15<this.maxPages?start+15 : this.maxPages;
@@ -166,14 +166,14 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 			var self = this;
 			this.rowViews = [];
 			_(this.pageRange).each(function(i,j){
-				if(self.showFiltered){ 
+				if(self.showFiltered){
 					if(self.filteredCollection[i]){
 						self.rowViews[j] = new TableRowView({model: self.filteredCollection[i],columnInfo: self.columnInfo,
 							bindings: self.bindings});
 					}
 				} else {
 					if(self.collection.at(i)){
-						self.rowViews[j]=new TableRowView({model: self.collection.at(i),columnInfo: self.columnInfo, 
+						self.rowViews[j]=new TableRowView({model: self.collection.at(i),columnInfo: self.columnInfo,
 							bindings: self.bindings});
 					}
 				}
@@ -193,7 +193,7 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 			var sort = _(this.columnInfo).find(function(col){
 				return (_.isArray(col.classname)? col.classname[0] : col.classname ) == $(evt.target).data("class-name");
 			});
-			
+
 			if(typeof(sort)=="undefined"){ // The user clicked on the select all button.
 				return;
 			}
@@ -201,7 +201,7 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 			if(this.sortInfo && this.sortInfo.key==sort.key){
 				this.sortInfo.direction = -1*this.sortInfo.direction;
 			} else {
-				this.sortInfo = {key: sort.key, direction: 1, 
+				this.sortInfo = {key: sort.key, direction: 1,
 						classname: _.isArray(sort.classname)? sort.classname[0] : sort.classname};
 			}
 			// determine the sort Function
@@ -210,7 +210,7 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 
 
 			/* Need a more robust comparator function. */
-			this.collection.comparator = function(model1,model2) { 
+			this.collection.comparator = function(model1,model2) {
 				var value1 = model1.get(sort.key) || model1._extra[sort.key],
 					value2 = model2.get(sort.key) || model2._extra[sort.key];
 				switch(sort.datatype){
@@ -227,8 +227,8 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 						if(parseFloat(sortFunction(value1))===parseFloat(sortFunction(value2))){return 0;}
 					    return self.sortInfo.direction*(parseFloat(sortFunction(value1))<parseFloat(sortFunction(value2))? -1:1);
 					break;
-				} 
-				
+				}
+
 			};
 			this.collection.sort();
 			this.render();
@@ -280,8 +280,8 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 			if(this.model){
 				this.stickit();
 			}
-			return this; 
-		}, 
+			return this;
+		},
 		setModel: function(_model){
 			if(typeof(_model)=="undefined"){
 				this.$el.html("");
@@ -290,7 +290,7 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 					this.render();
 				}
 				this.model=_model;
-				
+
 				this.stickit();
 			}
 		},

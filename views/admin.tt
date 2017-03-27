@@ -67,7 +67,17 @@
       <div class="presentation-content"></div>
     </div>
     <div class="tab-pane" role="tabpanel" id="judges"></div>
-    <div class="tab-pane" role="tabpanel" id="judge-schedule"></div>
+    <div class="tab-pane" role="tabpanel" id="judge-schedule">
+      <label class="radio-inline control-label">
+        <input type="radio" name="jsview" value="orals" checked>
+        View Oral Presentations
+      </label>
+      <label class="radio-inline control-label">
+        <input type="radio" name="jsview" value="posters">
+        View Poster Presentations
+      </label>
+      <div id="schedule-container"></div>
+    </div>
     <div class="tab-pane" role="tabpanel" id="emails"></div>
     <div class="tab-pane" role="tabpanel" id="feedback">
       <td class="row">
@@ -251,15 +261,7 @@
   </td>
 </script>
 
-<script id="judge-schedule-template" type="text/template">
-  <label class="radio-inline control-label">
-    <input type="radio" name="jsview" value="orals" checked>
-    View Oral Presentations
-  </label>
-  <label class="radio-inline control-label">
-    <input type="radio" name="jsview" value="posters">
-    View Poster Presentations
-  </label>
+<script id="judge-schedule-oral-template" type="text/template">
   <div class="orals">
     <table class="table table-bordered">
       <thead>
@@ -304,6 +306,8 @@
       </tbody>
     </table>
   </div>
+</script>
+<script id="judge-schedule-poster-template" type="text/template">
   <div class="posters">
     <table class="table table-bordered">
       <thead>
@@ -460,8 +464,6 @@
   <p><%=posterSponsors||''%></p>
   <h3><a href="mailto:<%=sponsors%>||''">All Sponsors</a></h3>
   <p><%=sponsors||''%></p>
-  <h3><a href="mailto:<%=missingNames||''%>">Missing Names</a></h3>
-  <p><%=missingNames||''%></p>
 
   <h3><a href="mailto:<%=missing_statements||''%>">Missing Statements</a></h3>
   <p><%=missing_statements||''%></p>
@@ -662,8 +664,10 @@
 
 <script id="judges-schedule-poster-row" type="text/template">
   <td>
-    WHAT GOES HERE?
-    <!--td <% print("<b>" + session + "</b>&nbsp;<em>" + title + "</em>,  "  + author + "<br><span style='color:blue'>" + sponsor_name + "</span>") %>-->
+    <b class="session"><%=session%></b>
+    <em class="title"><%=title%></em>
+    <span class="author"><%=author_name%></span><br>
+    <span style='color:blue' class="sponsor"><%=sponsor_name%></span>
   </td>
   <td class="poster-judge" data-session="<%=session%>">
     <ul></ul>

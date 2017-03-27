@@ -141,12 +141,22 @@ function(Backbone, _,settings,FeedbackView,common,Student,UserList,Sponsor){
     var self = this;
     if(this.model.isValid(true)){
       this.$(".submit-proposal-button").button("saving");
+      this.$(".submit-proposal-button").addClass("disabled");
       // TODO: the following line is a hack.  I'm not sure why new authors are doubled up.
       this.model.set("other_authors",_(this.model.get("other_authors")).unique()); // to ensure that the same author isn't added twice.
-      this.model.save(this.model.attributes,{success: function(){
-        location.href=settings.template_dir +"/submitted/"+self.model.get("_id");
-  //      $.ajax(settings.top_dir +"/proposals/"+self.model.get("_id"),{contentType: false});
-      }});
+      this.model.save(this.model.attributes,
+          {
+            success: function(){
+              location.href=settings.template_dir +"/submitted/"+self.model.get("_id");
+            },
+            error: function(data) {
+              self.$(".submit-proposal-button").removeClass("disabled");
+              self.$(".submit-proposal-button").button("reset");
+              alert("An error occurred.  Please try to submit again by clicking the button below. If you " +
+                  "still get an error, email pstaab@fitchburgstate.edu");
+
+            }
+      });
     } else if (! this.model.isValid("sponsor_id")){
       this.$(".sponsor-email").closest(".form-group").addClass("has-error");
       this.$(".sponsor-email").popover({placement: "top",content: "Email address was not found."}).popover("show");

@@ -6,7 +6,10 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
       _.bindAll(this, "render");
       this.rowTemplate = $("#proposal-template").html();
       this.proposals = options.proposals;
-      this.proposals.on("remove",this.render);
+      // this.proposals.on("remove",function(_prop){
+      //   console.log(_prop);
+      //
+      // });
       this.proposals.on("change:sponsor_statement change:sponsor_name change:sponsor_dept",function(model){
         model.save();
       });
@@ -37,8 +40,8 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         this.$('.num-proposals').text("There are " + this.proposals.size() + " proposals shown.");
       },
       events: {
-        "keyup .search-proposals": "search",
-        "click .clear-search-proposals": "clearSearch"
+        "keyup #proposal-search-box": "search",
+        "click .clear-search-proposal": "clearSearch"
       },
       showHideProposal: function ($el,model,target) {
         if(target.text()==="Show"){
@@ -90,7 +93,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         + " proposals shown.");
       },
       clearSearch: function(evt){
-        this.$(".search-proposals").val("");
+        this.$("#proposal-search-box").val("");
         this.proposalsTable.filter("");
         this.proposalsTable.render();
         this.$('.num-proposals').text("There are " + this.proposals.size() + " proposals shown.");
@@ -117,7 +120,6 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         attrs.sponsor_name = sponsor.get("first_name")+ " "+sponsor.get("last_name");
         attrs.sponsor_email = sponsor.get("email");
         attrs.sponsor_dept = sponsor.get("department");
-        console.log(sponsor);
         this.model = new ExtendedProposal(attrs);
         this.model.on("change:sponsor_statement",function(model){
           self.proposal.set("sponsor_statement",model.get("sponsor_statement"));
@@ -169,6 +171,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         var del = confirm("Do you want to delete the proposal entitled: " + this.model.get("title"));
         if(del){
           this.proposal.destroy();
+          this.$el.prev().remove();
           this.$el.remove();
         }
       }

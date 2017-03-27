@@ -3,19 +3,21 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
     var JudgeScheduleView = Backbone.View.extend({
         judgeTemplate: _.template($("#judges-schedule-row-template").html()),
         sessionNames: "ABCDEFGHIJKL",
-        template: _.template($("#judge-schedule-template").html()),
+        oral_template: _.template($("#judge-schedule-oral-template").html()),
+        poster_template: _.template($("#judge-schedule-poster-template").html()),
+        poster_row_template : _.template($("#judges-schedule-poster-row").html()),
+        //template: _.template($("#judge-schedule-template").html()),
         initialize: function(options){
             _.bindAll(this,"render","showPosters","showOrals");
             _(this).extend(_(options).pick("proposals","judges","users"));
         },
         render: function () {
-            this.$el.html(this.template());
-            this.$(".posters,.orals").css("display","none");
-            var viewType =  $("input[name='jsview']:checked").val();
-            this.$("."+viewType).css("display","block");
-
-            if(viewType==="orals") {this.showOrals();}
-            else if (viewType==="posters"){this.showPosters();}
+          switch(this.$("input[name='jsview']:checked").val()){
+            case "orals":
+              this.showOrals(); break;
+            case "posters":
+              this.showPosters(); break;
+            }
         },
         events: {
           "change input[name='jsview']": "render",
@@ -43,10 +45,8 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         showPosters: function () {
             var self = this;
 
-            var posterTemplate = _.template($("#judges-schedule-poster-row").html());
-
+            this.$("#schedule-container").html(this.poster_template);
             this.$(".posters tbody").html("<tr><td><ul class='all-judge-list'></ul></td><td colspan='8'></td></tr>");
-
             var judges = this.judges.filter(function(judge){
                     return (judge.get("type")==="poster") || (judge.get("type")==="either"); });
 
@@ -57,7 +57,12 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
                 var rowString = "<tr>";
                 for(var j=0; j<4;j++){
                     if(i+j>=posters.length) { break;}
-                    rowString += posterTemplate(posters[i+j].attributes);
+                    var _model = _(posters[i+j].attributes).pick("session","title");
+                    var _author = this.users.get(posters[i+j].get("author_id"));
+                    _model.author_name = _author.get("first_name") + " " + _author.get("last_name");
+                    var _sponsor = this.users.get(posters[i+j].get("sponsor_id"));
+                    _model.sponsor_name = _sponsor.get("first_name") + " " + _sponsor.get("last_name");
+                    rowString += this.poster_row_template(_model);
                 }
                 rowString += "</tr>";
                 self.$("div.posters table tbody").append(rowString);
@@ -119,6 +124,7 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
         },
         showOrals: function (){
             var self = this;
+            this.$("#schedule-container").html(this.oral_template);
             // Need to empty all of the ul's in the table.
             this.$("ul").html("");
             for(var i =0; i<this.sessionNames.length;i++){

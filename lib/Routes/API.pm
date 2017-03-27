@@ -404,7 +404,6 @@ put '/students/:student_id/proposals/:proposal_id' => sub {
   my $params = parseProposal(body_parameters->mixed);
   my $client = MongoDB->connect('mongodb://localhost');
   my $proposal = update_one($client,config->{database_name} . ".proposals","Model::Proposal",$params);
-  debug $proposal;
   return $proposal->TO_JSON;
 };
 
