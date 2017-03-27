@@ -28,6 +28,10 @@ var WebPage = Backbone.View.extend({
         $(".change-role").on("click",function(evt){
           location.href=settings.template_dir+"/"+$(evt.target).html();
         });
+        $(".add-role").on("click",function(evt){
+          location.href=settings.template_dir+"/add-role";
+        });
+
 
 
     },

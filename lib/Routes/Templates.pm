@@ -43,7 +43,7 @@ get '/login' => sub {
 post '/login' => sub {
     debug "in post /login";
 
-    debug body_parameters; 
+    debug body_parameters;
 
     my ($success, $realm) = authenticate_user(body_parameters->{username},body_parameters->{password});
 
@@ -84,8 +84,6 @@ get '/test' => sub {
 
 get '/welcome-student' => require_login sub {
   my $user = get_user_details(logged_in_user->{falconkey});
-  debug $user;
-  debug config;
   template 'welcome-student', {user=>$user,top_dir=>config->{top_dir}};
 };
 
