@@ -18,7 +18,6 @@ define(['backbone','models/Feedback','bootstrap'], function(Backbone,Feedback){
             case "posters":
               this.showPosters(); break;
             }
-            console.log()
         },
         events: {
           "change input[name='jsview']": "render",

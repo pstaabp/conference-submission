@@ -49,24 +49,27 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
 
 
   var OralPresentationScheduleView = Backbone.View.extend({
-    initialize: function(options){
+    template: _.template($("#schedule-template").html()),
+    prop_template: _.template($("#oral-presentation-template").html()),
+    initialize: function(opts){
       _.bindAll(this,"render","reorder");
-      this.parent = options.parent;
-      this.proposals = new ProposalList(options.proposals);
-      this.proposals.sortField = 'session';
-      this.proposals.sort();
+      _(this).extend(_(opts).pick("parent","users"));
+      this.proposals = new ProposalList(opts.proposals);
+      this.proposals.sortBy('session');
     },
     render: function (){
       var self = this;
       var sessionNames = "ABCDEFGHIJKL";
 
-      this.$el.html(_.template($("#schedule-template").html(),{numSessions: 12 }));
+      this.$el.html(this.template({numSessions: 12 }));
 
       var re = /OP-(\d+)-(\d+)/;
 
       this.proposals.each(function(prop){
         var matches = prop.get("session").match(re);
-        var propHTML = _.template($("#oral-presentation-template").html(),_.extend(prop.attributes, {cid: prop.cid}));
+        var _student = self.users.findWhere({_id: prop.get("author_id")});
+        var propHTML = self.prop_template(_(prop.attributes)
+                .extend({cid: prop.cid,author:_student.get("first_name")+ " " + _student.get("last_name")}));
         if(matches){
           self.$("ul#col" + matches[1]).append(propHTML);
         } else {
@@ -156,11 +159,9 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
       var PresentationRowView = Backbone.View.extend({
         tagName: "tr",
         className: "presentation-row",
-        initialize: function (options){
+        initialize: function (opts){
           _.bindAll(this, "render","showHideDetails");
-          this.rowTemplate = options.rowTemplate;
-          this.reorder = options.reorder;
-          this.student = options.student;
+          _(this).extend(_(opts).pick("reorder","student","sponsor","rowTemplate"));
           this.model.on("change:session",this.render);
         },
         render: function(){
@@ -188,7 +189,7 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
         showHideDetails: function (evt){
           if($(evt.target).text()==="Show Details"){
             $(evt.target).text("Hide Details");
-            this.$el.after(new PresentationDetailView({model: this.model}).render().el);
+            this.$el.after(new PresentationDetailView({model: this.model,author: this.student, sponsor: this.sponsor}).render().el);
           } else {
             $(evt.target).text("Show Details");
             this.$el.next().remove();
@@ -197,10 +198,10 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
       });
 
       var PresentationView = Backbone.View.extend({
-        initialize: function(options){
+        initialize: function(opts){
           _.bindAll(this, "render");
           this.rowTemplate =  _.template($("#presentation-row-template").html());
-          _(this).extend(_(options).pick("proposals","type","users"));
+          _(this).extend(_(opts).pick("proposals","type","users"));
         },
         render: function (){
           var self = this;
@@ -208,7 +209,9 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
           var table = this.$("table tbody");
           _(this.proposals).each(function(proposal){
             var _student = self.users.findWhere({_id: proposal.get("author_id")});
-            table.append((new PresentationRowView({model: proposal, rowTemplate: self.rowTemplate,
+            var _sponsor = self.users.findWhere({_id: proposal.get("sponsor_id")});
+            table.append((new PresentationRowView({model: proposal,
+              rowTemplate: self.rowTemplate, sponsor: _sponsor,
               student: _student,reorder: false })).render().el);
             });
             return this;
@@ -218,12 +221,17 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
         var PresentationDetailView = Backbone.View.extend({
           tagName: "tr",
           className: "presentation-detail-row",
+          initialize: function(opts){
+            _(this).extend(_(opts).pick("author","sponsor"));
+          },
           render: function(){
             var row = $("<td colspan='5'></td>");
             row.html($("#presentation-details-template").html());
             this.$el.html(row);
             this.$el.data("id",this.model.id);
             this.stickit();
+            this.stickit(this.author,this.author_bindings);
+            this.stickit(this.sponsor,this.sponsor_bindings);
             return this;
           },
           author_bindings: {
