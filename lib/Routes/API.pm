@@ -349,8 +349,8 @@ post '/students/:student_id/proposals' => sub {
       user=>$user, proposal=>$proposal,sponsor=>$sponsor,
       other_authors => \@other_authors};
 
-   sendEmail($params,$user->{email},'proposal-received.tt');
-   sendEmail($params,$sponsor->{email},'email-to-sponsor.tt');
+   #sendEmail($params,$user->{email},'proposal-received.tt');
+   #sendEmail($params,$sponsor->{email},'email-to-sponsor.tt');
 
     return $result->TO_JSON;
 };
