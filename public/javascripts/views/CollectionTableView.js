@@ -211,8 +211,8 @@ define(['backbone', 'underscore','stickit'], function(Backbone, _){
 
 			/* Need a more robust comparator function. */
 			this.collection.comparator = function(model1,model2) {
-				var value1 = model1.get(sort.key) || model1._extra[sort.key],
-					value2 = model2.get(sort.key) || model2._extra[sort.key];
+				var value1 = _.isUndefined(model1.get(sort.key))?model1._extra[sort.key]: model1.get(sort.key);
+				var value2 = _.isUndefined(model2.get(sort.key))?model2._extra[sort.key]: model2.get(sort.key);
 				switch(sort.datatype){
 					case "string":
 						if (sortFunction(value1)===sortFunction(value2))

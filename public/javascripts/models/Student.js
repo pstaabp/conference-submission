@@ -1,7 +1,7 @@
 define(['backbone','models/User','apps/settings'], function(Backbone,User,settings){
   /**
   *
-  * This defines an Author
+  * This defines a Student
   *
   * @type {*}
   */
@@ -11,7 +11,7 @@ define(['backbone','models/User','apps/settings'], function(Backbone,User,settin
         var _user_defaults = User.prototype.defaults;
         _(_user_defaults).extend({
           major: "",
-          grad_year: 2000,
+          grad_year: 2020,
           presented_before: false
         });
         return _user_defaults;
@@ -20,13 +20,6 @@ define(['backbone','models/User','apps/settings'], function(Backbone,User,settin
         grad_year: {
           required: true
         },
-        // grad_year: function(value,attr,computedState){
-        //     if(_(this.get("role")).contains("student")){
-        //         if(! /^20[1-2][0-9]$/.test(value)){
-        //              return "Please enter a valid graduation date.";
-        //          }
-        //      }
-        // },
         major: function(value, attr, computedState) {
             if(_(this.get("role")).contains("student")){
                 if(value==="" || value == null){

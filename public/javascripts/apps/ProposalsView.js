@@ -43,14 +43,14 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
         "keyup #proposal-search-box": "search",
         "click .clear-search-proposal": "clearSearch"
       },
-      showHideProposal: function ($el,model,target) {
+      showHideProposal: function ($el,_model,target) {
         if(target.text()==="Show"){
           target.text("Hide");
           $el.parent().siblings(".proposal-detail-row").each(function(i,v){
             $(v).prev().children(".show-proposal").children("button").text("Show");
             $(v).remove();
           })
-          $el.parent().after(new ProposalDetailView({proposal: model, users: this.users, hidden: true}).render().el);
+          $el.parent().after(new ProposalDetailView({model: _model, users: this.users, hidden: true}).render().el);
           $el.parent().siblings(".proposal-detail-row").show("blind",250);
 
         } else {
@@ -107,64 +107,60 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
       initialize: function (options){
         var self = this;
         _(this).bindAll("deleteProposal");
-        var ExtendedProposal = Backbone.Model.extend({})
-        , attrs = {};
-        this.proposal = options.proposal;
+        _(this).extend(_(options).pick("users"));
+
         if(options.hidden){
           this.$el.css("display","none");
         }
-        _(attrs).extend(options.proposal.attributes);
-        _(attrs).extend(options.users.findWhere({_id: options.proposal.get("author_id")})
-                .pick("grad_year","presented_before"));
-        var sponsor = options.users.findWhere({_id: options.proposal.get("sponsor_id")});
-        attrs.sponsor_name = sponsor.get("first_name")+ " "+sponsor.get("last_name");
-        attrs.sponsor_email = sponsor.get("email");
-        attrs.sponsor_dept = sponsor.get("department");
-        this.model = new ExtendedProposal(attrs);
-        this.model.on("change:sponsor_statement",function(model){
-          self.proposal.set("sponsor_statement",model.get("sponsor_statement"));
-        });
-        this.model.on("change:sponsor_name",function(model){
-          self.proposal.set("sponsor_name",model.get("sponsor_name"));
-        });
-
-        this.model.on("change:sponsor_dept",function(model){
-          self.proposal.set("sponsor_dept",model.get("sponsor_dept"));
-        });
-
+        this.author = this.users.findWhere({_id: this.model.get("author_id")});
+        this.sponsor = this.users.findWhere({_id: this.model.get("sponsor_id")});
       },
       render: function(){
         this.$el.html($("#proposal-details-template").html());
         this.stickit();
+        this.stickit(this.sponsor,this.sponsor_bindings);
+        this.stickit(this.author,this.author_bindings);
         return this;
       },
-      bindings: {".accepted": "accepted",
-      ".author": {
-        observe: ["first_name","last_name"],
-        onGet: function(vals){ return vals[0]+ " " + vals[1];}},
+      author_bindings: {
+        ".grad-year": "grad_year",
+        ".presented-before": "presented_before"
+      },
+      sponsor_bindings: {
+        ".sponsor-name": {
+          observe: ["first_name","last_name"],
+            onGet: function(vals){ return vals[0]+ " " + vals[1];}},
+        ".sponsor-email": "email",
+        ".sponsor-dept": "department",
+      },
+      bindings: {
+        ".accepted": "accepted",
         ".session": "session",
         ".type": "type",
         ".title": "title",
         ".submitted-date": "submit_date",
-        ".sponsor-name": "sponsor_name",
-        ".sponsor-email": "sponsor_email",
-        ".sponsor-dept": "sponsor_dept",
         ".use-human-subjects": "use_human_subjects",
         ".use-animal-subjects": "use_animal_subjects",
         ".proposal-content": "content",
         ".sponsor-statement": "sponsor_statement",
         ".human-subjects-number": "human_subjects_number",
         ".animal-subjects-number": "animal_subjects_number",
-        ".grad-year": "grad_year",
         ".judges": {observe: "feedback", onGet: function(feedbackList){
           feedbackList.map(function(feed){
             return feed.get("judge_id");
           }).join(", ");
         }},
-        ".presented-before": "presented_before",
-        ".other-authors": {observe: "other_authors", onGet: function(val){
-          return _(val.map(function(author) { return author.get("first_name") + " " + author.get("last_name");})).join(", ");
-        }}
+
+        ".other-authors": {
+            observe: "other_authors",
+            onGet: function(val){
+              var self = this;
+              return _(val).map(function(fk){
+                  var _user = self.users.findWhere({falconkey: fk});
+                  return _user.get("first_name") + " " + _user.get("last_name");
+              })
+            }
+        }
       },
       events: {"click .delete-proposal": "deleteProposal"},
       deleteProposal: function (){

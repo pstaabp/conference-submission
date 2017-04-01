@@ -218,24 +218,6 @@ get '/admin' => require_role admin => sub{
       };
 };
 
-### I think this should be in the Auth::Extensible package, but works okay.
-
-# sub get_user {
-#   my $username = shift;
-#   my $client = MongoDB->connect('mongodb://localhost');
-#   my $collection = $client->ns(config->{database_name} . ".users");
-#   my $user = $collection->find_one({falconkey => $username});
-#   $user->{_id} = $user->{_id}->{value} if defined($user);
-#   return $user if defined($user);
-#
-#   ## first look for the user in the envinroment config.
-#   my $users = config->{plugins}->{"Auth::Extensible"}->{realms}->{local}->{users};
-#   $user = first {$_->{falconkey} eq $username } @$users;
-#   return $user if defined($user);
-#
-#   return {};
-# }
-
 sub login_page {
   debug "in login_page";
   template 'login';
