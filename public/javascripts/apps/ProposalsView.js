@@ -166,7 +166,7 @@ define(['backbone','views/CollectionTableView', 'stickit'],function(Backbone,Col
       deleteProposal: function (){
         var del = confirm("Do you want to delete the proposal entitled: " + this.model.get("title"));
         if(del){
-          this.proposal.destroy();
+          this.model.destroy();
           this.$el.prev().remove();
           this.$el.remove();
         }
