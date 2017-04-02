@@ -1,0 +1,3 @@
+[% FOREACH prop in proposals %]
+   "[% prop.title%]","[% prop.author%]","[%prop.other_authors%]"
+[% END %]
