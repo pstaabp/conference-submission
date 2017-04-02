@@ -25,11 +25,11 @@ define(['backbone','models/ProposalList','stickit','jquery-truncate','jquery-ui'
           _view = new PresentationView({type: "Video", proposals: _proposals,users: this.users});
         break;
         case "art2d":
-          _proposals = this.proposals.where({type: "2D Art"});
+          _proposals = this.proposals.where({type: "Art (2D)"});
           _view = new PresentationView({type: "2D Art", proposals: _proposals, users: this.users});
         break;
         case "art3d":
-          _proposals = this.proposals.where({type: "3D Art"});
+          _proposals = this.proposals.where({type: "Art (3D)"});
           _view = new PresentationView({type: "3D Art", proposals: _proposals, users: this.users});
         break;
         case "music":
