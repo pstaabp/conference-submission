@@ -202,7 +202,13 @@ get '/admin' => require_role admin => sub{
   my $client = MongoDB->connect('mongodb://localhost');
   my $user = get_user_details(logged_in_user->{falconkey});
   my $json  = JSON->new->convert_blessed->allow_blessed;
-  my $users = get_all_in_collection($client,config->{database_name}.".users","Model::User");
+
+  # the following just grabs all of the users.  I think there needs to be a
+  # better way to do this
+  my $collection = $client->ns(config->{database_name} . ".users");
+  my @all_users = $collection->find()->all;
+  my @users = map {$_->{_id} = $_->{_id}->{value}; $_ } @all_users;
+
   my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
   my $mc = $client->ns(config->{database_name} . ".users");
   my $q = {role=> {'$in'=> ["judge"]}};
@@ -211,12 +217,30 @@ get '/admin' => require_role admin => sub{
   my @sponsors = map {Model::Sponsor->new($_); } $mc->find($q)->all;
   template 'basic', {top_dir=> config->{top_dir},header_script=>"admin.tt",
         user=>$user, user_encoded => $json->encode($user),
-        users=>$json->encode($users),
+        users=>$json->encode(\@users),
         proposals => $json->encode($proposals),
         judges => $json->encode(\@judges),
         sponsors => $json->encode(\@sponsors)
       };
 };
+
+#get '/all-proposals' => require_role admin => sub {
+get '/all-proposals' =>  sub {
+  my $client = MongoDB->connect('mongodb://localhost');
+  my $proposals = get_all_in_collection($client,config->{database_name}.".proposals","Model::Proposal");
+  template 'prop-to-csv', { proposals => $proposals}, { layout => undef };
+};
+
+# get '/users' => sub {
+#   my $json  = JSON->new->convert_blessed->allow_blessed;
+#   my $client = MongoDB->connect('mongodb://localhost');
+#   my $collection = $client->ns(config->{database_name} . ".users");
+#   my @all_users = $collection->find()->all;
+#
+#   my @users = map {$_->{_id} = $_->{_id}->{value}; $_ } @all_users;
+#
+#   return $json->encode(\@users);
+# };
 
 sub login_page {
   debug "in login_page";

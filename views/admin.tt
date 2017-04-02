@@ -18,6 +18,7 @@
   <ul class="nav nav-tabs" role="tablist" id="admin-tabs">
     <li class="active"><a href="#users" data-toggle="tab" data-view="usersView">Users</a></li>
     <li><a href="#proposals" data-toggle="tab" data-view="proposalsView">Proposals</a></li>
+    <li><a href="#csv" data-toggle="tab" data-view="csvView">CSV</a></li>
     <li><a href="#presentations" data-toggle="tab" data-view="presentationsView">Presentations</a></li>
     <li><a href="#judges" data-toggle="tab" data-view="judgesView">Judges</a></li>
     <li><a href="#judge-schedule" data-toggle="tab" data-view="judgeScheduleView">Judges Schedule</a></li>
@@ -29,6 +30,7 @@
     <div class="tab-pane active" role="tabpanel" id="users"></div>
 
     <div class="tab-pane" role="tabpanel"  id="proposals"></div>
+    <div class="tab-pane" role="tabpanel"  id="csv"></div>
     <div class="tab-pane" role="tabpanel" id="presentations">
       <div class="radio-buttons">
         <label class="radio-inline control-label">
@@ -162,8 +164,8 @@
           <td contenteditable='true' class="sponsor-name"></td>
           <td class="sponsor-email"></td>
           <td contenteditable='true' class="sponsor-dept"></td>
-          <td class="human-subjects-number"></td>
-          <td class="animal-subjects-number"></td>
+          <td> <b>Subject Number:</b> <span class="human-subjects-number"></span></td>
+          <td> <b>Subject Number:</b> <span class="animal-subjects-number"></span></td>
         </tr>
         <tr>
           <td></td>
@@ -197,6 +199,17 @@
       </tbody>
     </table>
   </td>
+</script>
+
+<script id="csv-url-template" type="text/template">
+  <a href="<%=url%>" download="conference-proposals.csv">Save the CSV File</a>
+</script>
+<script id="csv-template" type="text/template">
+<div id="url-to-csv"></div>
+<textarea rows="80" cols="120" id="proposals-textarea">
+
+</textarea>
+
 </script>
 
 <script id="user-row-template" type='text/template'>
@@ -375,12 +388,12 @@
 
 <script id="proposals-tab-template" type="text/template">
   <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-4">
       <div class="form-horizontal">
         <div class="form-group">
           <label class="control-label col-md-2" for="proposal-search-box">Search
           </label>
-          <div class="col-md-6">
+          <div class="col-md-10">
             <input type="search" class="form-control" id="proposal-search-box">
           </div>
         </div>
@@ -393,23 +406,34 @@
       <p class="num-proposals">
       </p>
     </div>
-
-    <div class="proposals-table-container">
-    </div>
-
   </div>
+  <div class="proposals-table-container">
+  </div>
+
 </script>
 <script id="proposals-template" type="text/template">
   <div class="row">
-    <div class="span4">
+    <div class="col-md-4">
       <h3> <%= propHeader %></h3>
     </div>
-    <div class="span4 pull-right">total number: <%= number %></div>
+    <div class="col-md-4 pull-right">total number: <%= number %></div>
   </div>
   <table id="proposal-table-header" class="table table-bordered proposal-table">
     <tbody>
     </tbody>
   </table>
+</script>
+
+<script id="schedule-template" type="text/template">
+<table class="table table-bordered" id="schedule-table">
+  <thead>
+    <tr><th></th>
+      <th>Presenter</th><th>Title</th><th>Sponsor</th><th>Department</th>
+      <th>Theme</th><th>Moderator</th><th>Room</th><th>Judges</th></tr>
+<tbody>
+</tbody>
+</table>
+
 </script>
 
 <script id="all-feedback-template" type="text/template">

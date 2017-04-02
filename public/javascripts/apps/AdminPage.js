@@ -4,13 +4,13 @@ define(['module','jquery','backbone', 'underscore','apps/common',
 'models/Proposal',"models/Judge","models/JudgeList","apps/UsersView",
 'apps/ProposalsView', 'apps/PresentationsView', 'apps/SponsorsView',
 'apps/JudgesView', 'apps/JudgeScheduleView', 'apps/EmailView', 'apps/AllFeedbackView',
-'views/WebPage','bootstrap'],
+'views/WebPage','apps/ScheduleView','apps/CSVView','bootstrap'],
 function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge,
-  JudgeList,UsersView, ProposalsView, PresentationsView,
-  SponsorsView, JudgesView, JudgeScheduleView, EmailView, AllFeedbackView,WebPage){
+  JudgeList,UsersView, ProposalsView, PresentationsView,SponsorsView, JudgesView,
+  JudgeScheduleView, EmailView, AllFeedbackView,WebPage,ScheduleView,CSVView){
     var AdminPage = WebPage.extend({
       tabs: {
-        usersView: "#users",proposalsView: "#proposals",
+        usersView: "#users",proposalsView: "#proposals", csvView: "#csv",
         judgesView: "#judges", judgeScheduleView: "#judge-schedule",
         emailView: "#emails", feedbackView: "#feedback",
         sponsorsView: "#sponsors", presentationsView: "#presentations"
@@ -43,6 +43,8 @@ function(module,$, Backbone, _,common, UserList,User,ProposalList,Proposal,Judge
         this.views = {
           usersView : new UsersView(_all_data),
           proposalsView : new ProposalsView(_all_data),
+          csvView: new CSVView(_all_data),
+          //scheduleView: new ScheduleView(_all_data),
           presentationsView: new PresentationsView(_all_data),
           judgesView : new JudgesView(_all_data),
           judgeScheduleView : new JudgeScheduleView(_all_data),
