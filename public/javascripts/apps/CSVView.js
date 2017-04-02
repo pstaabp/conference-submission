@@ -6,7 +6,8 @@ define(['backbone'], function(Backbone){
       },
       csvify: function(arr){
         return _(arr).map(function(_element){
-          return '"' + _element.toString().replace(/"/g,'""') + '"';
+          var el = _.isUndefined(_element)?'': _element.toString();
+          return '"' + el.replace(/"/g,'""') + '"';
         }).join(",");
       },
       render: function(){
